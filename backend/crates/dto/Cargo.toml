@@ -1,0 +1,16 @@
+[package]
+name = "dto"
+version = "0.1.0"
+edition = "2024"
+authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
+
+[dependencies]
+macros.workspace = true
+repository = { path = "../repository", default-features = false }
+
+serde.workspace = true
+validator.workspace = true
+
+ulid.workspace = true
+
+utoipa.workspace = true

@@ -1,0 +1,19 @@
+[package]
+name = "repository"
+version = "0.1.0"
+edition = "2024"
+authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
+
+[features]
+default = ["surrealdb"]
+
+[dependencies]
+macros.workspace = true
+
+thiserror.workspace = true
+
+serde.workspace = true
+
+ulid.workspace = true
+
+surrealdb = { version = "2.2", optional = true }
