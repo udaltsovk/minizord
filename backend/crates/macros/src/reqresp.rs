@@ -8,8 +8,8 @@ macro_rules! request {
                     $(#[$field_meta:meta])*
                     $field:ident: $ty:ty
                 ),* $(,)?
-            }
-        ),*
+            } $(,)?
+        )*
     ) => {
         macros::paste::paste! {
             $(
@@ -17,11 +17,9 @@ macro_rules! request {
                 $(#[$meta])*
                 pub struct [<$name Request>] {
                     $(
-                        $(
-                            $(#[$field_meta])*
-                            pub $field: $ty,
-                        )*
-                    )?
+                        $(#[$field_meta])*
+                        pub $field: $ty,
+                    )*
                 }
             )*
         }
@@ -38,20 +36,18 @@ macro_rules! response {
                     $(#[$field_meta:meta])*
                     $field:ident: $ty:ty
                 ),* $(,)?
-            }
-        ),*
+            } $(,)?
+        )*
     ) => {
         macros::paste::paste! {
             $(
-                #[derive(serde::Serialize, utoipa::ToSchema, validator::Validate, Debug, Clone)]
+                #[derive(serde::Serialize, utoipa::ToSchema, Debug, Clone)]
                 $(#[$meta])*
                 pub struct [<$name Response>] {
                     $(
-                        $(
-                            $(#[$field_meta])*
-                            pub $field: $ty,
-                        )*
-                    )?
+                        $(#[$field_meta])*
+                        pub $field: $ty,
+                    )*
                 }
             )*
         }

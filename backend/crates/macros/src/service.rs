@@ -5,21 +5,22 @@ macro_rules! service {
         $name:ident {
             $(
                 $(#[$fn_meta:meta])*
-                $method:ident $sig:tt -> $res:ty
-            );*
+                $method:ident $sig:tt -> $res:ty;
+            )*
         }
     ) => {
         macros::paste::paste! {
-            type [<$name ServiceError>] = crate::common::ServiceError;
+            type [<$name ServiceResult>]<T> = Result<T, crate::common::ServiceError>;
 
             #[macros::async_trait::async_trait]
             pub trait [<$name Service>] {
                 $(
                     $(#[$fn_meta])*
-                    async fn $method $sig-> Result<$res, [<$name ServiceError>]>;
+                    async fn $method $sig-> [<$name ServiceResult>]<$res>;
                 )*
             }
 
+            pub type [<$name ServiceDependency>] = std::sync::Arc<dyn [<$name Service>] + Send + Sync>;
         }
     };
 }

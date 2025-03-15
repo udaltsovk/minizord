@@ -43,12 +43,12 @@ macro_rules! repository {
                     ),* $(,)?
                 }
             )? $(,)?
-        } {
+        } $({
             $(
                 $(#[$fn_meta:meta])*
-                $method:ident $sig:tt -> $res:ty
-            );*
-        }
+                $method:ident $sig:tt -> $res:ty;
+            )*
+        })?
     ) => {
         macros::paste::paste! {
             #[cfg(feature = "surrealdb")]
@@ -62,8 +62,12 @@ macro_rules! repository {
                 pub struct [<$name Id>]($id_ty);
             }
             impl [<$name Id>] {
-                // Table name constant
-                const TABLE: &str = macros::to_snake_case!($name);
+                const TABLE: &str = stringify!([<$name:snake>]);
+
+                #[cfg(feature = "surrealdb")]
+                pub fn record_id(&self) -> surrealdb::RecordId {
+                    self.0.clone()
+                }
             }
             #[cfg(feature = "surrealdb")]
             impl From<$id_ty> for [<$name Id>] {
@@ -76,19 +80,13 @@ macro_rules! repository {
             impl ToString for [<$name Id>] {
                 fn to_string(&self) -> String {
                     let record_id: surrealdb::RecordId = self.clone().into();
-                    let wrapped_id = &record_id.key().to_string();
-                    wrapped_id
-                        .strip_prefix('⟨')
-                        .unwrap()
-                        .strip_suffix('⟩')
-                        .unwrap()
-                        .to_string()
+                    record_id.key().to_string()
                 }
             }
             #[cfg(feature = "surrealdb")]
             impl Into<surrealdb::RecordId> for [<$name Id>] {
                 fn into(self) -> surrealdb::RecordId {
-                    self.0
+                    self.record_id()
                 }
             }
             #[cfg(not(feature = "surrealdb"))]
@@ -125,6 +123,7 @@ macro_rules! repository {
 
             $(
                 macros::repository_entity! {
+                    #[derive(Default)]
                     $(#[$update_meta])*
                     pub struct [<$name Update>] {
                         $(
@@ -136,15 +135,24 @@ macro_rules! repository {
                 }
             )?
 
-            type [<$name RepositoryError>] = crate::common::RepositoryError;
+            type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
             #[macros::async_trait::async_trait]
             pub trait [<$name Repository>] {
+                async fn save(&self, new: [<Create $name>]) -> [<$name RepositoryResult>]<$name>;
+                async fn find_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
+                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool>;
+                async fn update_by_id(&self, id: [<$name Id>], update: [<$name Update>]) -> [<$name RepositoryResult>]<Option<$name>>;
+                async fn delete_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
                 $(
-                    $(#[$fn_meta])*
-                    async fn $method $sig -> Result<$res, [<$name RepositoryError>]>;
-                )*
+                    $(
+                        $(#[$fn_meta])*
+                        async fn $method $sig -> [<$name RepositoryResult>]<$res>;
+                    )*
+                )?
             }
+
+            pub type [<$name RepositoryDependency>] = std::sync::Arc<dyn [<$name Repository>] + Send + Sync>;
         }
     };
 }

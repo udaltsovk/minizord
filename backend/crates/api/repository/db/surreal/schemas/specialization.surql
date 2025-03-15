@@ -1,0 +1,2 @@
+DEFINE TABLE OVERWRITE specialization
+    SCHEMAFULL;

@@ -2,7 +2,7 @@ pub extern crate async_trait;
 pub extern crate paste;
 pub extern crate stringcase;
 
-mod cases;
+mod auth;
 mod dto;
 mod handler;
 mod implementation;

@@ -1,0 +1,21 @@
+[package]
+name = "service"
+version = "0.1.0"
+edition = "2024"
+authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
+
+[features]
+default = ["surrealdb"]
+surrealdb = ["repository/surrealdb"]
+
+
+[dependencies]
+macros.workspace = true
+utils.workspace = true
+dto.workspace = true
+
+repository = { path = "../repository", default-features = false }
+
+thiserror.workspace = true
+
+ulid.workspace = true

@@ -2,7 +2,11 @@
 macro_rules! handler {
     (
         $(#[$meta:meta])*
-        $name:ident {
+        $name:ident with impl($impl_tt:tt) {
+            $(#[$routes_meta:meta])*
+            #routes $routes_sig:tt
+                $routes_body:block
+
             $(
                 $(#[$fn_meta:meta])*
                 $method:ident $sig:tt -> $res:ty
@@ -11,15 +15,27 @@ macro_rules! handler {
         }
     ) => {
         macros::paste::paste! {
-            // Generate handler trait
-            #[macros::async_trait::async_trait]
+            type [<$name HandlerResult>]<T> = Result<T, crate::common::HandlerError>;
+
             pub trait [<$name Handler>] {
                 $(
                     $(#[$fn_meta])*
-                    async fn $method $sig-> Result<$res, crate::common::HandlerError>;
+                    fn $method () -> impl actix_web::dev::HttpServiceFactory + utoipa_actix_web::OpenApiFactory + 'static;
                 )*
 
-                fn config(cfg: &mut utoipa_actix_web::service_config::ServiceConfig);
+                fn routes $routes_sig -> impl FnOnce(&mut utoipa_actix_web::service_config::ServiceConfig)
+                where
+                    Self: Sized + Clone + 'static
+                {
+                    $routes_body
+                }
+            }
+
+            #[macros::async_trait::async_trait]
+            trait [<$name HandlerHelper>] {
+                $(
+                    async fn $method $sig -> [<$name HandlerResult>]<$res>;
+                )*
             }
 
         }
