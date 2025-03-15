@@ -506,6 +506,7 @@ dependencies = [
  "service",
  "utoipa",
  "utoipa-actix-web",
+ "utoipa-scalar",
  "utoipa-swagger-ui",
 ]
 
@@ -5308,6 +5309,18 @@ dependencies = [
  "regex",
  "syn 2.0.99",
  "ulid",
+]
+
+[[package]]
+name = "utoipa-scalar"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59559e1509172f6b26c1cdbc7247c4ddd1ac6560fe94b584f81ee489b141f719"
+dependencies = [
+ "actix-web",
+ "serde",
+ "serde_json",
+ "utoipa",
 ]
 
 [[package]]

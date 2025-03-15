@@ -210,7 +210,7 @@ handler_implementation! {
             tag = "Organizators",
             operation_id = "get_organizator_by_id",
             params(
-                ("organizator_id", description = "")
+                ("organizator_id" = Ulid, description = "")
             ),
             security(
                 ("organizator" = [])
@@ -240,7 +240,7 @@ handler_implementation! {
             tag = "Organizators",
             operation_id = "update_organizator_by_id",
             params(
-                ("organizator_id", description = "")
+                ("organizator_id" = Ulid, description = "")
             ),
             request_body(
                 description = "",
@@ -278,7 +278,7 @@ handler_implementation! {
             tag = "Organizators",
             operation_id = "change_organizator_password_by_id",
             params(
-                ("organizator_id", description = "")
+                ("organizator_id" = Ulid, description = "")
             ),
             request_body(
                 description = "",
@@ -315,7 +315,7 @@ handler_implementation! {
             tag = "Organizators",
             operation_id = "delete_organizator_by_id",
             params(
-                ("organizator_id", description = "")
+                ("organizator_id" = Ulid, description = "")
             ),
             security(
                 ("organizator" = [])

@@ -14,7 +14,7 @@ use service::organizator::{
     OrganizatorServiceDependency, implementation::ImplementedOrganizatorService,
 };
 use std::sync::Arc;
-use utils::openapi::Swagger;
+use utils::openapi::OpenApiVisualiser;
 use utoipa::{OpenApi, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::service_config::ServiceConfig;
 
@@ -44,7 +44,7 @@ pub fn app_setup(db: SurrealDB) -> BackendConfig {
             organizator_repository.clone(),
             config::JWT_SECRET.to_string(),
         ),
-        openapi: Swagger::openapi(),
+        openapi: OpenApiVisualiser::openapi(),
     }
 }
 

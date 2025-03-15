@@ -4,6 +4,12 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 
+
+[features]
+default = ["scalar"]
+scalar = ["utoipa-scalar"]
+swagger = ["utoipa-swagger-ui"]
+
 [dependencies]
 env-vars-config.workspace = true
 dto.workspace = true
@@ -16,7 +22,8 @@ env_logger.workspace = true
 log.workspace = true
 
 utoipa.workspace = true
-utoipa-swagger-ui = { version = "9.0", features = ["actix-web", "vendored"] }
+utoipa-scalar = { version = "0.3", features = ["actix-web"], optional = true }
+utoipa-swagger-ui = { version = "9.0", features = ["actix-web", "vendored"], optional = true }
 
 actix-web.workspace = true
 actix-rt = "2.10"

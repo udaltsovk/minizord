@@ -3,6 +3,9 @@ use utoipa::{
     Modify, OpenApi,
     openapi::{OpenApi as OpenApiStruct, security::SecurityScheme},
 };
+#[cfg(feature = "scalar")]
+use utoipa_scalar::{Scalar, Servable};
+#[cfg(feature = "swagger")]
 use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(OpenApi, Debug)]
@@ -34,9 +37,14 @@ use utoipa_swagger_ui::SwaggerUi;
     ),
     modifiers(&Security)
 )]
-pub struct Swagger;
-impl Swagger {
-    pub fn ui_service(api: OpenApiStruct) -> SwaggerUi {
+pub struct OpenApiVisualiser;
+impl OpenApiVisualiser {
+    #[cfg(feature = "scalar")]
+    pub fn service(api: OpenApiStruct) -> Scalar<OpenApiStruct> {
+        Scalar::with_url("/scalar", api)
+    }
+    #[cfg(feature = "swagger")]
+    pub fn service(api: OpenApiStruct) -> SwaggerUi {
         SwaggerUi::new("/swagger-ui/{_}*").url("/openapi.json", api)
     }
 }

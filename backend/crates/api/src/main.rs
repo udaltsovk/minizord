@@ -5,7 +5,7 @@ use actix_web::{
 use actix_web_lab::middleware::{CatchPanic, NormalizePath};
 use api::{
     app_setup, config,
-    utils::{logger::CustomLogger, openapi::Swagger},
+    utils::{logger::CustomLogger, openapi::OpenApiVisualiser},
 };
 use env_logger::Env;
 use repository::common::adapters::surrealdb::SurrealDB;
@@ -47,16 +47,19 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(CatchPanic::default())
             .wrap(Compress::default())
-            .wrap(NormalizePath::new(TrailingSlash::MergeOnly))
+            .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
+                TrailingSlash::MergeOnly
+            } else {
+                TrailingSlash::Trim
+            }))
             .wrap(CustomLogger::new())
             .into_utoipa_app()
             .openapi(app_config.openapi.clone())
             .configure(app_config.clone().build())
-            .openapi_service(Swagger::ui_service)
+            .openapi_service(OpenApiVisualiser::service)
             .into_app()
     })
     .bind(config::SERVER_ADDRESS.clone())?
     .run()
     .await
 }
-
