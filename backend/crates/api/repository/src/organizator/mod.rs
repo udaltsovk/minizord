@@ -26,6 +26,7 @@ repository! {
 }
 
 impl CreateOrganizator {
+    #[tracing::instrument(skip_all)]
     fn into_entity(self) -> Organizator {
         Organizator {
             id: OrganizatorId::from(Ulid::new()),

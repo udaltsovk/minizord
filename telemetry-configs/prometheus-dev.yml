@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'fiber-backend-scrap'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['"localhost:3000']
+  - job_name: 'tempo'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['tempo:3200']
+
+remote_write:
+  - url: "http://mimir:9009/api/v1/push"
+    remote_timeout: 30s
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: ".*"
+        action: keep

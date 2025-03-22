@@ -18,6 +18,8 @@ validator.workspace = true
 
 ulid.workspace = true
 
+tracing.workspace = true
+
 utoipa.workspace = true
 utoipa-actix-web.workspace = true
 

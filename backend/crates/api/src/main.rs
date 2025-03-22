@@ -5,21 +5,14 @@ use actix_web::{
 use actix_web_lab::middleware::{CatchPanic, NormalizePath};
 use api::{
     app_setup, config,
-    utils::{logger::CustomLogger, openapi::OpenApiVisualiser},
+    utils::{lgtm::LGTM, openapi::OpenApiVisualiser},
 };
-use env_logger::Env;
 use repository::common::adapters::surrealdb::SurrealDB;
 use utoipa_actix_web::AppExt;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    let default_log_level = if cfg!(debug_assertions) {
-        "debug"
-    } else {
-        "info"
-    };
-
-    env_logger::init_from_env(Env::default().default_filter_or(default_log_level));
+    LGTM::init_logging();
 
     let db = SurrealDB::init(
         &config::DB_ADDRESS,
@@ -43,8 +36,12 @@ async fn main() -> std::io::Result<()> {
 
     let app_config = app_setup(db);
 
+    tracing::info!("Starting the web server");
+
     HttpServer::new(move || {
         App::new()
+            .wrap(LGTM::tracing())
+            .wrap(LGTM::metrics())
             .wrap(CatchPanic::default())
             .wrap(Compress::default())
             .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
@@ -52,7 +49,6 @@ async fn main() -> std::io::Result<()> {
             } else {
                 TrailingSlash::Trim
             }))
-            .wrap(CustomLogger::new())
             .into_utoipa_app()
             .openapi(app_config.openapi.clone())
             .configure(app_config.clone().build())
@@ -61,5 +57,8 @@ async fn main() -> std::io::Result<()> {
     })
     .bind(config::SERVER_ADDRESS.clone())?
     .run()
-    .await
+    .await?;
+
+    tracing::info!("Shutting down web server");
+    Ok(())
 }

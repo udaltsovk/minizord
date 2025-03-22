@@ -3,15 +3,16 @@ use actix_web::{
     dev::ServiceRequest,
     http::header::{AUTHORIZATION, HeaderValue},
 };
-use dto::organizator::Organizator;
+use dto::{mentor::Mentor, organizator::Organizator, participant::Participant};
 use macros::auth_middlewares;
 
 auth_middlewares! {
     access_levels: [Any, Participant, Mentor, Organizator],
-    entities: [Organizator]
+    entities: [Participant, Mentor, Organizator]
 }
 
 #[inline]
+#[tracing::instrument(skip_all)]
 pub fn extract_auth_from_authorization_header(
     req: &ServiceRequest,
 ) -> Result<String, AuthenticationError> {

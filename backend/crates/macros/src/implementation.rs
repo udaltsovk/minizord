@@ -36,6 +36,7 @@ macro_rules! implementation {
             #[macros::async_trait::async_trait]
             impl super::$trait_name for [<$impl_name $trait_name>] {
                 $(
+                    #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
                     async fn $method $sig -> super::[<$trait_name Result>]<$res> {
                         let res = $body;
@@ -65,6 +66,7 @@ macro_rules! handler_implementation {
                 use super::*;
 
                 $(
+                    #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
                     async fn $method $sig -> super::super::[<$trait_name Result>]<$res> {
                         let res = $body;

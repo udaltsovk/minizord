@@ -11,12 +11,13 @@ surrealdb = ["dep:surrealdb", "surrealdb-migrations", "include_dir"]
 [dependencies]
 macros.workspace = true
 
-log.workspace = true
 thiserror.workspace = true
 
 serde.workspace = true
 
 ulid.workspace = true
+
+tracing.workspace = true
 
 surrealdb = { version = "2.2", optional = true }
 surrealdb-migrations = { version = "2.2", optional = true }

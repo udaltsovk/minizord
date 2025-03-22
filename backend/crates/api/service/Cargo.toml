@@ -19,3 +19,5 @@ repository = { path = "../repository", default-features = false }
 thiserror.workspace = true
 
 ulid.workspace = true
+
+tracing.workspace = true

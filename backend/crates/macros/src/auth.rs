@@ -13,6 +13,7 @@ macro_rules! auth_middlewares {
             $(
                 impl TryInto<$entity> for AuthEntity {
                     type Error = AuthenticationError;
+                    #[tracing::instrument(skip_all)]
                     fn try_into(self) -> Result<$entity, Self::Error> {
                         match self {
                             AuthEntity::$entity(entity) => Ok(entity),
@@ -32,17 +33,29 @@ macro_rules! auth_middlewares {
                 // TODO: Make services generate automatically
                 // I can't find a way to make composed meta-variable arrays with different sizes from non-copmposed ones
                 #[inline]
+                #[tracing::instrument(skip_all)]
                 pub async fn [<$access_level:snake _auth_middleware>](
                     jwt_secret: actix_web::web::Data<String>,
+                    participant_service: actix_web::web::Data<service::participant::ParticipantServiceDependency>, // TODO: here
+                    mentor_service: actix_web::web::Data<service::mentor::MentorServiceDependency>, // TODO: here
                     organizator_service: actix_web::web::Data<service::organizator::OrganizatorServiceDependency>, // TODO: here
                     req: actix_web::dev::ServiceRequest,
                     next: actix_web::middleware::Next<impl actix_web::body::MessageBody>,
                 ) -> Result<actix_web::dev::ServiceResponse<impl actix_web::body::MessageBody>, actix_web::Error> {
-                    auth_middleware(jwt_secret, organizator_service, TokenType::$access_level, req, next).await // TODO: and here
+                    auth_middleware(
+                        jwt_secret,
+                        participant_service, // TODO: here
+                        mentor_service, // TODO: here
+                        organizator_service, // TODO: and here
+                        TokenType::$access_level,
+                        req,
+                        next
+                    ).await
                 }
             )*
 
             #[inline]
+            #[tracing::instrument(skip_all)]
             pub async fn auth_middleware(
                 jwt_secret: actix_web::web::Data<String>,
                 $(

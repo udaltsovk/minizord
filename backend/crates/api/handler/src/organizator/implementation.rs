@@ -77,7 +77,7 @@ handler_implementation! {
             tag = "Organizators",
             operation_id = "get_current_organizator",
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
@@ -111,7 +111,7 @@ handler_implementation! {
                 content = OrganizatorUpdate
             ),
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
@@ -148,7 +148,7 @@ handler_implementation! {
                 content = PasswordChangeRequest
             ),
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
@@ -180,7 +180,7 @@ handler_implementation! {
             tag = "Organizators",
             operation_id = "delete_current_organizator",
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 204, description = ""),
@@ -213,7 +213,9 @@ handler_implementation! {
                 ("organizator_id" = Ulid, description = "")
             ),
             security(
-                ("organizator" = [])
+                ("organizator" = []),
+                ("mentor" = []),
+                ("participant" = []),
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
@@ -247,7 +249,7 @@ handler_implementation! {
                 content = OrganizatorUpdate
             ),
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
@@ -285,7 +287,7 @@ handler_implementation! {
                 content = PasswordChangeRequest
             ),
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
@@ -318,7 +320,7 @@ handler_implementation! {
                 ("organizator_id" = Ulid, description = "")
             ),
             security(
-                ("organizator" = [])
+                ("organizator" = []),
             ),
             responses(
                 (status = 204, description = ""),

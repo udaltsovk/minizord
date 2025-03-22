@@ -5,9 +5,14 @@ edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 
 [dependencies]
+lazy_static = "1.4"
+
 serde.workspace = true
+
 validator.workspace = true
 passwords = "3.1"
+regex = "1.10"
+url = "2.5"
 
 chrono = { version = "0.4", features = ["serde"] }
 ulid.workspace = true
@@ -16,3 +21,5 @@ argon2 = { version = "0.5", features = ["std"] }
 base64 = "0.22"
 rand_chacha = "0.3"
 jsonwebtoken = "9.3"
+
+tracing.workspace = true

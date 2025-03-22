@@ -13,13 +13,22 @@ swagger = ["utoipa-swagger-ui"]
 [dependencies]
 env-vars-config.workspace = true
 dto.workspace = true
+utils.workspace = true
 
 repository.path = "./repository"
 service.path = "./service"
 handler.path = "./handler"
 
-env_logger.workspace = true
-log.workspace = true
+# tonic.workspace = true
+
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json"] }
+console-subscriber = "0.4"
+tracing-opentelemetry = "0.24"
+opentelemetry_sdk = { version = "0.23", features = ["rt-tokio"] }
+opentelemetry-otlp = { version = "0.16", features = ["tls-roots"] }
+opentelemetry = "0.23"
+prometheus = "0.13"
 
 utoipa.workspace = true
 utoipa-scalar = { version = "0.3", features = ["actix-web"], optional = true }
@@ -30,7 +39,7 @@ actix-rt = "2.10"
 actix-cors = "0.7"
 # actix-files = "0.6"
 actix-web-lab.workspace = true
-actix-contrib-logger = "0.1"
 actix-multipart = "0.7"
-
 utoipa-actix-web.workspace = true
+tracing-actix-web = { version = "0.7", features = ["opentelemetry_0_23", "uuid_v7"] }
+actix-web-prom = { version = "0.9", features = ["process"] }

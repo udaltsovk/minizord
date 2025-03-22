@@ -1,7 +1,7 @@
 use macros::dto;
 use repository::organizator::Organizator as OrganizatorEntity;
 use ulid::Ulid;
-use utils::validation::validate_password;
+use utils::validation::{RE_USERNAME, validate_password};
 
 dto! {
     ///
@@ -9,7 +9,7 @@ dto! {
         ///
         id: Ulid,
         fields {
-            #[validate(length(min = 3, max = 20))]
+            #[validate(length(min = 3, max = 20), regex(path = *RE_USERNAME))]
             #[schema(min_length = 3, max_length = 20)]
             ///
             username: String,
@@ -39,6 +39,7 @@ dto! {
 }
 
 impl From<OrganizatorEntity> for Organizator {
+    #[tracing::instrument]
     fn from(entity: OrganizatorEntity) -> Self {
         Self {
             id: entity.id.into(),

@@ -1,9 +1,14 @@
 use validator::{ValidationErrors, ValidationErrorsKind};
 
 mod password;
+mod portfolio_urls;
+mod regex;
 
 pub use password::validate_password;
+pub use portfolio_urls::validate_portfolio_urls;
+pub use regex::RE_USERNAME;
 
+#[tracing::instrument(skip_all)]
 pub fn validation_errors_to_string(errors: ValidationErrors, adder: Option<String>) -> String {
     let mut output = String::new();
 

@@ -33,7 +33,15 @@ use utoipa_swagger_ui::SwaggerUi;
         (
             name = "Organizators",
             description = "Organizator-related endpoints"
-        )
+        ),
+        (
+            name = "Mentors",
+            description = "Mentor-related endpoints"
+        ),
+        (
+            name = "Participants",
+            description = "Participant-related endpoints"
+        ),
     ),
     modifiers(&Security)
 )]
@@ -62,5 +70,7 @@ impl Modify for Security {
         );
 
         components.add_security_scheme("organizator", scheme.clone());
+        components.add_security_scheme("mentor", scheme.clone());
+        components.add_security_scheme("participant", scheme.clone());
     }
 }

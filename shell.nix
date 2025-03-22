@@ -11,6 +11,7 @@
 
     cargo-watch
     surrealdb-migrations
+    protobuf
 
     (nodejs_22.override {enableNpm = false;})
     pnpm

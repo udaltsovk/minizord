@@ -1,11 +1,11 @@
-use crate::common::adapters::surrealdb::SurrealDB;
-
 use super::{CreateOrganizator, Organizator, OrganizatorId, OrganizatorUpdate};
+use crate::common::adapters::surrealdb::SurrealDB;
 use macros::implementation;
 use std::sync::Arc;
 use ulid::Ulid;
 
 impl Into<Ulid> for OrganizatorId {
+    #[tracing::instrument(skip_all)]
     fn into(self) -> Ulid {
         Ulid::from_string(&self.to_string()).unwrap()
     }

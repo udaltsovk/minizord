@@ -1,4 +1,6 @@
-use crate::common::middleware::auth::{AuthEntity, organizator_auth_middleware};
+use crate::common::middleware::auth::{
+    AuthEntity, any_auth_middleware, organizator_auth_middleware,
+};
 use actix_web::{
     HttpResponse,
     middleware::from_fn,
@@ -22,26 +24,28 @@ handler! {
             move |cfg: &mut ServiceConfig| {
                 cfg
                     .app_data(Data::new(organizator_service))
-                    .service(
-                        scope("/organizators")
-                            .service(Self::register())
-                            .service(Self::login())
-                            .service(
-                                scope("/me")
-                                    .wrap(from_fn(organizator_auth_middleware))
-                                    .service(Self::get_current())
-                                    .service(Self::update_current())
-                                    .service(Self::change_password_current())
-                                    .service(Self::delete_current())
+                    .service(scope("/organizators")
+                        .service(Self::register())
+                        .service(Self::login())
+                        .service(scope("/me")
+                            .wrap(from_fn(organizator_auth_middleware))
+                            .service(Self::get_current())
+                            .service(Self::update_current())
+                            .service(Self::change_password_current())
+                            .service(Self::delete_current())
+                        )
+                        .service(scope("/{organizator_id}")
+                            .service(scope("")
+                                .wrap(from_fn(any_auth_middleware))
+                                .service(Self::get_by_id())
                             )
-                            .service(
-                                scope("/{organizator_id}")
-                                    .wrap(from_fn(organizator_auth_middleware))
-                                    .service(Self::get_by_id())
-                                    .service(Self::update_by_id())
-                                    .service(Self::change_password_by_id())
-                                    .service(Self::delete_by_id())
+                            .service(scope("")
+                                .wrap(from_fn(organizator_auth_middleware))
+                                .service(Self::update_by_id())
+                                .service(Self::change_password_by_id())
+                                .service(Self::delete_by_id())
                             )
+                        )
                     );
             }
         }
@@ -113,6 +117,7 @@ response! {
 }
 
 impl From<(Organizator, String)> for OrganizatorAuthResponse {
+    #[tracing::instrument(skip_all)]
     fn from((organizator, token): (Organizator, String)) -> Self {
         Self { token, organizator }
     }

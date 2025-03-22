@@ -22,6 +22,7 @@ pub enum AuthenticationError {
 }
 
 impl ResponseError for AuthenticationError {
+    #[tracing::instrument(skip_all)]
     fn status_code(&self) -> StatusCode {
         use StatusCode as SC;
         match self {
@@ -33,6 +34,7 @@ impl ResponseError for AuthenticationError {
         }
     }
 
+    #[tracing::instrument(skip_all)]
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code()).json(ApiError {
             error: self.error_name().to_string(),
@@ -42,6 +44,7 @@ impl ResponseError for AuthenticationError {
 }
 
 impl AuthenticationError {
+    #[tracing::instrument(skip_all)]
     pub fn error_name(&self) -> &'static str {
         match self {
             Self::NoAuthorizationHeader => "missing_authorization_header",

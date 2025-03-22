@@ -1,3 +1,3 @@
 pub mod cors;
-pub mod logger;
+pub mod lgtm;
 pub mod openapi;

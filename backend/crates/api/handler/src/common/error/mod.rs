@@ -33,6 +33,7 @@ pub enum HandlerError {
 }
 
 impl From<ServiceError> for HandlerError {
+    #[tracing::instrument(skip_all)]
     fn from(err: ServiceError) -> Self {
         use ServiceError as SE;
         match err {
@@ -55,6 +56,7 @@ pub struct ApiError {
 }
 
 impl HandlerError {
+    #[tracing::instrument(skip_all)]
     pub fn as_api_error(&self) -> ApiError {
         ApiError {
             error: match self {
@@ -74,6 +76,7 @@ impl HandlerError {
 }
 
 impl ResponseError for HandlerError {
+    #[tracing::instrument(skip_all)]
     fn status_code(&self) -> StatusCode {
         use StatusCode as SC;
         match self {
@@ -88,6 +91,7 @@ impl ResponseError for HandlerError {
         }
     }
 
+    #[tracing::instrument(skip_all)]
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code()).json(self.as_api_error())
     }

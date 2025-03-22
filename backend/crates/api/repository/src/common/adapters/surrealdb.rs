@@ -10,6 +10,7 @@ use surrealdb_migrations::MigrationRunner;
 pub struct SurrealDB(pub Surreal<Client>);
 
 impl SurrealDB {
+    #[tracing::instrument(skip_all)]
     async fn setup(
         self,
         address: &str,
@@ -25,6 +26,7 @@ impl SurrealDB {
         Ok(self)
     }
 
+    #[tracing::instrument(skip_all)]
     pub async fn init(
         address: &str,
         namespace: &str,
@@ -39,6 +41,7 @@ impl SurrealDB {
             .expect("Failed to init the database")
     }
 
+    #[tracing::instrument(skip_all)]
     pub async fn migrate(self) -> Self {
         MigrationRunner::new(&self.0)
             .load_files(&include_dir!("crates/api/repository/db/surreal"))

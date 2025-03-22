@@ -15,6 +15,7 @@ implementation! {
     OrganizatorService {
         organizator_repository: OrganizatorRepositoryDependency,
         secret: String,
+        password_hasher: PasswordHasher<'static>
     } as Implemented {
         register(
             &self,
@@ -27,7 +28,7 @@ implementation! {
             let organizator = self.organizator_repository
                 .save(CreateOrganizatorEntity {
                     username: new.username.clone(),
-                    password_hash: PasswordHasher::new().hash(&new.password)?
+                    password_hash: self.password_hasher.hash(&new.password)?,
                 }).await?;
 
             let token = jwt::new("organizator", organizator.id.clone().into(), &self.secret);
@@ -49,7 +50,7 @@ implementation! {
                     ServiceError::NotFound("Organizator with provided username".into())
                 )?;
 
-            PasswordHasher::new()
+            self.password_hasher
                 .verify(&password, &organizator.password_hash)
                 .map_err(|_| ServiceError::InvalidPassword)?;
 
@@ -97,7 +98,7 @@ implementation! {
             self.organizator_repository
                 .update_by_id(id.into(), OrganizatorEntityUpdate {
                     username: update.username,
-                    password_hash: None
+                    password_hash: None,
                 })
                 .await?
                 .unwrap()
