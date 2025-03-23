@@ -41,4 +41,9 @@ utoipa = { version = "5.3", features = ["actix_extras", "ulid", "preserve_order"
 actix-web = "4.10"
 actix-web-lab = "0.23"
 utoipa-actix-web = "0.1"
-
+[profile.release]
+lto = true
+strip = true
+opt-level = 3
+panic = 'abort'
+codegen-units = 1
