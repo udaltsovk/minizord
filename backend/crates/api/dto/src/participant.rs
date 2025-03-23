@@ -1,7 +1,7 @@
 use macros::dto;
 use repository::participant::Participant as ParticipantEntity;
 use ulid::Ulid;
-use utils::validation::{RE_USERNAME, validate_password, validate_portfolio_urls};
+use utils::validation::{validate_password, validate_portfolio_urls};
 
 dto! {
     ///
@@ -9,10 +9,10 @@ dto! {
         ///
         id: Ulid,
         fields {
-            #[validate(length(min = 3, max = 20), regex(path = *RE_USERNAME))]
-            #[schema(min_length = 3, max_length = 20)]
+            #[validate(length(min = 6, max = 50), email)]
+            #[schema(format = Email, min_length = 3, max_length = 20)]
             ///
-            username: String,
+            email: String,
 
             #[validate(length(min = 1, max = 128))]
             #[schema(min_length = 1, max_length = 128)]
@@ -37,10 +37,10 @@ dto! {
         create
         ///
         {
-            #[validate(length(min = 3, max = 20))]
-            #[schema(min_length = 3, max_length = 20)]
+            #[validate(length(min = 6, max = 50), email)]
+            #[schema(format = Email, min_length = 3, max_length = 20)]
             ///
-            username: String,
+            email: String,
 
             #[validate(length(min = 8, max = 100), custom(function = "validate_password"))]
             #[schema(format = Password, min_length = 8, max_length = 100)]
@@ -70,10 +70,10 @@ dto! {
         update
         ///
         {
-            #[validate(length(min = 3, max = 20))]
-            #[schema(min_length = 3, max_length = 20)]
-            ///
-            username: String,
+            // #[validate(length(min = 6, max = 50), email)]
+            // #[schema(format = Email, min_length = 3, max_length = 20)]
+            // ///
+            // email: String,
 
             #[validate(length(min = 1, max = 128))]
             #[schema(min_length = 1, max_length = 128)]
@@ -99,11 +99,11 @@ dto! {
 }
 
 impl From<ParticipantEntity> for Participant {
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn from(entity: ParticipantEntity) -> Self {
         Self {
             id: entity.id.into(),
-            username: entity.username.into(),
+            email: entity.email.into(),
             name: entity.name.into(),
             surname: entity.surname.into(),
             bio: entity.bio.into(),

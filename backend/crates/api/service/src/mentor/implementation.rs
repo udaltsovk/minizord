@@ -5,7 +5,7 @@ use dto::{
 };
 use macros::implementation;
 use repository::mentor::{
-    CreateMentor as CreateMentorEntity, MentorRepositoryDependency,
+    CreateMentor as CreateMentorEntity, Mentor as MentorEntity, MentorRepositoryDependency,
     MentorUpdate as MentorEntityUpdate,
 };
 use ulid::Ulid;
@@ -26,15 +26,17 @@ implementation! {
             }
 
             let mentor = self.mentor_repository
-                .save(CreateMentorEntity {
-                    username: new.username.clone(),
-                    password_hash: self.password_hasher.hash(&new.password)?,
-                    name: new.name.clone(),
-                    surname: new.surname.clone(),
-                    bio: new.bio.clone(),
-                }).await?;
+                .save(
+                    CreateMentorEntity {
+                        username: new.username.clone(),
+                        password_hash: self.password_hasher.hash(&new.password)?,
+                        name: new.name.clone(),
+                        surname: new.surname.clone(),
+                        bio: new.bio.clone(),
+                    }
+                ).await?;
 
-            let token = jwt::new("mentor", mentor.id.clone().into(), &self.secret);
+            let token = generate_jwt(&mentor, &self.secret);
 
             (mentor.into(), token)
         }
@@ -57,7 +59,7 @@ implementation! {
                 .verify(&password, &mentor.password_hash)
                 .map_err(|_| ServiceError::InvalidPassword)?;
 
-            let token = jwt::new("mentor", mentor.id.clone().into(), &self.secret);
+            let token = generate_jwt(&mentor, &self.secret);
 
             (mentor.into(), token)
         }
@@ -99,13 +101,16 @@ implementation! {
             }
 
             self.mentor_repository
-                .update_by_id(id.into(), MentorEntityUpdate {
-                    username: update.username,
-                    password_hash: None,
-                    name: update.name,
-                    surname: update.surname,
-                    bio: update.bio,
-                })
+                .update_by_id(
+                    id.into(),
+                    MentorEntityUpdate {
+                        username: update.username,
+                        password_hash: None,
+                        name: update.name,
+                        surname: update.surname,
+                        bio: update.bio,
+                    }
+                )
                 .await?
                 .unwrap()
                 .into()
@@ -132,13 +137,17 @@ implementation! {
                 .map_err(|_| ServiceError::InvalidPassword)?;
 
             let mentor = self.mentor_repository
-                .update_by_id(id.into(), MentorEntityUpdate {
-                    password_hash: Some(new_password),
-                    ..Default::default()
-                })
+                .update_by_id(
+                    id.into(),
+                    MentorEntityUpdate {
+                        password_hash: Some(new_password),
+                        ..Default::default()
+                    }
+                )
                 .await?
                 .unwrap();
-            let token = jwt::new("mentor", mentor.id.clone().into(), &self.secret);
+
+            let token = generate_jwt(&mentor, &self.secret);
 
             (mentor.into(), token)
         }
@@ -153,4 +162,9 @@ implementation! {
                 .await?;
         }
     }
+}
+
+#[tracing::instrument(skip_all, level = "trace")]
+fn generate_jwt(mentor: &MentorEntity, secret: &str) -> String {
+    jwt::new("mentor", mentor.id.clone().into(), secret)
 }

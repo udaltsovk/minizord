@@ -10,7 +10,7 @@ use surrealdb_migrations::MigrationRunner;
 pub struct SurrealDB(pub Surreal<Client>);
 
 impl SurrealDB {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "debug")]
     async fn setup(
         self,
         address: &str,
@@ -20,13 +20,17 @@ impl SurrealDB {
         database: &str,
     ) -> Result<Self> {
         self.0.connect::<Ws>(address).await?;
+        tracing::trace!("Connected to the database");
+
         self.0.signin(Root { username, password }).await?;
+        tracing::trace!("Signed in the database");
 
         self.0.use_ns(namespace).use_db(database).await?;
+        tracing::trace!("Switched to the namespace and database");
         Ok(self)
     }
 
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "debug")]
     pub async fn init(
         address: &str,
         namespace: &str,
@@ -41,7 +45,7 @@ impl SurrealDB {
             .expect("Failed to init the database")
     }
 
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "debug")]
     pub async fn migrate(self) -> Self {
         MigrationRunner::new(&self.0)
             .load_files(&include_dir!("crates/api/repository/db/surreal"))

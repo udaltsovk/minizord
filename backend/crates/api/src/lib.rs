@@ -43,6 +43,7 @@ env_vars_config! {
     // MINIO_BUCKET: String = "ad-platform-backend-bucket",
 }
 
+#[tracing::instrument(skip_all, level = "trace")]
 pub fn app_setup(db: SurrealDB) -> BackendConfig {
     config::init();
     let surreal_client = Arc::new(db);
@@ -81,12 +82,13 @@ pub struct BackendConfig {
     pub openapi: OpenApiStruct,
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(skip_all, level = "trace")]
 fn input_err_handler<'a, T: Display>(err: T, _req: &'a HttpRequest) -> actix_web::Error {
     HandlerError::Validation(err.to_string()).into()
 }
 
 impl BackendConfig {
+    #[tracing::instrument(skip_all, level = "trace")]
     pub fn build(self) -> impl FnOnce(&mut ServiceConfig) {
         move |cfg: &mut ServiceConfig| {
             cfg.app_data(FormConfig::default().error_handler(input_err_handler))

@@ -84,7 +84,7 @@ dto! {
 }
 
 impl From<MentorEntity> for Mentor {
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn from(entity: MentorEntity) -> Self {
         Self {
             id: entity.id.into(),

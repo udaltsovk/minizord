@@ -12,7 +12,7 @@ auth_middlewares! {
 }
 
 #[inline]
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(skip_all, level = "trace")]
 pub fn extract_auth_from_authorization_header(
     req: &ServiceRequest,
 ) -> Result<String, AuthenticationError> {

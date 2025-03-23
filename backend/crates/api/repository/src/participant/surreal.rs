@@ -5,7 +5,7 @@ use std::sync::Arc;
 use ulid::Ulid;
 
 impl Into<Ulid> for ParticipantId {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn into(self) -> Ulid {
         Ulid::from_string(&self.to_string()).unwrap()
     }
@@ -34,23 +34,23 @@ implementation! {
             self.find_by_id(id).await?.is_some()
         }
 
-        find_by_username(&self, username: &str) -> Option<Participant> {
+        find_by_email(&self, email: &str) -> Option<Participant> {
             self.db.0
                 .query(
                     r#"
                         SELECT * FROM type::table($participant_table)
-                            WHERE username = type::string($username)
+                            WHERE email = type::string($email)
                             LIMIT 1
                     "#
                 )
                 .bind(("participant_table", ParticipantId::TABLE))
-                .bind(("username", username.to_string()))
+                .bind(("email", email.to_string()))
                 .await?
                 .take(0)?
         }
 
-        exists_by_username(&self, username: &str) -> bool {
-            self.find_by_username(username).await?.is_some()
+        exists_by_email(&self, email: &str) -> bool {
+            self.find_by_email(email).await?.is_some()
         }
 
         update_by_id(&self, id: ParticipantId, update: ParticipantUpdate) -> Option<Participant> {

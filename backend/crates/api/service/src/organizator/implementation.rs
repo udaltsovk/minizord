@@ -5,8 +5,8 @@ use dto::{
 };
 use macros::implementation;
 use repository::organizator::{
-    CreateOrganizator as CreateOrganizatorEntity, OrganizatorRepositoryDependency,
-    OrganizatorUpdate as OrganizatorEntityUpdate,
+    CreateOrganizator as CreateOrganizatorEntity, Organizator as OrganizatorEntity,
+    OrganizatorRepositoryDependency, OrganizatorUpdate as OrganizatorEntityUpdate,
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
@@ -26,12 +26,14 @@ implementation! {
             }
 
             let organizator = self.organizator_repository
-                .save(CreateOrganizatorEntity {
-                    username: new.username.clone(),
-                    password_hash: self.password_hasher.hash(&new.password)?,
-                }).await?;
+                .save(
+                    CreateOrganizatorEntity {
+                        username: new.username.clone(),
+                        password_hash: self.password_hasher.hash(&new.password)?,
+                    }
+                ).await?;
 
-            let token = jwt::new("organizator", organizator.id.clone().into(), &self.secret);
+            let token = generate_jwt(&organizator, &self.secret);
 
             (organizator.into(), token)
         }
@@ -54,7 +56,7 @@ implementation! {
                 .verify(&password, &organizator.password_hash)
                 .map_err(|_| ServiceError::InvalidPassword)?;
 
-            let token = jwt::new("organizator", organizator.id.clone().into(), &self.secret);
+            let token = generate_jwt(&organizator, &self.secret);
 
             (organizator.into(), token)
         }
@@ -96,10 +98,13 @@ implementation! {
             }
 
             self.organizator_repository
-                .update_by_id(id.into(), OrganizatorEntityUpdate {
-                    username: update.username,
-                    password_hash: None,
-                })
+                .update_by_id(
+                    id.into(),
+                        OrganizatorEntityUpdate {
+                        username: update.username,
+                        password_hash: None,
+                    }
+                )
                 .await?
                 .unwrap()
                 .into()
@@ -126,13 +131,17 @@ implementation! {
                 .map_err(|_| ServiceError::InvalidPassword)?;
 
             let organizator = self.organizator_repository
-                .update_by_id(id.into(), OrganizatorEntityUpdate {
-                    password_hash: Some(new_password),
-                    ..Default::default()
-                })
+                .update_by_id(
+                    id.into(),
+                    OrganizatorEntityUpdate {
+                        password_hash: Some(new_password),
+                        ..Default::default()
+                    }
+                )
                 .await?
                 .unwrap();
-            let token = jwt::new("organizator", organizator.id.clone().into(), &self.secret);
+
+            let token = generate_jwt(&organizator, &self.secret);
 
             (organizator.into(), token)
         }
@@ -147,4 +156,9 @@ implementation! {
                 .await?;
         }
     }
+}
+
+#[tracing::instrument(skip_all, level = "trace")]
+fn generate_jwt(organizator: &OrganizatorEntity, secret: &str) -> String {
+    jwt::new("organizator", organizator.id.clone().into(), secret)
 }

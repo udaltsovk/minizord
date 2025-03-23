@@ -12,7 +12,7 @@ pub struct Claims {
     pub sub: String,
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(skip_all, level = "debug")]
 pub fn new(entity: &str, id: Ulid, secret: &str) -> String {
     let current_time = Utc::now().timestamp() as usize;
     let mut header = Header::new(Algorithm::HS256);
@@ -29,7 +29,7 @@ pub fn new(entity: &str, id: Ulid, secret: &str) -> String {
     .unwrap()
 }
 
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(skip_all, level = "debug")]
 pub fn parse(token: &str, secret: &str) -> Option<Claims> {
     match decode(
         &token,

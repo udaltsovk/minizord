@@ -8,7 +8,7 @@ repository! {
     Participant {
         id: Ulid,
         fields {
-            username: String,
+            email: String,
             password_hash: String,
             name: String,
             surname: String,
@@ -16,7 +16,7 @@ repository! {
             portfolio_urls: Vec<String>,
         },
         create {
-            username: String,
+            email: String,
             password_hash: String,
             name: String,
             surname: String,
@@ -24,7 +24,7 @@ repository! {
             portfolio_urls: Vec<String>,
         },
         update {
-            username: String,
+            // email: String,
             password_hash: String,
             name: String,
             surname: String,
@@ -32,17 +32,17 @@ repository! {
             portfolio_urls: Vec<String>,
         }
     } {
-        find_by_username(&self, username: &str) -> Option<Participant>;
-        exists_by_username(&self, username: &str) -> bool;
+        find_by_email(&self, email: &str) -> Option<Participant>;
+        exists_by_email(&self, email: &str) -> bool;
     }
 }
 
 impl CreateParticipant {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn into_entity(self) -> Participant {
         Participant {
             id: ParticipantId::from(Ulid::new()),
-            username: self.username.clone(),
+            email: self.email.clone(),
             password_hash: self.password_hash.clone(),
             name: self.name.clone(),
             surname: self.surname.clone(),

@@ -24,6 +24,7 @@ macro_rules! implementation {
                 )*)?
             }
             impl [<$impl_name $trait_name>] {
+                #[tracing::instrument(skip_all, level = "trace")]
                 pub fn new($($($field: $ty),*)?) -> std::sync::Arc<Self> {
                     std::sync::Arc::new(Self {
                         $(
@@ -81,7 +82,7 @@ macro_rules! handler_implementation {
             pub struct [<$impl_name $trait_name>];
             impl super::$trait_name for [<$impl_name $trait_name>] {
                 $(
-                    #[inline]
+                    #[tracing::instrument(skip_all, level = "trace")]
                     fn $method () -> impl actix_web::dev::HttpServiceFactory + utoipa_actix_web::OpenApiFactory {
                         routes::$method
                     }

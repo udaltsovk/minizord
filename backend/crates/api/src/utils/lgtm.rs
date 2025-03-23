@@ -21,6 +21,8 @@ impl LGTM {
                 .into(),
             )
             .from_env_lossy()
+            .add_directive("tokio=off".parse().unwrap())
+            .add_directive("runtime=off".parse().unwrap())
             .add_directive("hyper=off".parse().unwrap())
             .add_directive("opentelemetry=off".parse().unwrap())
             .add_directive("tonic=off".parse().unwrap())

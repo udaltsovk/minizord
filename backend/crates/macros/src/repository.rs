@@ -65,12 +65,14 @@ macro_rules! repository {
                 const TABLE: &str = stringify!([<$name:snake>]);
 
                 #[cfg(feature = "surrealdb")]
+                #[tracing::instrument(skip_all, level = "trace")]
                 pub fn record_id(&self) -> surrealdb::RecordId {
                     self.0.clone()
                 }
             }
             #[cfg(feature = "surrealdb")]
             impl From<$id_ty> for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
                 fn from(id: $id_ty) -> Self {
                     Self(surrealdb::RecordId::from_table_key(Self::TABLE, id.to_string()))
 
@@ -78,6 +80,7 @@ macro_rules! repository {
             }
             #[cfg(feature = "surrealdb")]
             impl ToString for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
                 fn to_string(&self) -> String {
                     let record_id: surrealdb::RecordId = self.clone().into();
                     record_id.key().to_string()
@@ -85,12 +88,14 @@ macro_rules! repository {
             }
             #[cfg(feature = "surrealdb")]
             impl Into<surrealdb::RecordId> for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
                 fn into(self) -> surrealdb::RecordId {
                     self.record_id()
                 }
             }
             #[cfg(not(feature = "surrealdb"))]
             impl Into<$id_ty> for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
                 fn into(self) -> $id_ty {
                     self.0
                 }
@@ -141,7 +146,10 @@ macro_rules! repository {
             pub trait [<$name Repository>] {
                 async fn save(&self, new: [<Create $name>]) -> [<$name RepositoryResult>]<$name>;
                 async fn find_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool>;
+                #[tracing::instrument(skip_all)]
+                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool> {
+                    Ok(self.find_by_id(id).await?.is_some())
+                }
                 async fn update_by_id(&self, id: [<$name Id>], update: [<$name Update>]) -> [<$name RepositoryResult>]<Option<$name>>;
                 async fn delete_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
                 $(

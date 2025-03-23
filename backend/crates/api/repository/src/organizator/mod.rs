@@ -26,7 +26,7 @@ repository! {
 }
 
 impl CreateOrganizator {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn into_entity(self) -> Organizator {
         Organizator {
             id: OrganizatorId::from(Ulid::new()),

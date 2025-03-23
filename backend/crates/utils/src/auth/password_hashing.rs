@@ -11,7 +11,7 @@ pub struct PasswordHasher<'a> {
     hasher: Argon2<'a>,
 }
 impl PasswordHasher<'_> {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "debug")]
     pub fn new() -> Self {
         Self {
             hasher: Argon2::new(
@@ -22,7 +22,7 @@ impl PasswordHasher<'_> {
         }
     }
 
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "debug")]
     pub fn hash(&self, password: &str) -> Result<String, Error> {
         let salt = SaltString::generate(&mut ChaCha20Rng::from_entropy());
         let password_hash = self
@@ -32,7 +32,7 @@ impl PasswordHasher<'_> {
         Ok(password_hash)
     }
 
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "debug")]
     pub fn verify(&self, password: &str, password_hash: &str) -> Result<(), Error> {
         self.hasher
             .verify_password(password.as_bytes(), &PasswordHash::new(password_hash)?)

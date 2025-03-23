@@ -39,7 +39,7 @@ dto! {
 }
 
 impl From<OrganizatorEntity> for Organizator {
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn from(entity: OrganizatorEntity) -> Self {
         Self {
             id: entity.id.into(),

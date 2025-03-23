@@ -35,7 +35,7 @@ repository! {
 }
 
 impl CreateMentor {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn into_entity(self) -> Mentor {
         Mentor {
             id: MentorId::from(Ulid::new()),

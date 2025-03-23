@@ -5,7 +5,7 @@ use std::sync::Arc;
 use ulid::Ulid;
 
 impl Into<Ulid> for MentorId {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn into(self) -> Ulid {
         Ulid::from_string(&self.to_string()).unwrap()
     }

@@ -13,7 +13,7 @@ macro_rules! auth_middlewares {
             $(
                 impl TryInto<$entity> for AuthEntity {
                     type Error = AuthenticationError;
-                    #[tracing::instrument(skip_all)]
+                    #[tracing::instrument(skip_all, level = "trace")]
                     fn try_into(self) -> Result<$entity, Self::Error> {
                         match self {
                             AuthEntity::$entity(entity) => Ok(entity),
@@ -32,7 +32,6 @@ macro_rules! auth_middlewares {
             $(
                 // TODO: Make services generate automatically
                 // I can't find a way to make composed meta-variable arrays with different sizes from non-copmposed ones
-                #[inline]
                 #[tracing::instrument(skip_all)]
                 pub async fn [<$access_level:snake _auth_middleware>](
                     jwt_secret: actix_web::web::Data<String>,
@@ -54,8 +53,7 @@ macro_rules! auth_middlewares {
                 }
             )*
 
-            #[inline]
-            #[tracing::instrument(skip_all)]
+            #[tracing::instrument(skip_all, level = "debug")]
             pub async fn auth_middleware(
                 jwt_secret: actix_web::web::Data<String>,
                 $(
@@ -76,12 +74,14 @@ macro_rules! auth_middlewares {
                     Err(AuthenticationError::InvalidCredentials)?;
                 }
 
-                let id =
-                ulid::Ulid::from_string(&claims.sub).map_err(|_| AuthenticationError::InvalidCredentials)?;
+                let id = ulid::Ulid::from_string(&claims.sub)
+                    .map_err(|_| AuthenticationError::InvalidCredentials)?;
 
                 use actix_web::HttpMessage;
 
-                let token_type = match utils::auth::jsonwebtoken::decode_header(&token).map(|h| h.kid.map(|k| k.clone())) {
+                let token_type = match utils::auth::jsonwebtoken::decode_header(&token)
+                    .map(|h| h.kid.map(|k| k.clone()))
+                {
                     $(
                         Ok(Some(token_type)) if &token_type == stringify!([<$entity:snake>]) => {
                             let [<$entity:snake>] = match [<$entity:snake _service>]
@@ -92,6 +92,7 @@ macro_rules! auth_middlewares {
                                 None => Err(AuthenticationError::InvalidCredentials)?,
                                 Some([<$entity:snake>]) => [<$entity:snake>],
                             };
+
                             req.extensions_mut()
                                 .insert(AuthEntity::$entity([<$entity:snake>]));
 
