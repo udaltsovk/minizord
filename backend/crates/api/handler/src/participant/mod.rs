@@ -64,7 +64,6 @@ handler! {
         ) -> Json<ParticipantAuthResponse>;
 
         get_current(
-            participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
         ) -> Json<Participant>;
 

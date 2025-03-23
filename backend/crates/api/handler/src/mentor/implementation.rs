@@ -94,16 +94,12 @@ handler_implementation! {
         ///
         ///
         get_current(
-            mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
         ) -> Json<Mentor> {
             let mentor: Mentor = entity
                 .into_inner()
                 .try_into()?;
-            let res = mentor_service
-                .get_by_id(mentor.id)
-                .await?;
-            Json(res.into())
+            Json(mentor.into())
         }
 
         #[openapi(
@@ -137,6 +133,15 @@ handler_implementation! {
                 .into_inner()
                 .try_into()?;
             validate(&body)?;
+
+            if body.username.as_ref().unwrap_or(&mentor.username) == &mentor.username
+                && body.name.as_ref().unwrap_or(&mentor.name) == &mentor.name
+                && body.surname.as_ref().unwrap_or(&mentor.surname) == &mentor.surname
+                && body.bio.as_ref().unwrap_or(&mentor.bio) == &mentor.bio
+            {
+                return Ok(Json(mentor.into()));
+            }
+
             let res = mentor_service
                 .update_by_id(mentor.id, body)
                 .await?;

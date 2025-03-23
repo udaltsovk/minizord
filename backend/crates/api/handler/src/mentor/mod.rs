@@ -64,7 +64,6 @@ handler! {
         ) -> Json<MentorAuthResponse>;
 
         get_current(
-            mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
         ) -> Json<Mentor>;
 

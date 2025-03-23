@@ -94,16 +94,12 @@ handler_implementation! {
         ///
         ///
         get_current(
-            participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
         ) -> Json<Participant> {
             let participant: Participant = entity
                 .into_inner()
                 .try_into()?;
-            let res = participant_service
-                .get_by_id(participant.id)
-                .await?;
-            Json(res.into())
+            Json(participant.into())
         }
 
         #[openapi(
@@ -137,6 +133,15 @@ handler_implementation! {
                 .into_inner()
                 .try_into()?;
             validate(&body)?;
+
+
+            if body.name.as_ref().unwrap_or(&participant.name) == &participant.name
+                && body.surname.as_ref().unwrap_or(&participant.surname) == &participant.surname
+                && body.bio.as_ref().unwrap_or(&participant.bio) == &participant.bio
+                && body.portfolio_urls.as_ref().unwrap_or(&participant.portfolio_urls) == &participant.portfolio_urls
+            {
+                return Ok(Json(participant.into()));
+            }
             let res = participant_service
                 .update_by_id(participant.id, body)
                 .await?;

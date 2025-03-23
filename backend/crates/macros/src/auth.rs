@@ -53,7 +53,7 @@ macro_rules! auth_middlewares {
                 }
             )*
 
-            #[tracing::instrument(skip_all, level = "debug")]
+            #[inline]
             pub async fn auth_middleware(
                 jwt_secret: actix_web::web::Data<String>,
                 $(

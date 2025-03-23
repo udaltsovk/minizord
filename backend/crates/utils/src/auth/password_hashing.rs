@@ -24,10 +24,9 @@ impl PasswordHasher<'_> {
 
     #[tracing::instrument(skip_all, level = "debug")]
     pub fn hash(&self, password: &str) -> Result<String, Error> {
-        let salt = SaltString::generate(&mut ChaCha20Rng::from_entropy());
         let password_hash = self
             .hasher
-            .hash_password(password.as_bytes(), &salt)?
+            .hash_password(password.as_bytes(), &Self::gen_salt())?
             .to_string();
         Ok(password_hash)
     }
@@ -36,5 +35,10 @@ impl PasswordHasher<'_> {
     pub fn verify(&self, password: &str, password_hash: &str) -> Result<(), Error> {
         self.hasher
             .verify_password(password.as_bytes(), &PasswordHash::new(password_hash)?)
+    }
+
+    #[tracing::instrument(level = "debug")]
+    fn gen_salt() -> SaltString {
+        SaltString::generate(&mut ChaCha20Rng::from_entropy())
     }
 }

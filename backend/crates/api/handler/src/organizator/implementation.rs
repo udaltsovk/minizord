@@ -91,16 +91,12 @@ handler_implementation! {
         ///
         ///
         get_current(
-            organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
         ) -> Json<Organizator> {
             let organizator: Organizator = entity
                 .into_inner()
                 .try_into()?;
-            let res = organizator_service
-                .get_by_id(organizator.id)
-                .await?;
-            Json(res.into())
+            Json(organizator.into())
         }
 
         #[openapi(
@@ -134,6 +130,11 @@ handler_implementation! {
                 .into_inner()
                 .try_into()?;
             validate(&body)?;
+
+            if body.username.as_ref().unwrap_or(&organizator.username) == &organizator.username {
+                return Ok(Json(organizator.into()));
+            }
+
             let res = organizator_service
                 .update_by_id(organizator.id, body)
                 .await?;

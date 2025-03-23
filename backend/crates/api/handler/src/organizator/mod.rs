@@ -61,7 +61,6 @@ handler! {
         ) -> Json<OrganizatorAuthResponse>;
 
         get_current(
-            organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
         ) -> Json<Organizator>;
 
