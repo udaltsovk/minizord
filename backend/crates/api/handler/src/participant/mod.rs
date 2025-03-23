@@ -118,7 +118,7 @@ response! {
 }
 
 impl From<(Participant, String)> for ParticipantAuthResponse {
-    #[tracing::instrument(skip_all)]
+    #[tracing::instrument(skip_all, level = "trace")]
     fn from((participant, token): (Participant, String)) -> Self {
         Self { token, participant }
     }
