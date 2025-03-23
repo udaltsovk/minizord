@@ -2,14 +2,14 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: 'fiber-backend-scrap'
+  - job_name: 'megazord-api-scrap'
     metrics_path: /metrics
     static_configs:
-      - targets: ['"localhost:3000']
+      - targets: ['localhost:8080']
   - job_name: 'tempo'
     metrics_path: /metrics
     static_configs:
-      - targets: ['tempo:3200']
+      - targets: ['localhost:3200']
 
 remote_write:
   - url: "http://mimir:9009/api/v1/push"

@@ -24,14 +24,13 @@ services:
   prometheus:
     container_name: prometheus
     image: prom/prometheus:main
-    ports:
-      - "9090:9090"
     volumes:
       - prometheus:/prometheus
       - ../telemetry-configs/prometheus-dev.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--enable-feature=native-histograms'
+    network_mode: "host"
   loki:
     container_name: loki
     image: grafana/loki:3.4.1
