@@ -9,30 +9,30 @@ dto! {
         ///
         id: Ulid,
         fields {
+            ///
             #[validate(length(min = 3, max = 20), regex(path = *RE_USERNAME))]
             #[schema(min_length = 3, max_length = 20)]
-            ///
             username: String,
         },
         create
         ///
         {
+            ///
             #[validate(length(min = 3, max = 20))]
             #[schema(min_length = 3, max_length = 20)]
-            ///
             username: String,
 
+            ///
             #[validate(length(min = 8, max = 100), custom(function = "validate_password"))]
             #[schema(format = Password, min_length = 8, max_length = 100)]
-            ///
             password: String,
         },
         update
         ///
         {
+            ///
             #[validate(length(min = 3, max = 20))]
             #[schema(min_length = 3, max_length = 20)]
-            ///
             username: String
         }
     }

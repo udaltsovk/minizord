@@ -4,6 +4,9 @@ use utoipa::path as openapi;
 
 handler_implementation! {
     HealthHandler as Implemented {
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Health",
             operation_id = "health",
@@ -12,13 +15,13 @@ handler_implementation! {
             ),
         )]
         #[get("")]
-        ///
-        ///
-        ///
         health() -> HttpResponse {
             HttpResponse::Ok().into()
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Health",
             operation_id = "ping",
@@ -27,9 +30,6 @@ handler_implementation! {
             ),
         )]
         #[get("/ping")]
-        ///
-        ///
-        ///
         ping() -> HttpResponse {
             HttpResponse::NotImplemented().into()
         }

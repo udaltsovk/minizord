@@ -16,6 +16,9 @@ use utoipa::path as openapi;
 
 handler_implementation! {
     OrganizatorHandler as Implemented {
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "register_organizator",
@@ -30,9 +33,6 @@ handler_implementation! {
             ),
         )]
         #[post("/register")]
-        ///
-        ///
-        ///
         register(
             organizator_service: Data<OrganizatorServiceDependency>,
             Json(body): Json<CreateOrganizator>
@@ -45,6 +45,9 @@ handler_implementation! {
             HttpResponse::Created().json(resp)
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "organizator_login",
@@ -59,9 +62,6 @@ handler_implementation! {
             ),
         )]
         #[post("/login")]
-        ///
-        ///
-        ///
         login(
             organizator_service: Data<OrganizatorServiceDependency>,
             Json(body): Json<LoginRequest>,
@@ -73,6 +73,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "get_current_organizator",
@@ -87,9 +90,6 @@ handler_implementation! {
 
         )]
         #[get("")]
-        ///
-        ///
-        ///
         get_current(
             entity: ReqData<AuthEntity>,
         ) -> Json<Organizator> {
@@ -99,6 +99,9 @@ handler_implementation! {
             Json(organizator.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "update_current_organizator",
@@ -118,9 +121,6 @@ handler_implementation! {
             ),
         )]
         #[patch("")]
-        ///
-        ///
-        ///
         update_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -141,6 +141,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "change_current_organizator_password",
@@ -159,9 +162,6 @@ handler_implementation! {
             ),
         )]
         #[put("/password")]
-        ///
-        ///
-        ///
         change_password_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -177,6 +177,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "delete_current_organizator",
@@ -191,9 +194,6 @@ handler_implementation! {
             ),
         )]
         #[delete("")]
-        ///
-        ///
-        ///
         delete_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -207,6 +207,9 @@ handler_implementation! {
             HttpResponse::NoContent().into()
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "get_organizator_by_id",
@@ -226,9 +229,6 @@ handler_implementation! {
             ),
         )]
         #[get("")]
-        ///
-        ///
-        ///
         get_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
@@ -239,6 +239,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "update_organizator_by_id",
@@ -262,9 +265,6 @@ handler_implementation! {
             ),
         )]
         #[patch("")]
-        ///
-        ///
-        ///
         update_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
@@ -277,6 +277,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "change_organizator_password_by_id",
@@ -299,9 +302,6 @@ handler_implementation! {
             ),
         )]
         #[put("/password")]
-        ///
-        ///
-        ///
         change_password_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
@@ -314,6 +314,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Organizators",
             operation_id = "delete_organizator_by_id",
@@ -331,9 +334,6 @@ handler_implementation! {
             ),
         )]
         #[delete("")]
-        ///
-        ///
-        ///
         delete_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,

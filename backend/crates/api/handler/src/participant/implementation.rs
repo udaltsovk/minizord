@@ -16,6 +16,9 @@ use utoipa::path as openapi;
 
 handler_implementation! {
     ParticipantHandler as Implemented {
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "register_participant",
@@ -33,9 +36,6 @@ handler_implementation! {
             ),
         )]
         #[post("/register")]
-        ///
-        ///
-        ///
         register(
             participant_service: Data<ParticipantServiceDependency>,
             Json(body): Json<CreateParticipant>
@@ -48,6 +48,9 @@ handler_implementation! {
             HttpResponse::Created().json(resp)
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "participant_login",
@@ -62,9 +65,6 @@ handler_implementation! {
             ),
         )]
         #[post("/login")]
-        ///
-        ///
-        ///
         login(
             participant_service: Data<ParticipantServiceDependency>,
             Json(body): Json<LoginRequest>,
@@ -76,6 +76,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "get_current_participant",
@@ -90,9 +93,6 @@ handler_implementation! {
 
         )]
         #[get("")]
-        ///
-        ///
-        ///
         get_current(
             entity: ReqData<AuthEntity>,
         ) -> Json<Participant> {
@@ -102,6 +102,9 @@ handler_implementation! {
             Json(participant.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "update_current_participant",
@@ -121,9 +124,6 @@ handler_implementation! {
             ),
         )]
         #[patch("")]
-        ///
-        ///
-        ///
         update_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -148,6 +148,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "change_current_participant_password",
@@ -166,9 +169,6 @@ handler_implementation! {
             ),
         )]
         #[put("/password")]
-        ///
-        ///
-        ///
         change_password_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -184,6 +184,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "delete_current_participant",
@@ -198,9 +201,6 @@ handler_implementation! {
             ),
         )]
         #[delete("")]
-        ///
-        ///
-        ///
         delete_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -214,6 +214,9 @@ handler_implementation! {
             HttpResponse::NoContent().into()
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "get_participant_by_id",
@@ -233,9 +236,6 @@ handler_implementation! {
             ),
         )]
         #[get("")]
-        ///
-        ///
-        ///
         get_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             Path(participant_id): Path<Ulid>,
@@ -246,6 +246,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "update_participant_by_id",
@@ -269,9 +272,6 @@ handler_implementation! {
             ),
         )]
         #[patch("")]
-        ///
-        ///
-        ///
         update_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             Path(participant_id): Path<Ulid>,
@@ -284,6 +284,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "change_participant_password_by_id",
@@ -306,9 +309,6 @@ handler_implementation! {
             ),
         )]
         #[put("/password")]
-        ///
-        ///
-        ///
         change_password_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             Path(participant_id): Path<Ulid>,
@@ -321,6 +321,9 @@ handler_implementation! {
             Json(res.into())
         }
 
+        ///
+        ///
+        ///
         #[openapi(
             tag = "Participants",
             operation_id = "delete_participant_by_id",
@@ -338,9 +341,6 @@ handler_implementation! {
             ),
         )]
         #[delete("")]
-        ///
-        ///
-        ///
         delete_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             Path(participant_id): Path<Ulid>,
