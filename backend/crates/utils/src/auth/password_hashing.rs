@@ -1,6 +1,7 @@
 use argon2::{
-    Algorithm, Argon2, Params, PasswordHash, PasswordHasher as PasswordHasherTrait,
-    PasswordVerifier, Version, password_hash::SaltString,
+    Algorithm, Argon2, Params, PasswordHash,
+    PasswordHasher as PasswordHasherTrait, PasswordVerifier, Version,
+    password_hash::SaltString,
 };
 use rand_chacha::{ChaCha20Rng, rand_core::SeedableRng};
 
@@ -32,9 +33,15 @@ impl PasswordHasher<'_> {
     }
 
     #[tracing::instrument(skip_all, level = "debug")]
-    pub fn verify(&self, password: &str, password_hash: &str) -> Result<(), Error> {
-        self.hasher
-            .verify_password(password.as_bytes(), &PasswordHash::new(password_hash)?)
+    pub fn verify(
+        &self,
+        password: &str,
+        password_hash: &str,
+    ) -> Result<(), Error> {
+        self.hasher.verify_password(
+            password.as_bytes(),
+            &PasswordHash::new(password_hash)?,
+        )
     }
 
     #[tracing::instrument(level = "debug")]

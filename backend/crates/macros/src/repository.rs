@@ -1,9 +1,9 @@
 #[macro_export]
 macro_rules! repository_entity {
-    (
-        $item:item 
-    ) =>{
-        #[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq)]
+    ( $item:item ) => {
+        #[derive(
+            serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq,
+        )]
         $item
     };
 }

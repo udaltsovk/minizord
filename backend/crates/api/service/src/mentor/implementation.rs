@@ -5,8 +5,8 @@ use dto::{
 };
 use macros::implementation;
 use repository::mentor::{
-    CreateMentor as CreateMentorEntity, Mentor as MentorEntity, MentorRepositoryDependency,
-    MentorUpdate as MentorEntityUpdate,
+    CreateMentor as CreateMentorEntity, Mentor as MentorEntity,
+    MentorRepositoryDependency, MentorUpdate as MentorEntityUpdate,
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};

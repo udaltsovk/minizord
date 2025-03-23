@@ -1,5 +1,7 @@
 use chrono::Utc;
-use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode};
+use jsonwebtoken::{
+    Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
+};
 use serde::{Deserialize, Serialize};
 use ulid::Ulid;
 

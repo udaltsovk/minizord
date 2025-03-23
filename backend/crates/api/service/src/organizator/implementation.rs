@@ -5,8 +5,9 @@ use dto::{
 };
 use macros::implementation;
 use repository::organizator::{
-    CreateOrganizator as CreateOrganizatorEntity, Organizator as OrganizatorEntity,
-    OrganizatorRepositoryDependency, OrganizatorUpdate as OrganizatorEntityUpdate,
+    CreateOrganizator as CreateOrganizatorEntity,
+    Organizator as OrganizatorEntity, OrganizatorRepositoryDependency,
+    OrganizatorUpdate as OrganizatorEntityUpdate,
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};

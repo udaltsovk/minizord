@@ -2,7 +2,9 @@ use url::Url;
 use validator::ValidationError;
 
 #[tracing::instrument(skip_all, level = "debug")]
-pub fn validate_portfolio_url(portfolio_url: &str) -> Result<(), ValidationError> {
+pub fn validate_portfolio_url(
+    portfolio_url: &str,
+) -> Result<(), ValidationError> {
     let is_valid = if let Ok(parsed_url) = Url::parse(&portfolio_url) {
         parsed_url.scheme() == "https"
             && parsed_url.has_host()
@@ -20,7 +22,9 @@ pub fn validate_portfolio_url(portfolio_url: &str) -> Result<(), ValidationError
 }
 
 #[tracing::instrument(skip_all, level = "debug")]
-pub fn validate_portfolio_urls(portfolio_urls: &Vec<String>) -> Result<(), ValidationError> {
+pub fn validate_portfolio_urls(
+    portfolio_urls: &Vec<String>,
+) -> Result<(), ValidationError> {
     portfolio_urls
         .iter()
         .try_for_each(|url| validate_portfolio_url(&url))?;

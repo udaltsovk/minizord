@@ -1,5 +1,6 @@
 use crate::common::middleware::auth::{
-    AuthEntity, any_auth_middleware, organizator_auth_middleware, participant_auth_middleware,
+    AuthEntity, any_auth_middleware, organizator_auth_middleware,
+    participant_auth_middleware,
 };
 use actix_web::{
     HttpResponse,

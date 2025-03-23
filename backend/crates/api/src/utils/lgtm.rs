@@ -12,7 +12,9 @@ use std::{str::FromStr, time::Duration};
 use tracing::level_filters::LevelFilter;
 use tracing_actix_web::{RootSpanBuilder, TracingLogger};
 use tracing_opentelemetry::OpenTelemetryLayer;
-use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{
+    EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt,
+};
 
 pub struct LGTM {
     logger_provider: SdkLoggerProvider,

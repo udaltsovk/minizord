@@ -8,18 +8,31 @@ use handler::{
     common::{ApiError, HandlerError},
     health::{HealthHandler, implementation::ImplementedHealthHandler},
     mentor::{MentorHandler, implementation::ImplementedMentorHandler},
-    organizator::{OrganizatorHandler, implementation::ImplementedOrganizatorHandler},
-    participant::{ParticipantHandler, implementation::ImplementedParticipantHandler},
+    organizator::{
+        OrganizatorHandler, implementation::ImplementedOrganizatorHandler,
+    },
+    participant::{
+        ParticipantHandler, implementation::ImplementedParticipantHandler,
+    },
 };
 use repository::{
-    common::adapters::surrealdb::SurrealDB, mentor::surreal::SurrealMentorRepository,
+    common::adapters::surrealdb::SurrealDB,
+    mentor::surreal::SurrealMentorRepository,
     organizator::surreal::SurrealOrganizatorRepository,
     participant::surreal::SurrealParticipantRepository,
 };
 use service::{
-    mentor::{MentorServiceDependency, implementation::ImplementedMentorService},
-    organizator::{OrganizatorServiceDependency, implementation::ImplementedOrganizatorService},
-    participant::{ParticipantServiceDependency, implementation::ImplementedParticipantService},
+    mentor::{
+        MentorServiceDependency, implementation::ImplementedMentorService,
+    },
+    organizator::{
+        OrganizatorServiceDependency,
+        implementation::ImplementedOrganizatorService,
+    },
+    participant::{
+        ParticipantServiceDependency,
+        implementation::ImplementedParticipantService,
+    },
 };
 use std::{fmt::Display, sync::Arc};
 use utils::openapi::OpenApiVisualiser;
@@ -48,9 +61,12 @@ env_vars_config! {
 pub fn app_setup(db: SurrealDB) -> BackendConfig {
     let surreal_client = Arc::new(db);
 
-    let organizator_repository = SurrealOrganizatorRepository::new(surreal_client.clone());
-    let mentor_repository = SurrealMentorRepository::new(surreal_client.clone());
-    let participant_repository = SurrealParticipantRepository::new(surreal_client.clone());
+    let organizator_repository =
+        SurrealOrganizatorRepository::new(surreal_client.clone());
+    let mentor_repository =
+        SurrealMentorRepository::new(surreal_client.clone());
+    let participant_repository =
+        SurrealParticipantRepository::new(surreal_client.clone());
 
     let password_hasher = PasswordHasher::new();
 
@@ -83,7 +99,10 @@ pub struct BackendConfig {
 }
 
 #[tracing::instrument(skip_all, level = "trace")]
-fn input_err_handler<'a, T: Display>(err: T, _req: &'a HttpRequest) -> actix_web::Error {
+fn input_err_handler<'a, T: Display>(
+    err: T,
+    _req: &'a HttpRequest,
+) -> actix_web::Error {
     HandlerError::Validation(err.to_string()).into()
 }
 
@@ -91,22 +110,24 @@ impl BackendConfig {
     #[tracing::instrument(skip_all, level = "trace")]
     pub fn build(self) -> impl FnOnce(&mut ServiceConfig) {
         move |cfg: &mut ServiceConfig| {
-            cfg.app_data(FormConfig::default().error_handler(input_err_handler))
-                .app_data(PathConfig::default().error_handler(input_err_handler))
-                .app_data(QueryConfig::default().error_handler(input_err_handler))
-                .app_data(JsonConfig::default().error_handler(input_err_handler))
-                .app_data(Data::new(config::JWT_SECRET.to_string()))
-                .configure(ImplementedHealthHandler::routes())
-                .configure(ImplementedOrganizatorHandler::routes(
-                    self.organizator_service.clone(),
-                ))
-                .configure(ImplementedMentorHandler::routes(
-                    self.mentor_service.clone(),
-                ))
-                .configure(ImplementedParticipantHandler::routes(
-                    self.participant_service.clone(),
-                ))
-                .default_service(get().to(not_found));
+            cfg.app_data(
+                FormConfig::default().error_handler(input_err_handler),
+            )
+            .app_data(PathConfig::default().error_handler(input_err_handler))
+            .app_data(QueryConfig::default().error_handler(input_err_handler))
+            .app_data(JsonConfig::default().error_handler(input_err_handler))
+            .app_data(Data::new(config::JWT_SECRET.to_string()))
+            .configure(ImplementedHealthHandler::routes())
+            .configure(ImplementedOrganizatorHandler::routes(
+                self.organizator_service.clone(),
+            ))
+            .configure(ImplementedMentorHandler::routes(
+                self.mentor_service.clone(),
+            ))
+            .configure(ImplementedParticipantHandler::routes(
+                self.participant_service.clone(),
+            ))
+            .default_service(get().to(not_found));
         }
     }
 }

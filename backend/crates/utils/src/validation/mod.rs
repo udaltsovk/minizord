@@ -9,7 +9,10 @@ pub use portfolio_urls::validate_portfolio_urls;
 pub use regex::RE_USERNAME;
 
 #[tracing::instrument(skip_all, level = "trace")]
-pub fn validation_errors_to_string(errors: ValidationErrors, adder: Option<String>) -> String {
+pub fn validation_errors_to_string(
+    errors: ValidationErrors,
+    adder: Option<String>,
+) -> String {
     let mut output = String::new();
 
     let map = errors.into_errors();
@@ -20,7 +23,10 @@ pub fn validation_errors_to_string(errors: ValidationErrors, adder: Option<Strin
         if let Some(error) = map.get(field) {
             return match error {
                 ValidationErrorsKind::Struct(errors) => {
-                    validation_errors_to_string(*errors.clone(), Some(format!("of item {field}")))
+                    validation_errors_to_string(
+                        *errors.clone(),
+                        Some(format!("of item {field}")),
+                    )
                 }
                 ValidationErrorsKind::List(list) => {
                     if let Some((index, errors)) = list.iter().next() {

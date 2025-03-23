@@ -5,8 +5,9 @@ use dto::{
 };
 use macros::implementation;
 use repository::participant::{
-    CreateParticipant as CreateParticipantEntity, Participant as ParticipantEntity,
-    ParticipantRepositoryDependency, ParticipantUpdate as ParticipantEntityUpdate,
+    CreateParticipant as CreateParticipantEntity,
+    Participant as ParticipantEntity, ParticipantRepositoryDependency,
+    ParticipantUpdate as ParticipantEntityUpdate,
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
