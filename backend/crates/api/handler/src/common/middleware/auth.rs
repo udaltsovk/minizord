@@ -1,10 +1,11 @@
-use crate::common::{AuthenticationError, HandlerError};
 use actix_web::{
     dev::ServiceRequest,
     http::header::{AUTHORIZATION, HeaderValue},
 };
 use dto::{mentor::Mentor, organizator::Organizator, participant::Participant};
 use macros::auth_middlewares;
+
+use crate::common::{AuthenticationError, HandlerError};
 
 auth_middlewares! {
     access_levels: [Any, Participant, Mentor, Organizator],

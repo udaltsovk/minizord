@@ -1,4 +1,5 @@
-use crate::config;
+use std::{str::FromStr, time::Duration};
+
 use actix_web_prom::{PrometheusMetrics, PrometheusMetricsBuilder};
 use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
@@ -8,13 +9,14 @@ use opentelemetry_sdk::{
     logs::{BatchLogProcessor, SdkLoggerProvider},
     trace::SdkTracerProvider,
 };
-use std::{str::FromStr, time::Duration};
 use tracing::level_filters::LevelFilter;
 use tracing_actix_web::{RootSpanBuilder, TracingLogger};
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{
     EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt,
 };
+
+use crate::config;
 
 pub struct LGTM {
     logger_provider: SdkLoggerProvider,

@@ -1,3 +1,5 @@
+use std::{fmt::Display, sync::Arc};
+
 use ::utils::auth::password_hashing::PasswordHasher;
 use actix_web::{
     HttpRequest, HttpResponse,
@@ -34,7 +36,6 @@ use service::{
         implementation::ImplementedParticipantService,
     },
 };
-use std::{fmt::Display, sync::Arc};
 use utils::openapi::OpenApiVisualiser;
 use utoipa::{OpenApi, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::service_config::ServiceConfig;

@@ -1,4 +1,3 @@
-use crate::common::ServiceError;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     organizator::{CreateOrganizator, Organizator, OrganizatorUpdate},
@@ -11,6 +10,8 @@ use repository::organizator::{
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
+
+use crate::common::ServiceError;
 
 implementation! {
     OrganizatorService {

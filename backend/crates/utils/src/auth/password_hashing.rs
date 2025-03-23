@@ -1,11 +1,10 @@
+pub use argon2::password_hash::Error;
 use argon2::{
     Algorithm, Argon2, Params, PasswordHash,
     PasswordHasher as PasswordHasherTrait, PasswordVerifier, Version,
     password_hash::SaltString,
 };
 use rand_chacha::{ChaCha20Rng, rand_core::SeedableRng};
-
-pub use argon2::password_hash::Error;
 
 #[derive(Clone)]
 pub struct PasswordHasher<'a> {

@@ -1,6 +1,7 @@
-use super::HandlerError;
 use utils::validation::validation_errors_to_string;
 use validator::Validate;
+
+use super::HandlerError;
 
 #[tracing::instrument(skip_all, level = "debug")]
 pub fn validate(obj: impl Validate) -> Result<(), HandlerError> {

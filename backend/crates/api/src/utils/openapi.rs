@@ -1,7 +1,9 @@
-use utoipa::openapi::security::{Http, HttpAuthScheme};
 use utoipa::{
     Modify, OpenApi,
-    openapi::{OpenApi as OpenApiStruct, security::SecurityScheme},
+    openapi::{
+        OpenApi as OpenApiStruct,
+        security::{Http, HttpAuthScheme, SecurityScheme},
+    },
 };
 #[cfg(feature = "scalar")]
 use utoipa_scalar::{Scalar, Servable};
@@ -51,6 +53,7 @@ impl OpenApiVisualiser {
     pub fn service(api: OpenApiStruct) -> Scalar<OpenApiStruct> {
         Scalar::with_url("/openapi", api)
     }
+
     #[cfg(feature = "swagger")]
     pub fn service(api: OpenApiStruct) -> SwaggerUi {
         SwaggerUi::new("/openapi/{_}*").url("/openapi.json", api)

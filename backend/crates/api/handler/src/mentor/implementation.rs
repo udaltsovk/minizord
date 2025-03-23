@@ -1,5 +1,3 @@
-use super::MentorAuthResponse;
-use crate::common::{ApiError, middleware::auth::AuthEntity, validate};
 use actix_web::{
     HttpResponse, delete, get, patch, post, put,
     web::{Data, Json, ReqData},
@@ -13,6 +11,9 @@ use macros::handler_implementation;
 use service::mentor::MentorServiceDependency;
 use ulid::Ulid;
 use utoipa::path as openapi;
+
+use super::MentorAuthResponse;
+use crate::common::{ApiError, middleware::auth::AuthEntity, validate};
 
 handler_implementation! {
     MentorHandler as Implemented {

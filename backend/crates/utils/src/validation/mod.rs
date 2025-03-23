@@ -27,7 +27,7 @@ pub fn validation_errors_to_string(
                         *errors.clone(),
                         Some(format!("of item {field}")),
                     )
-                }
+                },
                 ValidationErrorsKind::List(list) => {
                     if let Some((index, errors)) = list.iter().next() {
                         output.push_str(&validation_errors_to_string(
@@ -37,7 +37,7 @@ pub fn validation_errors_to_string(
                     }
 
                     output
-                }
+                },
                 ValidationErrorsKind::Field(errors) => {
                     if let Some(error) = errors.first() {
                         if let Some(adder) = adder {
@@ -54,7 +54,7 @@ pub fn validation_errors_to_string(
                     }
 
                     output
-                }
+                },
             };
         }
     }

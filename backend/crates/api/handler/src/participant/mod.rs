@@ -1,7 +1,3 @@
-use crate::common::middleware::auth::{
-    AuthEntity, any_auth_middleware, organizator_auth_middleware,
-    participant_auth_middleware,
-};
 use actix_web::{
     HttpResponse,
     middleware::from_fn,
@@ -16,6 +12,11 @@ use macros::{handler, response};
 use service::participant::ParticipantServiceDependency;
 use ulid::Ulid;
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
+
+use crate::common::middleware::auth::{
+    AuthEntity, any_auth_middleware, organizator_auth_middleware,
+    participant_auth_middleware,
+};
 
 pub mod implementation;
 
@@ -121,6 +122,9 @@ response! {
 impl From<(Participant, String)> for ParticipantAuthResponse {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from((participant, token): (Participant, String)) -> Self {
-        Self { token, participant }
+        Self {
+            token,
+            participant,
+        }
     }
 }

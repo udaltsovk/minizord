@@ -1,8 +1,10 @@
+use std::sync::Arc;
+
+use macros::implementation;
+use ulid::Ulid;
+
 use super::{CreateParticipant, Participant, ParticipantId, ParticipantUpdate};
 use crate::common::adapters::surrealdb::SurrealDB;
-use macros::implementation;
-use std::sync::Arc;
-use ulid::Ulid;
 
 impl Into<Ulid> for ParticipantId {
     #[tracing::instrument(skip_all, level = "trace")]

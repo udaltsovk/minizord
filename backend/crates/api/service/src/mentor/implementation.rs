@@ -1,4 +1,3 @@
-use crate::common::ServiceError;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     mentor::{CreateMentor, Mentor, MentorUpdate},
@@ -10,6 +9,8 @@ use repository::mentor::{
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
+
+use crate::common::ServiceError;
 
 implementation! {
     MentorService {

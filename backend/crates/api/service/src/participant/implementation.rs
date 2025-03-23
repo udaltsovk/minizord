@@ -1,4 +1,3 @@
-use crate::common::ServiceError;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     participant::{CreateParticipant, Participant, ParticipantUpdate},
@@ -11,6 +10,8 @@ use repository::participant::{
 };
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
+
+use crate::common::ServiceError;
 
 implementation! {
     ParticipantService {
