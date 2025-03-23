@@ -6,10 +6,10 @@ use ulid::Ulid;
 use super::{CreateMentor, Mentor, MentorId, MentorUpdate};
 use crate::common::adapters::surrealdb::SurrealDB;
 
-impl Into<Ulid> for MentorId {
+impl From<MentorId> for Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
-    fn into(self) -> Ulid {
-        Ulid::from_string(&self.to_string()).unwrap()
+    fn from(id: MentorId) -> Self {
+        Self::from_string(&id.to_string()).unwrap()
     }
 }
 

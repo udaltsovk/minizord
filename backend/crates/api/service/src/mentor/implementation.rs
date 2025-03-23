@@ -85,7 +85,6 @@ implementation! {
                 .ok_or(
                     ServiceError::NotFound("Mentor with provided id".into())
                 )?
-                .into()
         }
 
         update_by_id(
@@ -93,7 +92,7 @@ implementation! {
             id: Ulid,
             update: MentorUpdate,
         ) -> Mentor {
-            self.get_by_id(id.clone()).await?;
+            self.get_by_id(id).await?;
             if update.username.is_some()
                 && self.mentor_repository
                     .exists_by_username(update.username.as_ref().unwrap())
@@ -157,7 +156,7 @@ implementation! {
             &self,
             id: Ulid,
         ) -> () {
-            self.get_by_id(id.clone()).await?;
+            self.get_by_id(id).await?;
             self.mentor_repository
                 .delete_by_id(id.into())
                 .await?;

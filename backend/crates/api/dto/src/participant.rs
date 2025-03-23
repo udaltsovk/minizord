@@ -103,10 +103,10 @@ impl From<ParticipantEntity> for Participant {
     fn from(entity: ParticipantEntity) -> Self {
         Self {
             id: entity.id.into(),
-            email: entity.email.into(),
-            name: entity.name.into(),
-            surname: entity.surname.into(),
-            bio: entity.bio.into(),
+            email: entity.email,
+            name: entity.name,
+            surname: entity.surname,
+            bio: entity.bio,
             portfolio_urls: entity.portfolio_urls.clone(),
         }
     }

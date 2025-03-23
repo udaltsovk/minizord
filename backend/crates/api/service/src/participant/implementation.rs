@@ -87,7 +87,6 @@ implementation! {
                 .ok_or(
                     ServiceError::NotFound("Participant with provided id".into())
                 )?
-                .into()
         }
 
         update_by_id(
@@ -95,7 +94,7 @@ implementation! {
             id: Ulid,
             update: ParticipantUpdate,
         ) -> Participant {
-            self.get_by_id(id.clone()).await?;
+            self.get_by_id(id).await?;
 
             self.participant_repository
                 .update_by_id(
@@ -152,7 +151,7 @@ implementation! {
             &self,
             id: Ulid,
         ) -> () {
-            self.get_by_id(id.clone()).await?;
+            self.get_by_id(id).await?;
             self.participant_repository
                 .delete_by_id(id.into())
                 .await?;

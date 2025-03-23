@@ -97,7 +97,7 @@ handler_implementation! {
             let organizator: Organizator = entity
                 .into_inner()
                 .try_into()?;
-            Json(organizator.into())
+            Json(organizator)
         }
 
         ///
@@ -133,13 +133,13 @@ handler_implementation! {
             validate(&body)?;
 
             if body.username.as_ref().unwrap_or(&organizator.username) == &organizator.username {
-                return Ok(Json(organizator.into()));
+                return Ok(Json(organizator));
             }
 
             let res = organizator_service
                 .update_by_id(organizator.id, body)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
@@ -237,7 +237,7 @@ handler_implementation! {
             let res = organizator_service
                 .get_by_id(organizator_id)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
@@ -275,7 +275,7 @@ handler_implementation! {
             let res = organizator_service
                 .update_by_id(organizator_id, body)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///

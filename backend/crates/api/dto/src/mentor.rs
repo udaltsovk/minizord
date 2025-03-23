@@ -88,10 +88,10 @@ impl From<MentorEntity> for Mentor {
     fn from(entity: MentorEntity) -> Self {
         Self {
             id: entity.id.into(),
-            username: entity.username.into(),
-            name: entity.name.into(),
-            surname: entity.surname.into(),
-            bio: entity.bio.into(),
+            username: entity.username,
+            name: entity.name,
+            surname: entity.surname,
+            bio: entity.bio,
         }
     }
 }

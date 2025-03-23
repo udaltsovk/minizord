@@ -5,7 +5,7 @@ use jsonwebtoken::{
 use serde::{Deserialize, Serialize};
 use ulid::Ulid;
 
-static TOKEN_LIFETIME: usize = 60 * 60 * 24 * 3 as usize; // 3 days
+static TOKEN_LIFETIME: usize = 60 * 60 * 24 * 3_usize; // 3 days
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -34,7 +34,7 @@ pub fn new(entity: &str, id: Ulid, secret: &str) -> String {
 #[tracing::instrument(skip_all, level = "debug")]
 pub fn parse(token: &str, secret: &str) -> Option<Claims> {
     match decode(
-        &token,
+        token,
         &DecodingKey::from_secret(secret.as_bytes()),
         &Validation::default(),
     ) {

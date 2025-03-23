@@ -22,12 +22,7 @@ impl SurrealDB {
         self.0.connect::<Ws>(address).await?;
         tracing::trace!("Connected to the database");
 
-        self.0
-            .signin(Root {
-                username,
-                password,
-            })
-            .await?;
+        self.0.signin(Root { username, password }).await?;
         tracing::trace!("Signed in the database");
 
         self.0.use_ns(namespace).use_db(database).await?;

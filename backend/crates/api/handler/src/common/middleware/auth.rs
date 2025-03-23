@@ -20,7 +20,7 @@ pub fn extract_auth_from_authorization_header(
     let headers = req.headers();
     let token_val: Option<&HeaderValue> = headers.get(AUTHORIZATION);
     let token_val = token_val
-        .ok_or_else(|| AuthenticationError::NoAuthorizationHeader)?
+        .ok_or(AuthenticationError::NoAuthorizationHeader)?
         .to_str()
         .map_err(|_| AuthenticationError::InvalidCredentials)?;
 

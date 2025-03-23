@@ -122,9 +122,6 @@ response! {
 impl From<(Mentor, String)> for MentorAuthResponse {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from((mentor, token): (Mentor, String)) -> Self {
-        Self {
-            token,
-            mentor,
-        }
+        Self { token, mentor }
     }
 }

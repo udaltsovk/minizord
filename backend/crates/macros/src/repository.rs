@@ -9,6 +9,7 @@ macro_rules! repository_entity {
 }
 
 #[macro_export]
+#[allow(clippy::crate_in_macro_def)]
 macro_rules! repository {
     (
         $(#[$meta:meta])*
@@ -79,11 +80,11 @@ macro_rules! repository {
                 }
             }
             #[cfg(feature = "surrealdb")]
-            impl ToString for [<$name Id>] {
+            impl std::fmt::Display for [<$name Id>] {
                 #[tracing::instrument(skip_all, level = "trace")]
-                fn to_string(&self) -> String {
+                fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
                     let record_id: surrealdb::RecordId = self.clone().into();
-                    record_id.key().to_string()
+                    record_id.key().fmt(formatter)
                 }
             }
             #[cfg(feature = "surrealdb")]

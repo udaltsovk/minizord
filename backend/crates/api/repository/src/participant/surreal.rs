@@ -6,10 +6,10 @@ use ulid::Ulid;
 use super::{CreateParticipant, Participant, ParticipantId, ParticipantUpdate};
 use crate::common::adapters::surrealdb::SurrealDB;
 
-impl Into<Ulid> for ParticipantId {
+impl From<ParticipantId> for Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
-    fn into(self) -> Ulid {
-        Ulid::from_string(&self.to_string()).unwrap()
+    fn from(id: ParticipantId) -> Self {
+        Self::from_string(&id.to_string()).unwrap()
     }
 }
 

@@ -43,7 +43,7 @@ impl From<OrganizatorEntity> for Organizator {
     fn from(entity: OrganizatorEntity) -> Self {
         Self {
             id: entity.id.into(),
-            username: entity.username.into(),
+            username: entity.username,
         }
     }
 }

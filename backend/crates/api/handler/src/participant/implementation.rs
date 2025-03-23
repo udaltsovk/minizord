@@ -100,7 +100,7 @@ handler_implementation! {
             let participant: Participant = entity
                 .into_inner()
                 .try_into()?;
-            Json(participant.into())
+            Json(participant)
         }
 
         ///
@@ -141,12 +141,12 @@ handler_implementation! {
                 && body.bio.as_ref().unwrap_or(&participant.bio) == &participant.bio
                 && body.portfolio_urls.as_ref().unwrap_or(&participant.portfolio_urls) == &participant.portfolio_urls
             {
-                return Ok(Json(participant.into()));
+                return Ok(Json(participant));
             }
             let res = participant_service
                 .update_by_id(participant.id, body)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
@@ -244,7 +244,7 @@ handler_implementation! {
             let res = participant_service
                 .get_by_id(participant_id)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
@@ -282,7 +282,7 @@ handler_implementation! {
             let res = participant_service
                 .update_by_id(participant_id, body)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///

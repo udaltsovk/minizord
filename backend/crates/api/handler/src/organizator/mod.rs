@@ -118,9 +118,6 @@ response! {
 impl From<(Organizator, String)> for OrganizatorAuthResponse {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from((organizator, token): (Organizator, String)) -> Self {
-        Self {
-            token,
-            organizator,
-        }
+        Self { token, organizator }
     }
 }

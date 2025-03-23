@@ -2,9 +2,11 @@ use std::{fmt::Display, sync::Arc};
 
 use ::utils::auth::password_hashing::PasswordHasher;
 use actix_web::{
-    HttpRequest, HttpResponse,
+    App, HttpRequest, HttpResponse, HttpServer,
+    middleware::{Compress, NormalizePath, TrailingSlash},
     web::{Data, FormConfig, JsonConfig, PathConfig, QueryConfig, get},
 };
+use actix_web_lab::middleware::CatchPanic;
 use env_vars_config::env_vars_config;
 use handler::{
     common::{ApiError, HandlerError},
@@ -36,9 +38,9 @@ use service::{
         implementation::ImplementedParticipantService,
     },
 };
-use utils::openapi::OpenApiVisualiser;
+use utils::{lgtm::LGTM, logger::CustomLogger, openapi::OpenApiVisualiser};
 use utoipa::{OpenApi, openapi::OpenApi as OpenApiStruct};
-use utoipa_actix_web::service_config::ServiceConfig;
+use utoipa_actix_web::{AppExt, service_config::ServiceConfig};
 
 pub mod utils;
 
@@ -58,45 +60,91 @@ env_vars_config! {
     // MINIO_BUCKET: String = "ad-platform-backend-bucket",
 }
 
-#[tracing::instrument(skip_all, level = "trace")]
-pub fn app_setup(db: SurrealDB) -> BackendConfig {
-    let surreal_client = Arc::new(db);
-
-    let organizator_repository =
-        SurrealOrganizatorRepository::new(surreal_client.clone());
-    let mentor_repository =
-        SurrealMentorRepository::new(surreal_client.clone());
-    let participant_repository =
-        SurrealParticipantRepository::new(surreal_client.clone());
-
-    let password_hasher = PasswordHasher::new();
-
-    BackendConfig {
-        organizator_service: ImplementedOrganizatorService::new(
-            organizator_repository,
-            config::JWT_SECRET.clone(),
-            password_hasher.clone(),
-        ),
-        mentor_service: ImplementedMentorService::new(
-            mentor_repository,
-            config::JWT_SECRET.clone(),
-            password_hasher.clone(),
-        ),
-        participant_service: ImplementedParticipantService::new(
-            participant_repository,
-            config::JWT_SECRET.clone(),
-            password_hasher.clone(),
-        ),
-        openapi: OpenApiVisualiser::openapi(),
-    }
-}
-
 #[derive(Clone)]
-pub struct BackendConfig {
+struct AppConfig {
     organizator_service: OrganizatorServiceDependency,
     mentor_service: MentorServiceDependency,
     participant_service: ParticipantServiceDependency,
     pub openapi: OpenApiStruct,
+}
+
+pub struct Api {
+    config: AppConfig,
+}
+impl Api {
+    #[tracing::instrument(skip_all, level = "trace")]
+    pub fn setup(db: SurrealDB) -> Self {
+        let surreal_client = Arc::new(db);
+
+        let organizator_repository =
+            SurrealOrganizatorRepository::new(surreal_client.clone());
+        let mentor_repository =
+            SurrealMentorRepository::new(surreal_client.clone());
+        let participant_repository =
+            SurrealParticipantRepository::new(surreal_client.clone());
+
+        let password_hasher = PasswordHasher::new();
+
+        Self {
+            config: AppConfig {
+                organizator_service: ImplementedOrganizatorService::new(
+                    organizator_repository,
+                    config::JWT_SECRET.clone(),
+                    password_hasher.clone(),
+                ),
+                mentor_service: ImplementedMentorService::new(
+                    mentor_repository,
+                    config::JWT_SECRET.clone(),
+                    password_hasher.clone(),
+                ),
+                participant_service: ImplementedParticipantService::new(
+                    participant_repository,
+                    config::JWT_SECRET.clone(),
+                    password_hasher.clone(),
+                ),
+                openapi: OpenApiVisualiser::openapi(),
+            },
+        }
+    }
+
+    pub async fn run(self) -> std::io::Result<()> {
+        log::info!("Starting the web server");
+        let config = self.config.clone();
+        HttpServer::new(move || {
+            App::new()
+                .wrap(LGTM::tracing_middleware())
+                .wrap(LGTM::metrics_middleware())
+                .wrap(CustomLogger::new())
+                .wrap(CatchPanic::default())
+                .wrap(Compress::default())
+                .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
+                    TrailingSlash::MergeOnly
+                } else {
+                    TrailingSlash::Trim
+                }))
+                .into_utoipa_app()
+                .openapi(config.openapi.clone())
+                .configure(config.clone().build())
+                .openapi_service(OpenApiVisualiser::service)
+                .into_app()
+        })
+        .bind(config::SERVER_ADDRESS.clone())?
+        .run()
+        .await?;
+
+        log::info!("Shutting down web server");
+        Ok(())
+    }
+
+    #[tracing::instrument]
+    pub async fn not_found() -> HttpResponse {
+        let data = ApiError {
+            error: "not_found".into(),
+            description: "the requested route does not exist".into(),
+        };
+
+        HttpResponse::NotFound().json(data)
+    }
 }
 
 #[tracing::instrument(skip_all, level = "trace")]
@@ -107,7 +155,7 @@ fn input_err_handler<'a, T: Display>(
     HandlerError::Validation(err.to_string()).into()
 }
 
-impl BackendConfig {
+impl AppConfig {
     #[tracing::instrument(skip_all, level = "trace")]
     pub fn build(self) -> impl FnOnce(&mut ServiceConfig) {
         move |cfg: &mut ServiceConfig| {
@@ -128,17 +176,7 @@ impl BackendConfig {
             .configure(ImplementedParticipantHandler::routes(
                 self.participant_service.clone(),
             ))
-            .default_service(get().to(not_found));
+            .default_service(get().to(Api::not_found));
         }
     }
-}
-
-#[tracing::instrument]
-async fn not_found() -> HttpResponse {
-    let data = ApiError {
-        error: "not_found".into(),
-        description: "the requested route does not exist".into(),
-    };
-
-    HttpResponse::NotFound().json(data)
 }

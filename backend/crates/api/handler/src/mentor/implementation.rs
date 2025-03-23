@@ -100,7 +100,7 @@ handler_implementation! {
             let mentor: Mentor = entity
                 .into_inner()
                 .try_into()?;
-            Json(mentor.into())
+            Json(mentor)
         }
 
         ///
@@ -140,13 +140,13 @@ handler_implementation! {
                 && body.surname.as_ref().unwrap_or(&mentor.surname) == &mentor.surname
                 && body.bio.as_ref().unwrap_or(&mentor.bio) == &mentor.bio
             {
-                return Ok(Json(mentor.into()));
+                return Ok(Json(mentor));
             }
 
             let res = mentor_service
                 .update_by_id(mentor.id, body)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
@@ -244,7 +244,7 @@ handler_implementation! {
             let res = mentor_service
                 .get_by_id(mentor_id)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
@@ -282,7 +282,7 @@ handler_implementation! {
             let res = mentor_service
                 .update_by_id(mentor_id, body)
                 .await?;
-            Json(res.into())
+            Json(res)
         }
 
         ///
