@@ -22,8 +22,7 @@ handler! {
     Participant with impl(ImplementedParticipantHandler) {
         #routes(participant_service: ParticipantServiceDependency) {
             move |cfg: &mut ServiceConfig| {
-                cfg
-                    .app_data(Data::new(participant_service))
+                cfg.app_data(Data::new(participant_service))
                     .service(scope("/participants")
                         .service(scope("")
                             .wrap(from_fn(organizator_auth_middleware))

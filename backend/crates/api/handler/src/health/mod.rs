@@ -8,11 +8,10 @@ handler! {
     Health {
         #routes() {
             move |cfg: &mut ServiceConfig| {
-                cfg
-                    .service(scope("/health")
-                        .service(Self::health())
-                        .service(Self::ping())
-                    );
+                cfg.service(scope("/health")
+                    .service(Self::health())
+                    .service(Self::ping())
+                );
             }
         }
 

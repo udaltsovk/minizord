@@ -63,5 +63,6 @@ async fn main() -> std::io::Result<()> {
 
     tracing::info!("Shutting down web server");
     lgtm.shutdown().expect("Failed to shut down LGTM stack");
+
     Ok(())
 }

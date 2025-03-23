@@ -15,8 +15,7 @@ handler_implementation! {
         ///
         ///
         ///
-        health(
-        ) -> HttpResponse {
+        health() -> HttpResponse {
             HttpResponse::Ok().into()
         }
 
@@ -31,8 +30,7 @@ handler_implementation! {
         ///
         ///
         ///
-        ping(
-        ) -> HttpResponse {
+        ping() -> HttpResponse {
             HttpResponse::NotImplemented().into()
         }
     }

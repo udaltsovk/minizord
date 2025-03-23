@@ -22,8 +22,7 @@ handler! {
     Mentor with impl(ImplementedMentorHandler) {
         #routes(mentor_service: MentorServiceDependency) {
             move |cfg: &mut ServiceConfig| {
-                cfg
-                    .app_data(Data::new(mentor_service))
+                cfg.app_data(Data::new(mentor_service))
                     .service(scope("/mentors")
                         .service(scope("")
                             .wrap(from_fn(organizator_auth_middleware))

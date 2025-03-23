@@ -22,8 +22,7 @@ handler! {
     Organizator with impl(ImplementedOrganizatorHandler) {
         #routes(organizator_service: OrganizatorServiceDependency) {
             move |cfg: &mut ServiceConfig| {
-                cfg
-                    .app_data(Data::new(organizator_service))
+                cfg.app_data(Data::new(organizator_service))
                     .service(scope("/organizators")
                         .service(Self::register())
                         .service(Self::login())
