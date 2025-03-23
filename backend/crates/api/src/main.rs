@@ -5,14 +5,15 @@ use actix_web::{
 use actix_web_lab::middleware::{CatchPanic, NormalizePath};
 use api::{
     app_setup, config,
-    utils::{lgtm::LGTM, openapi::OpenApiVisualiser},
+    utils::{lgtm::LGTM, logger::CustomLogger, openapi::OpenApiVisualiser},
 };
 use repository::common::adapters::surrealdb::SurrealDB;
 use utoipa_actix_web::AppExt;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    LGTM::init_logging();
+    config::init();
+    let lgtm = LGTM::init();
 
     let db = SurrealDB::init(
         &config::DB_ADDRESS,
@@ -40,8 +41,9 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .wrap(LGTM::tracing())
-            .wrap(LGTM::metrics())
+            .wrap(LGTM::tracing_middleware())
+            .wrap(LGTM::metrics_middleware())
+            .wrap(CustomLogger::new())
             .wrap(CatchPanic::default())
             .wrap(Compress::default())
             .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
@@ -60,5 +62,6 @@ async fn main() -> std::io::Result<()> {
     .await?;
 
     tracing::info!("Shutting down web server");
+    lgtm.shutdown().expect("Failed to shut down LGTM stack");
     Ok(())
 }

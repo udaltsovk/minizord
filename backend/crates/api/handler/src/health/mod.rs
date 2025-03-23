@@ -11,13 +11,13 @@ handler! {
                 cfg
                     .service(scope("/health")
                         .service(Self::health())
-                        // .service(Self::ping())
+                        .service(Self::ping())
                     );
             }
         }
 
         health() -> HttpResponse;
 
-        // ping() -> HttpResponse;
+        ping() -> HttpResponse;
     }
 }

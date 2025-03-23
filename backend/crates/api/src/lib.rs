@@ -36,7 +36,8 @@ env_vars_config! {
     DB_USER: String = "root",
     DB_PASSWORD: String = "root",
     JWT_SECRET: String = "ohrfwahl;fhjjhawefhjaewfjhhjawfjbklbjlhjeawfjhjhwarjhjhhawhfhjhjfwahl",
-    OTLP_ENDPOINT: String = "http://localhost:4317",
+    OTEL_ENDPOINT: String = "http://localhost:4317",
+    OTEL_SERVICE_NAME: String = "megazord_api",
     // MINIO_BASE_URL: String = "http://localhost:9000",
     // MINIO_USER: String = "root",
     // MINIO_PASSWORD: String = "beetroot",
@@ -45,7 +46,6 @@ env_vars_config! {
 
 #[tracing::instrument(skip_all, level = "trace")]
 pub fn app_setup(db: SurrealDB) -> BackendConfig {
-    config::init();
     let surreal_client = Arc::new(db);
 
     let organizator_repository = SurrealOrganizatorRepository::new(surreal_client.clone());

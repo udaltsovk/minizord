@@ -19,16 +19,19 @@ repository.path = "./repository"
 service.path = "./service"
 handler.path = "./handler"
 
+log.workspace = true
+
+
 # tonic.workspace = true
 
 tracing.workspace = true
-tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json"] }
-console-subscriber = "0.4"
-tracing-opentelemetry = "0.24"
-opentelemetry_sdk = { version = "0.23", features = ["rt-tokio"] }
-opentelemetry-otlp = { version = "0.16", features = ["tls-roots"] }
-opentelemetry = "0.23"
-prometheus = "0.13"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json", "registry", "std"] }
+tracing-opentelemetry = "0.29"
+opentelemetry-appender-tracing = "0.28"
+opentelemetry_sdk = { version = "0.28", features = ["rt-tokio", "trace", "logs"] }
+opentelemetry-otlp = { version = "0.28", features = ["grpc-tonic", "trace", "logs"] }
+opentelemetry = {version = "0.28", features = ["trace", "logs"]}
+# prometheus = "0.13"
 
 utoipa.workspace = true
 utoipa-scalar = { version = "0.3", features = ["actix-web"], optional = true }
@@ -40,6 +43,7 @@ actix-cors = "0.7"
 # actix-files = "0.6"
 actix-web-lab.workspace = true
 actix-multipart = "0.7"
+actix-contrib-logger = "0.1"
 utoipa-actix-web.workspace = true
-tracing-actix-web = { version = "0.7", features = ["opentelemetry_0_23", "uuid_v7"] }
+tracing-actix-web = { version = "0.7", features = ["opentelemetry_0_28", "uuid_v7"] }
 actix-web-prom = { version = "0.9", features = ["process"] }

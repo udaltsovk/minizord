@@ -23,8 +23,9 @@ macros.path = "./crates/macros"
 utils.path = "./crates/utils"
 dto.path = "./crates/api/dto"
 
-env-vars-config = "0.2"
+env-vars-config = "0.3"
 
+log = "0.4"
 tracing = "0.1"
 thiserror = "2.0"
 

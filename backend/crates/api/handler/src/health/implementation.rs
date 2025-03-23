@@ -20,20 +20,20 @@ handler_implementation! {
             HttpResponse::Ok().into()
         }
 
-        // #[openapi(
-        //     tag = "Health",
-        //     operation_id = "ping",
-        //     responses(
-        //         (status = 200, description = ""),
-        //     ),
-        // )]
-        // #[get("/ping")]
-        // ///
-        // ///
-        // ///
-        // ping(
-        // ) -> HttpResponse {
-        //     HttpResponse::Ok().w()
-        // }
+        #[openapi(
+            tag = "Health",
+            operation_id = "ping",
+            responses(
+                (status = 200, description = ""),
+            ),
+        )]
+        #[get("/ping")]
+        ///
+        ///
+        ///
+        ping(
+        ) -> HttpResponse {
+            HttpResponse::NotImplemented().into()
+        }
     }
 }

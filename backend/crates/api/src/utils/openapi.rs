@@ -49,11 +49,11 @@ pub struct OpenApiVisualiser;
 impl OpenApiVisualiser {
     #[cfg(feature = "scalar")]
     pub fn service(api: OpenApiStruct) -> Scalar<OpenApiStruct> {
-        Scalar::with_url("/scalar", api)
+        Scalar::with_url("/openapi", api)
     }
     #[cfg(feature = "swagger")]
     pub fn service(api: OpenApiStruct) -> SwaggerUi {
-        SwaggerUi::new("/swagger-ui/{_}*").url("/openapi.json", api)
+        SwaggerUi::new("/openapi/{_}*").url("/openapi.json", api)
     }
 }
 

@@ -1,24 +1,71 @@
+use crate::config;
 use actix_web_prom::{PrometheusMetrics, PrometheusMetricsBuilder};
-use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk::runtime;
-use std::time::Duration;
+use opentelemetry::trace::TracerProvider as _;
+use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
+use opentelemetry_otlp::{LogExporter, SpanExporter, WithExportConfig};
+use opentelemetry_sdk::{
+    error::OTelSdkResult,
+    logs::{BatchLogProcessor, SdkLoggerProvider},
+    trace::SdkTracerProvider,
+};
+use std::{str::FromStr, time::Duration};
 use tracing::level_filters::LevelFilter;
 use tracing_actix_web::{RootSpanBuilder, TracingLogger};
-use tracing_subscriber::{EnvFilter, Registry, fmt, layer::SubscriberExt};
+use tracing_opentelemetry::OpenTelemetryLayer;
+use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::config;
-
-pub struct LGTM;
+pub struct LGTM {
+    logger_provider: SdkLoggerProvider,
+    tracer_provider: SdkTracerProvider,
+}
 impl LGTM {
-    pub fn init_logging() {
-        let env_filter = EnvFilter::builder()
+    #[inline]
+    const fn default_log_level() -> &'static str {
+        if cfg!(debug_assertions) {
+            "debug"
+        } else {
+            "info"
+        }
+    }
+
+    fn logger_provider() -> SdkLoggerProvider {
+        SdkLoggerProvider::builder()
+            .with_log_processor(
+                BatchLogProcessor::builder(
+                    LogExporter::builder()
+                        .with_tonic()
+                        .with_endpoint(config::OTEL_ENDPOINT.clone())
+                        .with_timeout(Duration::from_secs(5))
+                        .build()
+                        .unwrap(),
+                )
+                .build(),
+            )
+            .build()
+    }
+
+    fn tracer_provider() -> SdkTracerProvider {
+        SdkTracerProvider::builder()
+            .with_batch_exporter(
+                SpanExporter::builder()
+                    .with_tonic()
+                    .with_endpoint(config::OTEL_ENDPOINT.clone())
+                    .with_timeout(Duration::from_secs(5))
+                    .build()
+                    .unwrap(),
+            )
+            .build()
+    }
+
+    pub fn init() -> Self {
+        let logger_provider = Self::logger_provider();
+        let tracer_provider = Self::tracer_provider();
+
+        let filter_layer = EnvFilter::builder()
             .with_default_directive(
-                if cfg!(debug_assertions) {
-                    LevelFilter::DEBUG
-                } else {
-                    LevelFilter::INFO
-                }
-                .into(),
+                LevelFilter::from_str(Self::default_log_level())
+                    .unwrap()
+                    .into(),
             )
             .from_env_lossy()
             .add_directive("tokio=off".parse().unwrap())
@@ -30,39 +77,41 @@ impl LGTM {
             .add_directive("tower=off".parse().unwrap())
             .add_directive("reqwest=off".parse().unwrap());
 
-        let exporter = opentelemetry_otlp::new_exporter()
-            .tonic()
-            .with_endpoint(config::OTLP_ENDPOINT.clone())
-            .with_timeout(Duration::from_secs(5));
+        let fmt_layer = fmt::layer().compact();
 
-        let telemetry = tracing_opentelemetry::layer().with_tracer(
-            opentelemetry_otlp::new_pipeline()
-                .tracing()
-                .with_exporter(exporter)
-                .install_batch(runtime::Tokio)
-                .unwrap(),
-        );
+        let log_layer = OpenTelemetryTracingBridge::new(&logger_provider);
+        let tracer = tracer_provider.tracer(config::OTEL_SERVICE_NAME.clone());
 
-        let fmt_layer = fmt::layer().pretty();
+        tracing_subscriber::registry()
+            .with(filter_layer)
+            .with(fmt_layer)
+            .with(log_layer)
+            .with(OpenTelemetryLayer::new(tracer))
+            .init();
 
-        tracing::subscriber::set_global_default(
-            Registry::default()
-                .with(env_filter)
-                .with(telemetry)
-                .with(fmt_layer),
-        )
-        .expect("Could not set up global logger");
+        Self {
+            logger_provider,
+            tracer_provider,
+        }
     }
 
-    pub fn tracing() -> TracingLogger<impl RootSpanBuilder> {
+    pub fn tracing_middleware() -> TracingLogger<impl RootSpanBuilder> {
         TracingLogger::default()
     }
 
-    pub fn metrics() -> PrometheusMetrics {
-        PrometheusMetricsBuilder::new("megazord")
+    pub fn metrics_middleware() -> PrometheusMetrics {
+        PrometheusMetricsBuilder::new(config::OTEL_SERVICE_NAME.as_str())
             .endpoint("/metrics")
             .mask_unmatched_patterns("UNKNOWN")
             .build()
             .expect("Failed to create prometheus metrics middleware")
+    }
+
+    pub fn shutdown(self) -> OTelSdkResult {
+        self.tracer_provider.shutdown()?;
+
+        self.logger_provider.shutdown()?;
+
+        Ok(())
     }
 }
