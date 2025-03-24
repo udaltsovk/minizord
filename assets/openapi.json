@@ -461,7 +461,6 @@
       },
       "delete": {
         "tags": [
-          "Organizators",
           "Organizators"
         ],
         "description": "\n\n\n\n",
@@ -2184,37 +2183,6 @@
           }
         }
       },
-      "HashMap": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "description": "",
-            "required": [
-              "message",
-              "params"
-            ],
-            "properties": {
-              "message": {
-                "type": "string",
-                "description": ""
-              },
-              "params": {
-                "type": "object",
-                "description": "",
-                "additionalProperties": {},
-                "propertyNames": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "propertyNames": {
-          "type": "string"
-        }
-      },
       "LoginRequest": {
         "type": "object",
         "description": "",
@@ -2561,9 +2529,38 @@
                 "type": "null"
               },
               {
-                "$ref": "#/components/schemas/HashMap"
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "",
+                    "required": [
+                      "message",
+                      "params"
+                    ],
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "description": ""
+                      },
+                      "params": {
+                        "type": "object",
+                        "description": "",
+                        "additionalProperties": {},
+                        "propertyNames": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
               }
-            ]
+            ],
+            "description": ""
           }
         }
       }

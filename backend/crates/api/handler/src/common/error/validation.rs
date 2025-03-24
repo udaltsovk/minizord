@@ -13,6 +13,7 @@ pub struct ValidationErrorFieldError {
     message: String,
 
     ///
+    #[schema(inline)]
     params: HashMap<Cow<'static, str>, Value>,
 }
 impl From<OriginalValidationError> for ValidationErrorFieldError {
@@ -39,6 +40,7 @@ pub struct ValidationError {
 
     ///
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(inline)]
     pub errors: Option<ValidationErrorErrors>,
 }
 impl Display for ValidationError {
