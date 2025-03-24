@@ -11,14 +11,14 @@ on:
       - backend
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     steps:
       - name: Set up Rust
-        uses: actions/checkout@2
+        uses: actions/checkout@master
       - name: Install cargo-audit
         run: cargo install cargo-audit
       - name: Build
