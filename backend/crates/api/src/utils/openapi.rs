@@ -15,8 +15,6 @@ use utoipa_swagger_ui::SwaggerUi;
 #[openapi(
     info(
         title = "Megazord API",
-        description = "OpenAPI for the Megazord platform",
-        version = "0.1.0",
         contact(
             name = "GitHub repo",
             url = "https://github.com/udaltsovk/megazord"

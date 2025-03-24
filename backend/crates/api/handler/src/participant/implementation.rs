@@ -14,7 +14,9 @@ use ulid::Ulid;
 use utoipa::path as openapi;
 
 use super::ParticipantAuthResponse;
-use crate::common::{ApiError, ValidationError, middleware::auth::AuthEntity};
+use crate::common::{
+    HandlerError, ValidationError, middleware::auth::AuthEntity,
+};
 
 handler_implementation! {
     ParticipantHandler as Implemented {
@@ -32,7 +34,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 201, description = "", body = ParticipantAuthResponse),
-                (status = 409, description = "", body = ApiError),
+                (status = 409, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
@@ -59,7 +61,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = ParticipantAuthResponse),
-                (status = 401, description = "", body = ApiError),
+                (status = 401, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
@@ -84,8 +86,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Participant),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
 
         )]
@@ -113,10 +115,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Participant),
-                (status = 409, description = "", body = ApiError),
+                (status = 409, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[patch("/me")]
@@ -158,8 +160,8 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = ParticipantAuthResponse),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[put("/me/password")]
@@ -188,8 +190,8 @@ handler_implementation! {
             responses(
                 (status = 204, description = ""),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[delete("/me")]
@@ -221,9 +223,9 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Participant),
-                (status = 404, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[get("/{participant_id}")]
@@ -254,11 +256,11 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Participant),
-                (status = 409, description = "", body = ApiError),
-                (status = 404, description = "", body = ApiError),
+                (status = 409, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[patch("/{participant_id}")]
@@ -290,10 +292,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = ParticipantAuthResponse),
-                (status = 404, description = "", body = ApiError),
+                (status = 404, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[put("/{participant_id}/password")]
@@ -321,9 +323,9 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = HandlerError),
             ),
         )]
         #[delete("/{participant_id}")]

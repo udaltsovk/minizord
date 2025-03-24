@@ -14,7 +14,9 @@ use ulid::Ulid;
 use utoipa::path as openapi;
 
 use super::OrganizatorAuthResponse;
-use crate::common::{ApiError, ValidationError, middleware::auth::AuthEntity};
+use crate::common::{
+    HandlerError, ValidationError, middleware::auth::AuthEntity,
+};
 
 handler_implementation! {
     OrganizatorHandler as Implemented {
@@ -29,7 +31,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 201, description = "", body = OrganizatorAuthResponse),
-                (status = 409, description = "", body = ApiError),
+                (status = 409, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
@@ -56,7 +58,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
-                (status = 401, description = "", body = ApiError),
+                (status = 401, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
@@ -81,8 +83,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
 
         )]
@@ -110,10 +112,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
-                (status = 409, description = "", body = ApiError),
+                (status = 409, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[patch("/me")]
@@ -151,8 +153,8 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[put("/me/password")]
@@ -181,8 +183,8 @@ handler_implementation! {
             responses(
                 (status = 204, description = ""),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[delete("/me")]
@@ -214,9 +216,9 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
-                (status = 404, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[get("/{organizator_id}")]
@@ -247,11 +249,11 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Organizator),
-                (status = 409, description = "", body = ApiError),
-                (status = 404, description = "", body = ApiError),
+                (status = 409, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[patch("/{organizator_id}")]
@@ -283,10 +285,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
-                (status = 404, description = "", body = ApiError),
+                (status = 404, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[put("/{organizator_id}/password")]
@@ -314,9 +316,9 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = HandlerError),
             ),
         )]
         #[delete("/{organizator_id}")]

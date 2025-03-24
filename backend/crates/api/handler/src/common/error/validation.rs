@@ -3,7 +3,7 @@ use std::{borrow::Cow, collections::HashMap, fmt::Display};
 use actix_web::{HttpResponse, ResponseError, http::StatusCode};
 use serde::Serialize;
 use serde_json::Value;
-use utoipa::ToSchema;
+use utoipa::{IntoResponses, ToSchema};
 use validator::ValidationError as OriginalValidationError;
 
 ///
@@ -28,8 +28,8 @@ impl From<OriginalValidationError> for ValidationErrorFieldError {
 
 type ValidationErrorErrors = HashMap<String, Vec<ValidationErrorFieldError>>;
 
-///
-#[derive(Serialize, ToSchema, Debug)]
+#[derive(Serialize, ToSchema, IntoResponses, Debug)]
+#[response(status = 400)]
 pub struct ValidationError {
     ///
     pub error: String,

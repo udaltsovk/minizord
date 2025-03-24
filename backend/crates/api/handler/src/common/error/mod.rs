@@ -1,31 +1,44 @@
 use actix_web::{HttpResponse, ResponseError, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use service::common::ServiceError;
-use utoipa::ToSchema;
+use utoipa::{IntoResponses, ToSchema};
 
 pub mod auth;
 pub mod validation;
 
-#[derive(thiserror::Error, Debug)]
+///
+#[derive(thiserror::Error, IntoResponses, ToSchema, Debug)]
+#[schema(as = ApiError)]
 pub enum HandlerError {
+    #[response(status = 400)]
     #[error("Invalid input: {0}")]
     InvalidInput(String),
 
+    #[response(status = "default")]
     #[error("Authentication error: {0}")]
-    Authentication(#[from] auth::AuthenticationError),
+    Authentication(
+        #[from]
+        #[schema(inline)]
+        auth::AuthenticationError,
+    ),
 
+    #[response(status = 401)]
     #[error("Authentication error: {0}")]
     Unauthorized(String),
 
+    #[response(status = 403)]
     #[error("Access denied")]
     Forbidden,
 
+    #[response(status = 404)]
     #[error("{0} was not found")]
     NotFound(String),
 
+    #[response(status = 409)]
     #[error("{0} already exists")]
     AlreadyExists(String),
 
+    #[response(status = 500)]
     #[error("{0}")]
     Internal(String),
 }

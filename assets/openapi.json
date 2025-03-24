@@ -8,7 +8,8 @@
       "url": "https://github.com/udaltsovk/megazord"
     },
     "license": {
-      "name": ""
+      "name": "MIT",
+      "identifier": "MIT"
     },
     "version": "0.1.0"
   },
@@ -24,25 +25,12 @@
         "tags": [
           "Health"
         ],
-        "description": "\n\n\n\n",
+        "summary": "API status check",
+        "description": "Verify that API is running and ready to accept incoming requests.",
         "operationId": "health",
         "responses": {
           "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/health/ping": {
-      "get": {
-        "tags": [
-          "Health"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "ping",
-        "responses": {
-          "200": {
-            "description": ""
+            "description": "API is running"
           }
         }
       }
@@ -2045,22 +2033,87 @@
   "components": {
     "schemas": {
       "ApiError": {
-        "type": "object",
-        "description": "",
-        "required": [
-          "error",
-          "description"
-        ],
-        "properties": {
-          "error": {
-            "type": "string",
-            "description": ""
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "InvalidInput"
+            ],
+            "properties": {
+              "InvalidInput": {
+                "type": "string"
+              }
+            }
           },
-          "description": {
+          {
+            "type": "object",
+            "required": [
+              "Authentication"
+            ],
+            "properties": {
+              "Authentication": {
+                "type": "string",
+                "enum": [
+                  "NoAuthorizationHeader",
+                  "InvalidCredentials",
+                  "InvalidAuthMethod",
+                  "MissingPermissions"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "Unauthorized"
+            ],
+            "properties": {
+              "Unauthorized": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "type": "string",
-            "description": ""
+            "enum": [
+              "Forbidden"
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "NotFound"
+            ],
+            "properties": {
+              "NotFound": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "AlreadyExists"
+            ],
+            "properties": {
+              "AlreadyExists": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "Internal"
+            ],
+            "properties": {
+              "Internal": {
+                "type": "string"
+              }
+            }
           }
-        }
+        ],
+        "description": ""
       },
       "CreateMentor": {
         "type": "object",
@@ -2507,7 +2560,6 @@
       },
       "ValidationError": {
         "type": "object",
-        "description": "",
         "required": [
           "error"
         ],

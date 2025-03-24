@@ -1,24 +1,25 @@
 use actix_web::{HttpResponse, ResponseError, http::StatusCode};
-use thiserror::Error;
+use utoipa::{IntoResponses, ToSchema};
 
 use super::ApiError;
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, IntoResponses, ToSchema, Debug)]
 pub enum AuthenticationError {
+    #[response(status = 401)]
     #[error("Missing Authorization Header")]
     NoAuthorizationHeader,
 
+    #[response(status = 401)]
     #[error("Invalid Authentication Credentials")]
     InvalidCredentials,
 
+    #[response(status = 401)]
     #[error("Authentication method was not valid")]
     InvalidAuthMethod,
 
+    #[response(status = 403)]
     #[error("Missing permissions")]
     MissingPermissions,
-
-    #[error("User email/account is already registered")]
-    DuplicateUser,
 }
 
 impl ResponseError for AuthenticationError {
@@ -30,7 +31,6 @@ impl ResponseError for AuthenticationError {
             Self::InvalidCredentials => SC::UNAUTHORIZED,
             Self::InvalidAuthMethod => SC::UNAUTHORIZED,
             Self::MissingPermissions => SC::FORBIDDEN,
-            Self::DuplicateUser => SC::CONFLICT,
         }
     }
 
@@ -51,7 +51,6 @@ impl AuthenticationError {
             Self::InvalidCredentials => "invalid_credentials",
             Self::InvalidAuthMethod => "invalid_auth_method",
             Self::MissingPermissions => "missing_permissions",
-            Self::DuplicateUser => "duplicate_user",
         }
     }
 }
