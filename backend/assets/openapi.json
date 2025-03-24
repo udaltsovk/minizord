@@ -1,0 +1,59 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Megazord API",
+    "description": "OpenAPI for the Megazord platform",
+    "contact": {
+      "name": "GitHub repo",
+      "url": "https://github.com/udaltsovk/megazord"
+    },
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/",
+      "description": "Local server"
+    }
+  ],
+  "paths": {},
+  "components": {
+    "securitySchemes": {
+      "mentor": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "organizator": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "participant": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Endpoints for monitoring"
+    },
+    {
+      "name": "Organizators",
+      "description": "Organizator-related endpoints"
+    },
+    {
+      "name": "Mentors",
+      "description": "Mentor-related endpoints"
+    },
+    {
+      "name": "Participants",
+      "description": "Participant-related endpoints"
+    }
+  ]
+}

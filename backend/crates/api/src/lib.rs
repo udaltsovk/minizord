@@ -39,10 +39,8 @@ use service::{
         implementation::ImplementedParticipantService,
     },
 };
-use utils::{
-    lgtm::LGTM, logger::CustomLogger, openapi::OpenApiVisualiser, validation,
-};
-use utoipa::{OpenApi, openapi::OpenApi as OpenApiStruct};
+use utils::{lgtm::LGTM, logger::CustomLogger, openapi::OpenApi, validation};
+use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::{AppExt, service_config::ServiceConfig};
 
 pub mod utils;
@@ -105,7 +103,7 @@ impl Api {
                     config::JWT_SECRET.clone(),
                     password_hasher.clone(),
                 ),
-                openapi: OpenApiVisualiser::openapi(),
+                openapi: OpenApi::openapi(),
             },
         }
     }
@@ -129,7 +127,7 @@ impl Api {
                 .into_utoipa_app()
                 .openapi(config.openapi.clone())
                 .configure(config.clone().build())
-                .openapi_service(OpenApiVisualiser::service)
+                .openapi_service(OpenApi::ui_service)
                 .into_app()
         })
         .bind(config::SERVER_ADDRESS.clone())?

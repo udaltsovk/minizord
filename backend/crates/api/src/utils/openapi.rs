@@ -1,5 +1,5 @@
 use utoipa::{
-    Modify, OpenApi,
+    Modify, OpenApi as OpenApiTrait,
     openapi::{
         OpenApi as OpenApiStruct,
         security::{Http, HttpAuthScheme, SecurityScheme},
@@ -10,7 +10,7 @@ use utoipa_scalar::{Scalar, Servable};
 #[cfg(feature = "swagger")]
 use utoipa_swagger_ui::SwaggerUi;
 
-#[derive(OpenApi, Debug)]
+#[derive(OpenApiTrait, Debug)]
 #[openapi(
     info(
         title = "Megazord API",
@@ -47,16 +47,20 @@ use utoipa_swagger_ui::SwaggerUi;
     ),
     modifiers(&Security)
 )]
-pub struct OpenApiVisualiser;
-impl OpenApiVisualiser {
+pub struct OpenApi;
+impl OpenApi {
     #[cfg(feature = "scalar")]
-    pub fn service(api: OpenApiStruct) -> Scalar<OpenApiStruct> {
+    pub fn ui_service(api: OpenApiStruct) -> Scalar<OpenApiStruct> {
         Scalar::with_url("/openapi", api)
     }
 
     #[cfg(feature = "swagger")]
-    pub fn service(api: OpenApiStruct) -> SwaggerUi {
+    pub fn ui_service(api: OpenApiStruct) -> SwaggerUi {
         SwaggerUi::new("/openapi/{_}*").url("/openapi.json", api)
+    }
+
+    pub fn as_json() -> String {
+        OpenApi::openapi().to_pretty_json().unwrap()
     }
 }
 

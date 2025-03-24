@@ -3,6 +3,11 @@ name = "api"
 version = "0.1.0"
 edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
+default-run = "api"
+
+[[bin]]
+name = "gen-openapi"
+path = "./src/gen_openapi.rs"
 
 
 [features]
