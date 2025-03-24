@@ -1,3 +1,4 @@
+use handler;
 use utoipa::{
     Modify, OpenApi as OpenApiTrait,
     openapi::{
@@ -45,7 +46,13 @@ use utoipa_swagger_ui::SwaggerUi;
             description = "Participant-related endpoints"
         ),
     ),
-    modifiers(&Security)
+    nest(
+        (path = "/health",       api = handler::health::OpenApi,      tags = ["Health"]),
+        (path = "/organizators", api = handler::organizator::OpenApi, tags = ["Organizators"]),
+        (path = "/mentors",      api = handler::mentor::OpenApi,      tags = ["Mentors"]),
+        (path = "/participants", api = handler::participant::OpenApi, tags = ["Participants"]),
+    ),
+    modifiers(&Security),
 )]
 pub struct OpenApi;
 impl OpenApi {

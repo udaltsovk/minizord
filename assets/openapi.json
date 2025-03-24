@@ -18,8 +18,2556 @@
       "description": "Local server"
     }
   ],
-  "paths": {},
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/health/ping": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/organizators/register": {
+      "post": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "register_organizator",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrganizator"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizatorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizators/login": {
+      "post": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "organizator_login",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizatorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizators/me": {
+      "get": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_organizator",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organizator"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_current_organizator",
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "update_current_organizator",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizatorUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organizator"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/organizators/me/password": {
+      "put": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "change_current_organizator_password",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizatorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/organizators/{organizator_id}": {
+      "get": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_organizator_by_id",
+        "parameters": [
+          {
+            "name": "organizator_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organizator"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "participant": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Organizators",
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_organizator_by_id",
+        "parameters": [
+          {
+            "name": "organizator_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "update_organizator_by_id",
+        "parameters": [
+          {
+            "name": "organizator_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizatorUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organizator"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/organizators/{organizator_id}/password": {
+      "put": {
+        "tags": [
+          "Organizators"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "change_organizator_password_by_id",
+        "parameters": [
+          {
+            "name": "organizator_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizatorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/mentors/register": {
+      "post": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "register_mentor",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMentor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MentorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/mentors/login": {
+      "post": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "mentor_login",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MentorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mentors/me": {
+      "get": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_mentor",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mentor"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "mentor": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_current_mentor",
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "mentor": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "update_current_mentor",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MentorUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mentor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "mentor": []
+          }
+        ]
+      }
+    },
+    "/mentors/me/password": {
+      "put": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "change_current_mentor_password",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MentorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "mentor": []
+          }
+        ]
+      }
+    },
+    "/mentors/{mentor_id}": {
+      "get": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_mentor_by_id",
+        "parameters": [
+          {
+            "name": "mentor_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mentor"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "participant": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_mentor_by_id",
+        "parameters": [
+          {
+            "name": "mentor_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "update_mentor_by_id",
+        "parameters": [
+          {
+            "name": "mentor_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MentorUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mentor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/mentors/{mentor_id}/password": {
+      "put": {
+        "tags": [
+          "Mentors"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "change_mentor_password_by_id",
+        "parameters": [
+          {
+            "name": "mentor_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MentorAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/participants/register": {
+      "post": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "register_participant",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateParticipant"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParticipantAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/participants/login": {
+      "post": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "participant_login",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParticipantAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/participants/me": {
+      "get": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_participant",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_current_participant",
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "update_current_participant",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          }
+        ]
+      }
+    },
+    "/participants/me/password": {
+      "put": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "change_current_participant_password",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParticipantAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          }
+        ]
+      }
+    },
+    "/participants/{participant_id}": {
+      "get": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_participant_by_id",
+        "parameters": [
+          {
+            "name": "participant_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          },
+          {
+            "participant": []
+          },
+          {
+            "participant": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_participant_by_id",
+        "parameters": [
+          {
+            "name": "participant_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "update_participant_by_id",
+        "parameters": [
+          {
+            "name": "participant_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/participants/{participant_id}/password": {
+      "put": {
+        "tags": [
+          "Participants"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "change_participant_password_by_id",
+        "parameters": [
+          {
+            "name": "participant_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParticipantAuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    }
+  },
   "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "error",
+          "description"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": ""
+          },
+          "description": {
+            "type": "string",
+            "description": ""
+          }
+        }
+      },
+      "CreateMentor": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "username",
+          "password",
+          "name",
+          "surname",
+          "bio"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          },
+          "name": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          }
+        }
+      },
+      "CreateOrganizator": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          }
+        }
+      },
+      "CreateParticipant": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "email",
+          "password",
+          "name",
+          "surname",
+          "bio",
+          "portfolio_urls"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          },
+          "name": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          },
+          "portfolio_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 0
+            },
+            "description": ""
+          }
+        }
+      },
+      "HashMap": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "",
+            "required": [
+              "message",
+              "params"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": ""
+              },
+              "params": {
+                "type": "object",
+                "description": "",
+                "additionalProperties": {},
+                "propertyNames": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "propertyNames": {
+          "type": "string"
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "login",
+          "password"
+        ],
+        "properties": {
+          "login": {
+            "type": "string",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          }
+        }
+      },
+      "Mentor": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "id",
+          "username",
+          "name",
+          "surname",
+          "bio"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "ulid",
+            "description": ""
+          },
+          "username": {
+            "type": "string",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "name": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          }
+        }
+      },
+      "MentorAuthResponse": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "token",
+          "mentor"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": ""
+          },
+          "mentor": {
+            "$ref": "#/components/schemas/Mentor"
+          }
+        }
+      },
+      "MentorUpdate": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          }
+        }
+      },
+      "Organizator": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "id",
+          "username"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "ulid",
+            "description": ""
+          },
+          "username": {
+            "type": "string",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          }
+        }
+      },
+      "OrganizatorAuthResponse": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "token",
+          "organizator"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": ""
+          },
+          "organizator": {
+            "$ref": "#/components/schemas/Organizator"
+          }
+        }
+      },
+      "OrganizatorUpdate": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          }
+        }
+      },
+      "Participant": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "id",
+          "email",
+          "name",
+          "surname",
+          "bio",
+          "portfolio_urls"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "ulid",
+            "description": ""
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "",
+            "maxLength": 20,
+            "minLength": 3
+          },
+          "name": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          },
+          "portfolio_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 0
+            },
+            "description": ""
+          }
+        }
+      },
+      "ParticipantAuthResponse": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "token",
+          "participant"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": ""
+          },
+          "participant": {
+            "$ref": "#/components/schemas/Participant"
+          }
+        }
+      },
+      "ParticipantUpdate": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          },
+          "portfolio_urls": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "minLength": 0
+            },
+            "description": ""
+          }
+        }
+      },
+      "PasswordChangeRequest": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "current_password",
+          "new_password",
+          "new_password_repeat"
+        ],
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          },
+          "new_password": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          },
+          "new_password_repeat": {
+            "type": "string",
+            "format": "password",
+            "description": "",
+            "maxLength": 100,
+            "minLength": 8
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": ""
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": ""
+          },
+          "errors": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HashMap"
+              }
+            ]
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "mentor": {
         "type": "http",

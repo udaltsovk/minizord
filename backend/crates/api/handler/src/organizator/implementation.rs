@@ -22,7 +22,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "register_organizator",
             request_body(
                 description = "",
@@ -50,7 +49,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "organizator_login",
             request_body(
                 description = "",
@@ -77,7 +75,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "get_current_organizator",
             security(
                 ("organizator" = []),
@@ -89,7 +86,7 @@ handler_implementation! {
             ),
 
         )]
-        #[get("")]
+        #[get("/me")]
         get_current(
             entity: ReqData<AuthEntity>,
         ) -> Json<Organizator> {
@@ -103,7 +100,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "update_current_organizator",
             request_body(
                 description = "",
@@ -120,7 +116,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[patch("")]
+        #[patch("/me")]
         update_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -144,7 +140,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "change_current_organizator_password",
             request_body(
                 description = "",
@@ -160,7 +155,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[put("/password")]
+        #[put("/me/password")]
         change_password_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -179,7 +174,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "delete_current_organizator",
             security(
                 ("organizator" = []),
@@ -191,7 +185,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[delete("")]
+        #[delete("/me")]
         delete_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -209,7 +203,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "get_organizator_by_id",
             params(
                 ("organizator_id" = Ulid, description = "")
@@ -226,7 +219,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("")]
+        #[get("/{organizator_id}")]
         get_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
@@ -241,7 +234,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "update_organizator_by_id",
             params(
                 ("organizator_id" = Ulid, description = "")
@@ -262,7 +254,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[patch("")]
+        #[patch("/{organizator_id}")]
         update_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
@@ -278,7 +270,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "change_organizator_password_by_id",
             params(
                 ("organizator_id" = Ulid, description = "")
@@ -298,7 +289,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[put("/password")]
+        #[put("/{organizator_id}/password")]
         change_password_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
@@ -314,7 +305,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Organizators",
             operation_id = "delete_organizator_by_id",
             params(
                 ("organizator_id" = Ulid, description = "")
@@ -329,7 +319,7 @@ handler_implementation! {
                 (status = 403, description = "", body = ApiError),
             ),
         )]
-        #[delete("")]
+        #[delete("/{organizator_id}")]
         delete_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,

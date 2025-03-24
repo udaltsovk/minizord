@@ -22,7 +22,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "register_mentor",
             request_body(
                 description = "",
@@ -54,7 +53,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "mentor_login",
             request_body(
                 description = "",
@@ -81,7 +79,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "get_current_mentor",
             security(
                 ("mentor" = []),
@@ -93,7 +90,7 @@ handler_implementation! {
             ),
 
         )]
-        #[get("")]
+        #[get("/me")]
         get_current(
             entity: ReqData<AuthEntity>,
         ) -> Json<Mentor> {
@@ -107,7 +104,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "update_current_mentor",
             request_body(
                 description = "",
@@ -124,7 +120,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[patch("")]
+        #[patch("/me")]
         update_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -152,7 +148,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "change_current_mentor_password",
             request_body(
                 description = "",
@@ -168,7 +163,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[put("/password")]
+        #[put("/me/password")]
         change_password_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -187,7 +182,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "delete_current_mentor",
             security(
                 ("mentor" = []),
@@ -199,7 +193,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[delete("")]
+        #[delete("/me")]
         delete_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
@@ -217,7 +211,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "get_mentor_by_id",
             params(
                 ("mentor_id" = Ulid, description = "")
@@ -234,7 +227,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("")]
+        #[get("/{mentor_id}")]
         get_by_id(
             mentor_service: Data<MentorServiceDependency>,
             Path(mentor_id): Path<Ulid>,
@@ -249,7 +242,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "update_mentor_by_id",
             params(
                 ("mentor_id" = Ulid, description = "")
@@ -270,7 +262,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[patch("")]
+        #[patch("/{mentor_id}")]
         update_by_id(
             mentor_service: Data<MentorServiceDependency>,
             Path(mentor_id): Path<Ulid>,
@@ -286,7 +278,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "change_mentor_password_by_id",
             params(
                 ("mentor_id" = Ulid, description = "")
@@ -306,7 +297,7 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[put("/password")]
+        #[put("/{mentor_id}/password")]
         change_password_by_id(
             mentor_service: Data<MentorServiceDependency>,
             Path(mentor_id): Path<Ulid>,
@@ -322,7 +313,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Mentors",
             operation_id = "delete_mentor_by_id",
             params(
                 ("mentor_id" = Ulid, description = "")
@@ -337,7 +327,7 @@ handler_implementation! {
                 (status = 403, description = "", body = ApiError),
             ),
         )]
-        #[delete("")]
+        #[delete("/{mentor_id}")]
         delete_by_id(
             mentor_service: Data<MentorServiceDependency>,
             Path(mentor_id): Path<Ulid>,

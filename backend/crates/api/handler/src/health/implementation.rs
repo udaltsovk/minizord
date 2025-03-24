@@ -8,7 +8,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Health",
             operation_id = "health",
             responses(
                 (status = 200, description = ""),
@@ -23,7 +22,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            tag = "Health",
             operation_id = "ping",
             responses(
                 (status = 200, description = ""),

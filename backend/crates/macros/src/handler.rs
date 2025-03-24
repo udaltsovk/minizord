@@ -16,6 +16,8 @@ macro_rules! handler {
         }
     ) => {
         macros::paste::paste! {
+            pub use implementation::OpenApi;
+
             type [<$name HandlerResult>]<T> = Result<T, crate::common::HandlerError>;
 
             pub trait [<$name Handler>] {

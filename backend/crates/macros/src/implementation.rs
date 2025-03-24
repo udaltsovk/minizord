@@ -63,13 +63,18 @@ macro_rules! handler_implementation {
         }
     ) => {
         macros::paste::paste! {
+            pub use routes::OpenApi;
             mod routes {
                 use super::*;
+
+                #[derive(utoipa::OpenApi)]
+                #[openapi(paths($($method),*))]
+                pub struct OpenApi;
 
                 $(
                     #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
-                    async fn $method $sig -> super::super::[<$trait_name Result>]<$res> {
+                    pub async fn $method $sig -> super::super::[<$trait_name Result>]<$res> {
                         let res = $body;
                         #[allow(unreachable_code)]
                         Ok(res)
