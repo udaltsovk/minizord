@@ -3,12 +3,12 @@ name: Backend CI
 on:
   push:
     paths:
-      - backend
+      - backend/**
     branches: 
       - master
   pull_request:
     paths:
-      - backend
+      - backend/**
     branches:
       - master
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
       - name: Install cargo-audit
         run: cargo install cargo-audit
       - name: Build
-        run: cargo build --all --verbose
+        run: cd ./backend && cargo build --all --verbose
       - name: Test
         run: cargo test --all --verbose
       - name: Clippy
