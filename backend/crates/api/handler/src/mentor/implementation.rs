@@ -3,6 +3,7 @@ use actix_web::{
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
+use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     mentor::{CreateMentor, Mentor, MentorUpdate},
@@ -13,7 +14,7 @@ use ulid::Ulid;
 use utoipa::path as openapi;
 
 use super::MentorAuthResponse;
-use crate::common::{ApiError, middleware::auth::AuthEntity, validate};
+use crate::common::{ApiError, ValidationError, middleware::auth::AuthEntity};
 
 handler_implementation! {
     MentorHandler as Implemented {
@@ -33,15 +34,15 @@ handler_implementation! {
             responses(
                 (status = 201, description = "", body = MentorAuthResponse),
                 (status = 409, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
             ),
         )]
         #[post("/register")]
         register(
             mentor_service: Data<MentorServiceDependency>,
-            Json(body): Json<CreateMentor>
+            Validated(Json(body)): Validated<Json<CreateMentor>>
         ) -> HttpResponse {
-            validate(&body)?;
             let resp: MentorAuthResponse = mentor_service
                 .register(body)
                 .await?
@@ -61,16 +62,15 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = MentorAuthResponse),
-                (status = 401, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 404, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
             ),
         )]
         #[post("/login")]
         login(
             mentor_service: Data<MentorServiceDependency>,
-            Json(body): Json<LoginRequest>,
+            Validated(Json(body)): Validated<Json<LoginRequest>>,
         ) -> Json<MentorAuthResponse> {
-            validate(&body)?;
             let res = mentor_service
                 .login(body)
                 .await?;
@@ -119,7 +119,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = Mentor),
                 (status = 409, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -128,12 +128,11 @@ handler_implementation! {
         update_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            Json(body): Json<MentorUpdate>,
+            Validated(Json(body)): Validated<Json<MentorUpdate>>,
         ) -> Json<Mentor> {
             let mentor: Mentor = entity
                 .into_inner()
                 .try_into()?;
-            validate(&body)?;
 
             if body.username.as_ref().unwrap_or(&mentor.username) == &mentor.username
                 && body.name.as_ref().unwrap_or(&mentor.name) == &mentor.name
@@ -164,7 +163,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = MentorAuthResponse),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -173,12 +172,11 @@ handler_implementation! {
         change_password_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            Json(body): Json<PasswordChangeRequest>,
+            Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<MentorAuthResponse> {
             let mentor: Mentor = entity
                 .into_inner()
                 .try_into()?;
-            validate(&body)?;
             let res = mentor_service
                 .change_password_by_id(mentor.id, body)
                 .await?;
@@ -196,7 +194,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -267,7 +265,7 @@ handler_implementation! {
                 (status = 200, description = "", body = Mentor),
                 (status = 409, description = "", body = ApiError),
                 (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -276,9 +274,8 @@ handler_implementation! {
         update_by_id(
             mentor_service: Data<MentorServiceDependency>,
             Path(mentor_id): Path<Ulid>,
-            Json(body): Json<MentorUpdate>,
+            Validated(Json(body)): Validated<Json<MentorUpdate>>,
         ) -> Json<Mentor> {
-            validate(&body)?;
             let res = mentor_service
                 .update_by_id(mentor_id, body)
                 .await?;
@@ -304,7 +301,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = MentorAuthResponse),
                 (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -313,9 +310,8 @@ handler_implementation! {
         change_password_by_id(
             mentor_service: Data<MentorServiceDependency>,
             Path(mentor_id): Path<Ulid>,
-            Json(body): Json<PasswordChangeRequest>,
+            Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<MentorAuthResponse> {
-            validate(&body)?;
             let res = mentor_service
                 .change_password_by_id(mentor_id, body)
                 .await?;

@@ -4,6 +4,7 @@ use actix_web::{
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
+use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     mentor::{CreateMentor, Mentor, MentorUpdate},
@@ -56,12 +57,12 @@ handler! {
 
         register(
             mentor_service: Data<MentorServiceDependency>,
-            body: Json<CreateMentor>
+            body: Validated<Json<CreateMentor>>
         ) -> HttpResponse;
 
         login(
             mentor_service: Data<MentorServiceDependency>,
-            body: Json<LoginRequest>
+            body: Validated<Json<LoginRequest>>
         ) -> Json<MentorAuthResponse>;
 
         get_current(
@@ -71,13 +72,13 @@ handler! {
         update_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            body: Json<MentorUpdate>
+            body: Validated<Json<MentorUpdate>>
         ) -> Json<Mentor>;
 
         change_password_current(
             mentor_service: Data<MentorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            body: Json<PasswordChangeRequest>
+            body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<MentorAuthResponse>;
 
         delete_current(
@@ -93,13 +94,13 @@ handler! {
         update_by_id(
             mentor_service: Data<MentorServiceDependency>,
             mentor_id: Path<Ulid>,
-            body: Json<MentorUpdate>
+            body: Validated<Json<MentorUpdate>>
         ) -> Json<Mentor>;
 
         change_password_by_id(
             mentor_service: Data<MentorServiceDependency>,
             mentor_id: Path<Ulid>,
-            body: Json<PasswordChangeRequest>
+            body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<MentorAuthResponse>;
 
         delete_by_id(

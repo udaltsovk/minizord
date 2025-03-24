@@ -14,6 +14,7 @@ service.path = "../service"
 thiserror.workspace = true
 
 serde.workspace = true
+serde_json.workspace = true
 validator.workspace = true
 
 ulid.workspace = true
@@ -25,3 +26,4 @@ utoipa-actix-web.workspace = true
 
 actix-web.workspace = true
 actix-web-lab.workspace = true
+actix-web-validation.workspace = true

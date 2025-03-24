@@ -1,5 +1,9 @@
 use std::{str::FromStr, time::Duration};
 
+use actix_web::{
+    body::MessageBody,
+    dev::{ServiceRequest, ServiceResponse},
+};
 use actix_web_prom::{PrometheusMetrics, PrometheusMetricsBuilder};
 use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
@@ -9,8 +13,11 @@ use opentelemetry_sdk::{
     logs::{BatchLogProcessor, SdkLogger, SdkLoggerProvider},
     trace::{BatchSpanProcessor, SdkTracerProvider, Tracer},
 };
-use tracing::{Subscriber, level_filters::LevelFilter};
-use tracing_actix_web::{RootSpanBuilder, TracingLogger};
+use tracing::{Span, Subscriber, level_filters::LevelFilter};
+use tracing_actix_web::Level;
+use tracing_actix_web::{
+    DefaultRootSpanBuilder, RootSpanBuilder, TracingLogger,
+};
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{
     EnvFilter,
@@ -131,7 +138,7 @@ impl LGTM {
     }
 
     pub fn tracing_middleware() -> TracingLogger<impl RootSpanBuilder> {
-        TracingLogger::default()
+        TracingLogger::<CustomLevelRootSpanBuilder>::new()
     }
 
     pub fn metrics_middleware() -> PrometheusMetrics {
@@ -154,5 +161,25 @@ impl LGTM {
 impl Drop for LGTM {
     fn drop(&mut self) {
         self.shutdown().expect("Failed to shut down LGTM stack");
+    }
+}
+
+pub struct CustomLevelRootSpanBuilder;
+
+impl RootSpanBuilder for CustomLevelRootSpanBuilder {
+    fn on_request_start(request: &ServiceRequest) -> Span {
+        let level = if request.path() == "/metrics" {
+            Level::TRACE
+        } else {
+            Level::INFO
+        };
+        tracing_actix_web::root_span!(level = level, request)
+    }
+
+    fn on_request_end<B: MessageBody>(
+        span: Span,
+        outcome: &Result<ServiceResponse<B>, actix_web::Error>,
+    ) {
+        DefaultRootSpanBuilder::on_request_end(span, outcome);
     }
 }

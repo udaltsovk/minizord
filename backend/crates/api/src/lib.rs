@@ -7,9 +7,10 @@ use actix_web::{
     web::{Data, FormConfig, JsonConfig, PathConfig, QueryConfig, get},
 };
 use actix_web_lab::middleware::CatchPanic;
+use actix_web_validation::validator::ValidatorErrorHandlerExt;
 use env_vars_config::env_vars_config;
 use handler::{
-    common::{ApiError, HandlerError},
+    common::{ApiError, ValidationError},
     health::{HealthHandler, implementation::ImplementedHealthHandler},
     mentor::{MentorHandler, implementation::ImplementedMentorHandler},
     organizator::{
@@ -38,7 +39,9 @@ use service::{
         implementation::ImplementedParticipantService,
     },
 };
-use utils::{lgtm::LGTM, logger::CustomLogger, openapi::OpenApiVisualiser};
+use utils::{
+    lgtm::LGTM, logger::CustomLogger, openapi::OpenApiVisualiser, validation,
+};
 use utoipa::{OpenApi, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::{AppExt, service_config::ServiceConfig};
 
@@ -112,9 +115,8 @@ impl Api {
         let config = self.config.clone();
         HttpServer::new(move || {
             App::new()
-                .wrap(LGTM::tracing_middleware())
+                .validator_error_handler(Arc::new(validation::error_handler))
                 .wrap(LGTM::metrics_middleware())
-                .wrap(CustomLogger::new())
                 .wrap(CatchPanic::default())
                 .wrap(Compress::default())
                 .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
@@ -122,6 +124,8 @@ impl Api {
                 } else {
                     TrailingSlash::Trim
                 }))
+                .wrap(LGTM::tracing_middleware())
+                .wrap(CustomLogger::new())
                 .into_utoipa_app()
                 .openapi(config.openapi.clone())
                 .configure(config.clone().build())
@@ -136,14 +140,12 @@ impl Api {
         Ok(())
     }
 
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, level = "trace")]
     pub async fn not_found() -> HttpResponse {
-        let data = ApiError {
+        HttpResponse::NotFound().json(ApiError {
             error: "not_found".into(),
-            description: "the requested route does not exist".into(),
-        };
-
-        HttpResponse::NotFound().json(data)
+            description: "The requested route does not exist".into(),
+        })
     }
 }
 
@@ -152,7 +154,7 @@ fn input_err_handler<'a, T: Display>(
     err: T,
     _req: &'a HttpRequest,
 ) -> actix_web::Error {
-    HandlerError::Validation(err.to_string()).into()
+    ValidationError::with_description(&err.to_string()).into()
 }
 
 impl AppConfig {

@@ -3,6 +3,7 @@ use actix_web::{
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
+use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     organizator::{CreateOrganizator, Organizator, OrganizatorUpdate},
@@ -13,7 +14,7 @@ use ulid::Ulid;
 use utoipa::path as openapi;
 
 use super::OrganizatorAuthResponse;
-use crate::common::{ApiError, middleware::auth::AuthEntity, validate};
+use crate::common::{ApiError, ValidationError, middleware::auth::AuthEntity};
 
 handler_implementation! {
     OrganizatorHandler as Implemented {
@@ -30,15 +31,14 @@ handler_implementation! {
             responses(
                 (status = 201, description = "", body = OrganizatorAuthResponse),
                 (status = 409, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
             ),
         )]
         #[post("/register")]
         register(
             organizator_service: Data<OrganizatorServiceDependency>,
-            Json(body): Json<CreateOrganizator>
+            Validated(Json(body)): Validated<Json<CreateOrganizator>>
         ) -> HttpResponse {
-            validate(&body)?;
             let resp: OrganizatorAuthResponse = organizator_service
                 .register(body)
                 .await?
@@ -59,15 +59,14 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
                 (status = 401, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
             ),
         )]
         #[post("/login")]
         login(
             organizator_service: Data<OrganizatorServiceDependency>,
-            Json(body): Json<LoginRequest>,
+            Validated(Json(body)): Validated<Json<LoginRequest>>,
         ) -> Json<OrganizatorAuthResponse> {
-            validate(&body)?;
             let res = organizator_service
                 .login(body)
                 .await?;
@@ -116,7 +115,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = Organizator),
                 (status = 409, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -125,12 +124,11 @@ handler_implementation! {
         update_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            Json(body): Json<OrganizatorUpdate>,
+            Validated(Json(body)): Validated<Json<OrganizatorUpdate>>,
         ) -> Json<Organizator> {
             let organizator: Organizator = entity
                 .into_inner()
                 .try_into()?;
-            validate(&body)?;
 
             if body.username.as_ref().unwrap_or(&organizator.username) == &organizator.username {
                 return Ok(Json(organizator));
@@ -157,7 +155,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -166,12 +164,11 @@ handler_implementation! {
         change_password_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            Json(body): Json<PasswordChangeRequest>,
+            Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<OrganizatorAuthResponse> {
             let organizator: Organizator = entity
                 .into_inner()
                 .try_into()?;
-            validate(&body)?;
             let res = organizator_service
                 .change_password_by_id(organizator.id, body)
                 .await?;
@@ -189,7 +186,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -260,7 +257,7 @@ handler_implementation! {
                 (status = 200, description = "", body = Organizator),
                 (status = 409, description = "", body = ApiError),
                 (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -269,9 +266,8 @@ handler_implementation! {
         update_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
-            Json(body): Json<OrganizatorUpdate>,
+            Validated(Json(body)): Validated<Json<OrganizatorUpdate>>,
         ) -> Json<Organizator> {
-            validate(&body)?;
             let res = organizator_service
                 .update_by_id(organizator_id, body)
                 .await?;
@@ -297,7 +293,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = OrganizatorAuthResponse),
                 (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -306,9 +302,8 @@ handler_implementation! {
         change_password_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             Path(organizator_id): Path<Ulid>,
-            Json(body): Json<PasswordChangeRequest>,
+            Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<OrganizatorAuthResponse> {
-            validate(&body)?;
             let res = organizator_service
                 .change_password_by_id(organizator_id, body)
                 .await?;

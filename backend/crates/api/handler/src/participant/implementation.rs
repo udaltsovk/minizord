@@ -3,6 +3,7 @@ use actix_web::{
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
+use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     participant::{CreateParticipant, Participant, ParticipantUpdate},
@@ -13,7 +14,7 @@ use ulid::Ulid;
 use utoipa::path as openapi;
 
 use super::ParticipantAuthResponse;
-use crate::common::{ApiError, middleware::auth::AuthEntity, validate};
+use crate::common::{ApiError, ValidationError, middleware::auth::AuthEntity};
 
 handler_implementation! {
     ParticipantHandler as Implemented {
@@ -33,15 +34,14 @@ handler_implementation! {
             responses(
                 (status = 201, description = "", body = ParticipantAuthResponse),
                 (status = 409, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
             ),
         )]
         #[post("/register")]
         register(
             participant_service: Data<ParticipantServiceDependency>,
-            Json(body): Json<CreateParticipant>
+            Validated(Json(body)): Validated<Json<CreateParticipant>>
         ) -> HttpResponse {
-            validate(&body)?;
             let resp: ParticipantAuthResponse = participant_service
                 .register(body)
                 .await?
@@ -62,15 +62,14 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = ParticipantAuthResponse),
                 (status = 401, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
             ),
         )]
         #[post("/login")]
         login(
             participant_service: Data<ParticipantServiceDependency>,
-            Json(body): Json<LoginRequest>,
+            Validated(Json(body)): Validated<Json<LoginRequest>>,
         ) -> Json<ParticipantAuthResponse> {
-            validate(&body)?;
             let res = participant_service
                 .login(body)
                 .await?;
@@ -119,7 +118,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = Participant),
                 (status = 409, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -128,12 +127,11 @@ handler_implementation! {
         update_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
-            Json(body): Json<ParticipantUpdate>,
+            Validated(Json(body)): Validated<Json<ParticipantUpdate>>,
         ) -> Json<Participant> {
             let participant: Participant = entity
                 .into_inner()
                 .try_into()?;
-            validate(&body)?;
 
 
             if body.name.as_ref().unwrap_or(&participant.name) == &participant.name
@@ -164,7 +162,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = ParticipantAuthResponse),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -173,12 +171,11 @@ handler_implementation! {
         change_password_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
-            Json(body): Json<PasswordChangeRequest>,
+            Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<ParticipantAuthResponse> {
             let participant: Participant = entity
                 .into_inner()
                 .try_into()?;
-            validate(&body)?;
             let res = participant_service
                 .change_password_by_id(participant.id, body)
                 .await?;
@@ -196,7 +193,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -267,7 +264,7 @@ handler_implementation! {
                 (status = 200, description = "", body = Participant),
                 (status = 409, description = "", body = ApiError),
                 (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -276,9 +273,8 @@ handler_implementation! {
         update_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             Path(participant_id): Path<Ulid>,
-            Json(body): Json<ParticipantUpdate>,
+            Validated(Json(body)): Validated<Json<ParticipantUpdate>>,
         ) -> Json<Participant> {
-            validate(&body)?;
             let res = participant_service
                 .update_by_id(participant_id, body)
                 .await?;
@@ -304,7 +300,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = ParticipantAuthResponse),
                 (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = ApiError),
                 (status = 401, description = "", body = ApiError),
             ),
@@ -313,9 +309,8 @@ handler_implementation! {
         change_password_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             Path(participant_id): Path<Ulid>,
-            Json(body): Json<PasswordChangeRequest>,
+            Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<ParticipantAuthResponse> {
-            validate(&body)?;
             let res = participant_service
                 .change_password_by_id(participant_id, body)
                 .await?;

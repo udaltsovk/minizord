@@ -40,6 +40,7 @@ utoipa = { version = "5.3", features = ["actix_extras", "ulid", "preserve_order"
 
 actix-web = "4.10"
 actix-web-lab = "0.23"
+actix-web-validation = { version = "0.8", features = ["validator"] }
 utoipa-actix-web = "0.1"
 [profile.release]
 lto = true

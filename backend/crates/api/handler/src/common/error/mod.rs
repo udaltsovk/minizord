@@ -4,14 +4,12 @@ use service::common::ServiceError;
 use utoipa::ToSchema;
 
 pub mod auth;
+pub mod validation;
 
 #[derive(thiserror::Error, Debug)]
 pub enum HandlerError {
     #[error("Invalid input: {0}")]
     InvalidInput(String),
-
-    #[error("Error while validating input: {0}")]
-    Validation(String),
 
     #[error("Authentication error: {0}")]
     Authentication(#[from] auth::AuthenticationError),
@@ -61,7 +59,6 @@ impl HandlerError {
         ApiError {
             error: match self {
                 Self::InvalidInput(..) => "invalid_input",
-                Self::Validation(..) => "invalid_input",
                 Self::Authentication(err) => err.error_name(),
                 Self::Unauthorized(..) => "unauthorized",
                 Self::Forbidden => "access_denied",
@@ -81,7 +78,6 @@ impl ResponseError for HandlerError {
         use StatusCode as SC;
         match self {
             Self::InvalidInput(..) => SC::BAD_REQUEST,
-            Self::Validation(..) => SC::BAD_REQUEST,
             Self::Authentication(err) => err.status_code(),
             Self::Unauthorized(..) => SC::UNAUTHORIZED,
             Self::Forbidden => SC::FORBIDDEN,

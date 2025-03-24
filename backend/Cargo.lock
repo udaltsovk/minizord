@@ -335,6 +335,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-web-validation"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "289a4fa5febbf8a11f53d68b3830d42f3268f902e891df56ea8391d5ce548f70"
+dependencies = [
+ "actix-web",
+ "thiserror 2.0.12",
+ "validator",
+]
+
+[[package]]
 name = "addr"
 version = "0.15.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -519,6 +530,7 @@ dependencies = [
  "actix-web",
  "actix-web-lab",
  "actix-web-prom",
+ "actix-web-validation",
  "dto",
  "env-vars-config",
  "handler",
@@ -539,6 +551,7 @@ dependencies = [
  "utoipa-actix-web",
  "utoipa-scalar",
  "utoipa-swagger-ui",
+ "validator",
 ]
 
 [[package]]
@@ -2110,9 +2123,11 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "actix-web-lab",
+ "actix-web-validation",
  "dto",
  "macros",
  "serde",
+ "serde_json",
  "service",
  "thiserror 2.0.12",
  "tracing",

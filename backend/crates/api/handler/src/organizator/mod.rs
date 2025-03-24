@@ -4,6 +4,7 @@ use actix_web::{
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
+use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     organizator::{CreateOrganizator, Organizator, OrganizatorUpdate},
@@ -52,12 +53,12 @@ handler! {
 
         register(
             organizator_service: Data<OrganizatorServiceDependency>,
-            body: Json<CreateOrganizator>
+            body: Validated<Json<CreateOrganizator>>
         ) -> HttpResponse;
 
         login(
             organizator_service: Data<OrganizatorServiceDependency>,
-            body: Json<LoginRequest>
+            body: Validated<Json<LoginRequest>>
         ) -> Json<OrganizatorAuthResponse>;
 
         get_current(
@@ -67,13 +68,13 @@ handler! {
         update_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            body: Json<OrganizatorUpdate>
+            body: Validated<Json<OrganizatorUpdate>>
         ) -> Json<Organizator>;
 
         change_password_current(
             organizator_service: Data<OrganizatorServiceDependency>,
             entity: ReqData<AuthEntity>,
-            body: Json<PasswordChangeRequest>
+            body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<OrganizatorAuthResponse>;
 
         delete_current(
@@ -89,13 +90,13 @@ handler! {
         update_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             organizator_id: Path<Ulid>,
-            body: Json<OrganizatorUpdate>
+            body: Validated<Json<OrganizatorUpdate>>
         ) -> Json<Organizator>;
 
         change_password_by_id(
             organizator_service: Data<OrganizatorServiceDependency>,
             organizator_id: Path<Ulid>,
-            body: Json<PasswordChangeRequest>
+            body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<OrganizatorAuthResponse>;
 
         delete_by_id(

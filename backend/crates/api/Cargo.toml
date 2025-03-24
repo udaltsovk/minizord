@@ -21,6 +21,8 @@ handler.path = "./handler"
 
 log.workspace = true
 
+validator.workspace = true
+
 tonic.workspace = true
 
 tracing.workspace = true
@@ -41,8 +43,9 @@ actix-rt = "2.10"
 actix-cors = "0.7"
 # actix-files = "0.6"
 actix-web-lab.workspace = true
+actix-web-validation.workspace = true
 actix-multipart = "0.7"
 actix-contrib-logger = "0.1"
 utoipa-actix-web.workspace = true
-tracing-actix-web = { version = "0.7", features = ["opentelemetry_0_28", "uuid_v7"] }
+tracing-actix-web = { version = "0.7", default-features = false, features = ["opentelemetry_0_28", "uuid_v7"] }
 actix-web-prom = { version = "0.9", features = ["process"] }

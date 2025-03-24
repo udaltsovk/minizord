@@ -4,6 +4,7 @@ use actix_web::{
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
+use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     participant::{CreateParticipant, Participant, ParticipantUpdate},
@@ -27,7 +28,7 @@ handler! {
                 cfg.app_data(Data::new(participant_service))
                     .service(scope("/participants")
                         .service(scope("")
-                            .wrap(from_fn(organizator_auth_middleware))
+                            // .wrap(from_fn(organizator_auth_middleware))
                             .service(Self::register())
                         )
                         .service(Self::login())
@@ -56,12 +57,12 @@ handler! {
 
         register(
             participant_service: Data<ParticipantServiceDependency>,
-            body: Json<CreateParticipant>
+            body: Validated<Json<CreateParticipant>>
         ) -> HttpResponse;
 
         login(
             participant_service: Data<ParticipantServiceDependency>,
-            body: Json<LoginRequest>
+            body: Validated<Json<LoginRequest>>
         ) -> Json<ParticipantAuthResponse>;
 
         get_current(
@@ -71,13 +72,13 @@ handler! {
         update_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
-            body: Json<ParticipantUpdate>
+            body: Validated<Json<ParticipantUpdate>>
         ) -> Json<Participant>;
 
         change_password_current(
             participant_service: Data<ParticipantServiceDependency>,
             entity: ReqData<AuthEntity>,
-            body: Json<PasswordChangeRequest>
+            body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<ParticipantAuthResponse>;
 
         delete_current(
@@ -93,13 +94,13 @@ handler! {
         update_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             participant_id: Path<Ulid>,
-            body: Json<ParticipantUpdate>
+            body: Validated<Json<ParticipantUpdate>>
         ) -> Json<Participant>;
 
         change_password_by_id(
             participant_service: Data<ParticipantServiceDependency>,
             participant_id: Path<Ulid>,
-            body: Json<PasswordChangeRequest>
+            body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<ParticipantAuthResponse>;
 
         delete_by_id(
