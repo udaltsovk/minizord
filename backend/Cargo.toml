@@ -34,7 +34,7 @@ serde_json = "1.0"
 validator = { version = "0.20", features = ["derive"] }
 ulid = { version = "1.2", features = ["serde"] }
 
-# tonic = "0.12"
+tonic = "0.12"
 
 utoipa = { version = "5.3", features = ["actix_extras", "ulid", "preserve_order", "preserve_path_order"] }
 
