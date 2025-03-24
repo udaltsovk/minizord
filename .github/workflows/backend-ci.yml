@@ -1,0 +1,31 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - backend
+    branches: 
+      - master
+  pull_request:
+    paths:
+      - backend
+    branches:
+      - master
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Rust
+        uses: actions/checkout@2
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+      - name: Build
+        run: cargo build --all --verbose
+      - name: Test
+        run: cargo test --all --verbose
+      - name: Clippy
+        run: cargo clippy --verbose -- -D warnings
+      - name: Audit
+        run: cargo audit
