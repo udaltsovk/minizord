@@ -26,7 +26,7 @@ services:
     image: prom/prometheus:main
     volumes:
       - prometheus:/prometheus
-      - ../telemetry-configs/prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - ../assets/telemetry-configs/prometheus-dev.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--enable-feature=native-histograms'
@@ -38,7 +38,7 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ../telemetry-configs/loki.yml:/etc/loki/local-config.yaml
+      - ../assets/telemetry-configs/loki.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     depends_on:
       - minio
@@ -49,7 +49,7 @@ services:
     ports:
       - "3200:3200"
     volumes:
-      - ../telemetry-configs/tempo.yml:/etc/tempo/tempo-config.yaml
+      - ../assets/telemetry-configs/tempo.yml:/etc/tempo/tempo-config.yaml
       - tempo:/var/tempo
     command: -config.file=/etc/tempo/tempo-config.yaml
     depends_on:
@@ -62,7 +62,7 @@ services:
     ports:
       - "9009:9009"
     volumes:
-      - ../telemetry-configs/mimir.yml:/etc/mimir/mimir.yaml
+      - ../assets/telemetry-configs/mimir.yml:/etc/mimir/mimir.yaml
     command: --config.file=/etc/mimir/mimir.yaml
     depends_on:
       - minio
@@ -70,7 +70,7 @@ services:
     container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
-      - ../telemetry-configs/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+      - ../assets/telemetry-configs/otel-collector.yml:/etc/otelcol-contrib/config.yaml
     ports:
       - "4317:4317"
   minio:
