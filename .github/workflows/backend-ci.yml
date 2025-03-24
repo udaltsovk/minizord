@@ -24,8 +24,8 @@ jobs:
       - name: Build
         run: cd ./backend && cargo build --all --verbose
       - name: Test
-        run: cargo test --all --verbose
+        run: cd ./backend && cargo test --all --verbose
       - name: Clippy
-        run: cargo clippy --verbose -- -D warnings
+        run: cd ./backend && cargo clippy --verbose -- -D warnings
       - name: Audit
-        run: cargo audit
+        run: cd ./backend && cargo audit
