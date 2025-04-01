@@ -768,7 +768,110 @@
           }
         ]
       },
-      "put": {
+      "post": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "create_profile",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProfile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_current_profile",
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "patch": {
         "tags": [
           "Profiles"
         ],
@@ -827,59 +930,6 @@
             }
           },
           "409": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "participant": []
-          },
-          {
-            "mentor": []
-          },
-          {
-            "organizator": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "delete_current_profile",
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
             "description": "",
             "content": {
               "application/json": {
@@ -976,7 +1026,66 @@
           }
         ]
       },
-      "put": {
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_profile_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "patch": {
         "tags": [
           "Profiles"
         ],
@@ -1057,65 +1166,6 @@
             }
           },
           "409": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "organizator": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "delete_profile_by_id",
-        "parameters": [
-          {
-            "name": "profile_id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "ulid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
             "description": "",
             "content": {
               "application/json": {
@@ -1229,6 +1279,50 @@
           }
         ],
         "description": ""
+      },
+      "CreateProfile": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "name",
+          "surname",
+          "city",
+          "bio",
+          "portfolio_urls"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "surname": {
+            "type": "string",
+            "description": "",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "bio": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096,
+            "minLength": 0
+          },
+          "portfolio_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 0
+            },
+            "description": ""
+          }
+        }
       },
       "CreateUser": {
         "type": "object",
