@@ -52,7 +52,7 @@ env_vars_config! {
 struct AppConfig {
     user_service: UserServiceDependency,
     profile_service: ProfileServiceDependency,
-    pub openapi: OpenApiStruct,
+    openapi: OpenApiStruct,
 }
 impl AppConfig {
     #[tracing::instrument(skip_all, level = "trace")]
