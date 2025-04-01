@@ -42,10 +42,10 @@ env_vars_config! {
     JWT_SECRET: String = "ohrfwahl;fhjjhawefhjaewfjhhjawfjbklbjlhjeawfjhjhwarjhjhhawhfhjhjfwahl",
     OTEL_ENDPOINT: String = "http://localhost:4317",
     OTEL_SERVICE_NAME: String = "megazord_api",
-    // MINIO_BASE_URL: String = "http://localhost:9000",
-    // MINIO_USER: String = "root",
-    // MINIO_PASSWORD: String = "beetroot",
-    // MINIO_BUCKET: String = "ad-platform-backend-bucket",
+    MINIO_BASE_URL: String = "http://localhost:9000",
+    MINIO_USER: String = "minioadmin",
+    MINIO_PASSWORD: String = "minioadmin",
+    MINIO_BUCKET: String = "megazord-api-bucket",
 }
 
 #[derive(Clone)]
@@ -53,6 +53,35 @@ struct AppConfig {
     user_service: UserServiceDependency,
     profile_service: ProfileServiceDependency,
     pub openapi: OpenApiStruct,
+}
+impl AppConfig {
+    #[tracing::instrument(skip_all, level = "trace")]
+    pub fn build(self) -> impl FnOnce(&mut ServiceConfig) {
+        move |cfg: &mut ServiceConfig| {
+            cfg.app_data(
+                FormConfig::default().error_handler(input_err_handler),
+            )
+            .app_data(PathConfig::default().error_handler(input_err_handler))
+            .app_data(QueryConfig::default().error_handler(input_err_handler))
+            .app_data(JsonConfig::default().error_handler(input_err_handler))
+            .app_data(Data::new(config::JWT_SECRET.to_string()))
+            .configure(ImplementedHealthHandler::routes())
+            .configure(ImplementedUserHandler::routes(
+                self.user_service.clone(),
+            ))
+            .configure(ImplementedProfileHandler::routes(
+                self.profile_service.clone(),
+            ))
+            .default_service(get().to(Api::not_found));
+        }
+    }
+}
+#[tracing::instrument(skip_all, level = "trace")]
+fn input_err_handler<'a, T: Display>(
+    err: T,
+    _req: &'a HttpRequest,
+) -> actix_web::Error {
+    ValidationError::with_description(&err.to_string()).into()
 }
 
 pub struct Api {
@@ -122,36 +151,5 @@ impl Api {
             error: "not_found".into(),
             description: "The requested route does not exist".into(),
         })
-    }
-}
-
-#[tracing::instrument(skip_all, level = "trace")]
-fn input_err_handler<'a, T: Display>(
-    err: T,
-    _req: &'a HttpRequest,
-) -> actix_web::Error {
-    ValidationError::with_description(&err.to_string()).into()
-}
-
-impl AppConfig {
-    #[tracing::instrument(skip_all, level = "trace")]
-    pub fn build(self) -> impl FnOnce(&mut ServiceConfig) {
-        move |cfg: &mut ServiceConfig| {
-            cfg.app_data(
-                FormConfig::default().error_handler(input_err_handler),
-            )
-            .app_data(PathConfig::default().error_handler(input_err_handler))
-            .app_data(QueryConfig::default().error_handler(input_err_handler))
-            .app_data(JsonConfig::default().error_handler(input_err_handler))
-            .app_data(Data::new(config::JWT_SECRET.to_string()))
-            .configure(ImplementedHealthHandler::routes())
-            .configure(ImplementedUserHandler::routes(
-                self.user_service.clone(),
-            ))
-            .configure(ImplementedProfileHandler::routes(
-                self.profile_service.clone(),
-            ))
-            .default_service(get().to(Api::not_found));
-        }
     }
 }
