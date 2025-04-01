@@ -14,8 +14,12 @@ utils.workspace = true
 repository = { path = "../repository", default-features = false }
 
 serde.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+
 validator.workspace = true
 
+chrono.workspace = true
 ulid.workspace = true
 
 tracing.workspace = true 

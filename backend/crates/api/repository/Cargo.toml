@@ -14,11 +14,14 @@ macros.workspace = true
 thiserror.workspace = true
 
 serde.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
 
+chrono.workspace = true
 ulid.workspace = true
 
 tracing.workspace = true
 
-surrealdb = { version = "2.2", optional = true }
+surrealdb = { workspace = true, optional = true }
 surrealdb-migrations = { version = "2.2", optional = true }
 include_dir = { version = "0.7", optional = true }

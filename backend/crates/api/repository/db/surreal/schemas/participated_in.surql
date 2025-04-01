@@ -1,6 +1,6 @@
 DEFINE TABLE OVERWRITE participated_in
     SCHEMAFULL
-    TYPE RELATION FROM participant | mentor TO tour ENFORCED;
+    TYPE RELATION FROM user TO tour ENFORCED;
 
 DEFINE FIELD OVERWRITE score ON participated_in
     TYPE float;

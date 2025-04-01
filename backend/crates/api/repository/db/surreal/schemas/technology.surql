@@ -1,2 +1,5 @@
 DEFINE TABLE OVERWRITE technology
     SCHEMAFULL;
+
+DEFINE FIELD OVERWRITE name ON TABLE technology
+    TYPE string;

@@ -14,9 +14,8 @@ use opentelemetry_sdk::{
     trace::{BatchSpanProcessor, SdkTracerProvider, Tracer},
 };
 use tracing::{Span, Subscriber, level_filters::LevelFilter};
-use tracing_actix_web::Level;
 use tracing_actix_web::{
-    DefaultRootSpanBuilder, RootSpanBuilder, TracingLogger,
+    DefaultRootSpanBuilder, Level, RootSpanBuilder, TracingLogger,
 };
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{

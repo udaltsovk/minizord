@@ -1,6 +1,6 @@
 DEFINE TABLE OVERWRITE reviewed
     SCHEMAFULL
-    TYPE RELATION FROM participant | organizator | mentor TO participant | mentor ENFORCED;
+    TYPE RELATION FROM user TO user ENFORCED;
 
 DEFINE FIELD OVERWRITE review ON reviewed
     TYPE string;

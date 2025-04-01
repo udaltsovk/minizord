@@ -7,7 +7,7 @@
     },
 }: let
   packages = with pkgs; [
-    rust-bin.stable.latest.default
+    rust-bin.nightly.latest.default
 
     cargo-watch
     surrealdb-migrations

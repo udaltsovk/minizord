@@ -10,18 +10,12 @@ members = [
     "crates/api", 
     "crates/mail", 
     "crates/telegram", 
-    "crates/testing/repository",
-    "crates/testing/service", 
-    "crates/testing/handler", 
-    "crates/testing/api", 
-    "crates/testing/mail", 
-    "crates/testing/telegram",
 ]
 
 [workspace.dependencies]
-macros.path = "./crates/macros"
-utils.path = "./crates/utils"
-dto.path = "./crates/api/dto"
+macros = { path = "./crates/macros" }
+utils = { path = "./crates/utils" }
+dto = { path = "./crates/api/dto" }
 
 env-vars-config = "0.3"
 
@@ -31,17 +25,32 @@ thiserror = "2.0"
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+strum = "0.27"
+strum_macros = "0.27"
+
 validator = { version = "0.20", features = ["derive"] }
+
+chrono = { version = "0.4", features = ["serde"] }
 ulid = { version = "1.2", features = ["serde"] }
+
+surrealdb = "2.2"
 
 tonic = "0.12"
 
-utoipa = { version = "5.3", features = ["actix_extras", "ulid", "preserve_order", "preserve_path_order"] }
+utoipa = { version = "5.3", features = [
+    "actix_extras", 
+    "chrono", 
+    "ulid", 
+    "preserve_order", 
+    "preserve_path_order", 
+    "non_strict_integers"
+] }
 
 actix-web = "4.10"
-actix-web-lab = "0.23"
+actix-web-lab = "0.24"
 actix-web-validation = { version = "0.8", features = ["validator"] }
 utoipa-actix-web = "0.1"
+
 [profile.release]
 lto = true
 strip = true

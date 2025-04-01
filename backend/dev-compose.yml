@@ -30,6 +30,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--enable-feature=native-histograms'
+      - '--web.listen-address=:9091'
     network_mode: "host"
   loki:
     container_name: loki

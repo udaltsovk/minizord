@@ -15,7 +15,7 @@ handler_implementation! {
         )]
         #[get("")]
         health() -> HttpResponse {
-            HttpResponse::Ok().into()
+            HttpResponse::Ok().finish()
         }
     }
 }

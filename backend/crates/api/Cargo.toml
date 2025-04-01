@@ -23,9 +23,9 @@ env-vars-config.workspace = true
 dto.workspace = true
 utils.workspace = true
 
-repository.path = "./repository"
-service.path = "./service"
-handler.path = "./handler"
+repository = { path = "./repository" }
+service = { path = "./service" }
+handler = { path = "./handler" }
 
 log.workspace = true
 
@@ -35,11 +35,11 @@ tonic.workspace = true
 
 tracing.workspace = true
 tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json", "registry", "std"] }
-tracing-opentelemetry = "0.29"
-opentelemetry-appender-tracing = "0.28"
-opentelemetry_sdk = { version = "0.28", features = ["rt-tokio", "trace", "logs"] }
-opentelemetry-otlp = { version = "0.28", features = ["grpc-tonic", "trace", "logs"] }
-opentelemetry = {version = "0.28", features = ["trace", "logs"]}
+tracing-opentelemetry = "0.30"
+opentelemetry-appender-tracing = "0.29"
+opentelemetry_sdk = { version = "0.29", features = ["rt-tokio", "trace", "logs"] }
+opentelemetry-otlp = { version = "0.29", features = ["grpc-tonic", "trace", "logs"] }
+opentelemetry = {version = "0.29", features = ["trace", "logs"]}
 # prometheus = "0.13"
 
 utoipa.workspace = true

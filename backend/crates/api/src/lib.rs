@@ -12,32 +12,19 @@ use env_vars_config::env_vars_config;
 use handler::{
     common::{ApiError, ValidationError},
     health::{HealthHandler, implementation::ImplementedHealthHandler},
-    mentor::{MentorHandler, implementation::ImplementedMentorHandler},
-    organizator::{
-        OrganizatorHandler, implementation::ImplementedOrganizatorHandler,
-    },
-    participant::{
-        ParticipantHandler, implementation::ImplementedParticipantHandler,
-    },
+    profile::{ProfileHandler, implementation::ImplementedProfileHandler},
+    user::{UserHandler, implementation::ImplementedUserHandler},
 };
 use repository::{
     common::adapters::surrealdb::SurrealDB,
-    mentor::surreal::SurrealMentorRepository,
-    organizator::surreal::SurrealOrganizatorRepository,
-    participant::surreal::SurrealParticipantRepository,
+    profile::surreal::SurrealProfileRepository,
+    user::surreal::SurrealUserRepository,
 };
 use service::{
-    mentor::{
-        MentorServiceDependency, implementation::ImplementedMentorService,
+    profile::{
+        ProfileServiceDependency, implementation::ImplementedProfileService,
     },
-    organizator::{
-        OrganizatorServiceDependency,
-        implementation::ImplementedOrganizatorService,
-    },
-    participant::{
-        ParticipantServiceDependency,
-        implementation::ImplementedParticipantService,
-    },
+    user::{UserServiceDependency, implementation::ImplementedUserService},
 };
 use utils::{lgtm::LGTM, logger::CustomLogger, openapi::OpenApi, validation};
 use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
@@ -63,9 +50,8 @@ env_vars_config! {
 
 #[derive(Clone)]
 struct AppConfig {
-    organizator_service: OrganizatorServiceDependency,
-    mentor_service: MentorServiceDependency,
-    participant_service: ParticipantServiceDependency,
+    user_service: UserServiceDependency,
+    profile_service: ProfileServiceDependency,
     pub openapi: OpenApiStruct,
 }
 
@@ -77,31 +63,23 @@ impl Api {
     pub fn setup(db: SurrealDB) -> Self {
         let surreal_client = Arc::new(db);
 
-        let organizator_repository =
-            SurrealOrganizatorRepository::new(surreal_client.clone());
-        let mentor_repository =
-            SurrealMentorRepository::new(surreal_client.clone());
-        let participant_repository =
-            SurrealParticipantRepository::new(surreal_client.clone());
+        let user_repository =
+            SurrealUserRepository::new(surreal_client.clone());
+        let profile_repository =
+            SurrealProfileRepository::new(surreal_client.clone());
 
         let password_hasher = PasswordHasher::new();
 
         Self {
             config: AppConfig {
-                organizator_service: ImplementedOrganizatorService::new(
-                    organizator_repository,
+                user_service: ImplementedUserService::new(
+                    user_repository.clone(),
                     config::JWT_SECRET.clone(),
                     password_hasher.clone(),
                 ),
-                mentor_service: ImplementedMentorService::new(
-                    mentor_repository,
-                    config::JWT_SECRET.clone(),
-                    password_hasher.clone(),
-                ),
-                participant_service: ImplementedParticipantService::new(
-                    participant_repository,
-                    config::JWT_SECRET.clone(),
-                    password_hasher.clone(),
+                profile_service: ImplementedProfileService::new(
+                    user_repository.clone(),
+                    profile_repository.clone(),
                 ),
                 openapi: OpenApi::openapi(),
             },
@@ -167,14 +145,11 @@ impl AppConfig {
             .app_data(JsonConfig::default().error_handler(input_err_handler))
             .app_data(Data::new(config::JWT_SECRET.to_string()))
             .configure(ImplementedHealthHandler::routes())
-            .configure(ImplementedOrganizatorHandler::routes(
-                self.organizator_service.clone(),
+            .configure(ImplementedUserHandler::routes(
+                self.user_service.clone(),
             ))
-            .configure(ImplementedMentorHandler::routes(
-                self.mentor_service.clone(),
-            ))
-            .configure(ImplementedParticipantHandler::routes(
-                self.participant_service.clone(),
+            .configure(ImplementedProfileHandler::routes(
+                self.profile_service.clone(),
             ))
             .default_service(get().to(Api::not_found));
         }

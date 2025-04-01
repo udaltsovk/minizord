@@ -32,23 +32,18 @@ use utoipa_swagger_ui::SwaggerUi;
             description = "Endpoints for monitoring"
         ),
         (
-            name = "Organizators",
-            description = "Organizator-related endpoints"
+            name = "Users",
+            description = "User-related endpoints"
         ),
         (
-            name = "Mentors",
-            description = "Mentor-related endpoints"
-        ),
-        (
-            name = "Participants",
-            description = "Participant-related endpoints"
+            name = "Profiles",
+            description = "Profile-related endpoints"
         ),
     ),
     nest(
-        (path = "/health",       api = handler::health::OpenApi,      tags = ["Health"]),
-        (path = "/organizators", api = handler::organizator::OpenApi, tags = ["Organizators"]),
-        (path = "/mentors",      api = handler::mentor::OpenApi,      tags = ["Mentors"]),
-        (path = "/participants", api = handler::participant::OpenApi, tags = ["Participants"]),
+        (path = "/health", api = handler::health::OpenApi, tags = ["Health"]),
+        (path = "/users", api = handler::user::OpenApi, tags = ["Users"]),
+        (path = "/profiles", api = handler::profile::OpenApi, tags = ["Profiles"]),
     ),
     modifiers(&Security),
 )]

@@ -40,7 +40,7 @@ macro_rules! implementation {
                     #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
                     async fn $method $sig -> super::[<$trait_name Result>]<$res> {
-                        let res = $body;
+                        let res: $res = $body;
                         #[allow(unreachable_code)]
                         Ok(res)
                     }

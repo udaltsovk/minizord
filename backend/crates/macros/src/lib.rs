@@ -9,3 +9,5 @@ mod implementation;
 mod repository;
 mod reqresp;
 mod service;
+
+pub use repository::RepositoryId;

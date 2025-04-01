@@ -1,4 +1,3 @@
 pub mod common;
-pub mod mentor;
-pub mod organizator;
-pub mod participant;
+pub mod profile;
+pub mod user;

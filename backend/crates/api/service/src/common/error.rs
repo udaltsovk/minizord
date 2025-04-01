@@ -6,6 +6,9 @@ pub enum ServiceError {
     InvalidPassword,
 
     #[error("{0}")]
+    Forbidden(String),
+
+    #[error("{0}")]
     NotFound(String),
 
     #[error("{0}")]

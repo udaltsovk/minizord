@@ -1,3 +1,10 @@
+pub trait RepositoryId: std::fmt::Display {
+    const TABLE: &str;
+
+    #[cfg(feature = "surrealdb")]
+    fn record_id(&self) -> surrealdb::RecordId;
+}
+
 #[macro_export]
 macro_rules! repository_entity {
     ( $item:item ) => {
@@ -62,12 +69,12 @@ macro_rules! repository {
                 #[serde(transparent)]
                 pub struct [<$name Id>]($id_ty);
             }
-            impl [<$name Id>] {
+            impl macros::RepositoryId for [<$name Id>] {
                 const TABLE: &str = stringify!([<$name:snake>]);
 
                 #[cfg(feature = "surrealdb")]
                 #[tracing::instrument(skip_all, level = "trace")]
-                pub fn record_id(&self) -> surrealdb::RecordId {
+                fn record_id(&self) -> surrealdb::RecordId {
                     self.0.clone()
                 }
             }
@@ -102,17 +109,15 @@ macro_rules! repository {
                 }
             }
 
-            $(
-                macros::repository_entity! {
-                    $(#[$create_meta])*
-                    pub struct [<Create $name>] {
-                        $(
-                            $(#[$create_field_meta])*
-                            pub $create_field: $create_ty,
-                        )*
-                    }
+            macros::repository_entity! {
+                $($(#[$create_meta])*)?
+                pub struct [<Create $name>] {
+                    $($(
+                        $(#[$create_field_meta])*
+                        pub $create_field: $create_ty,
+                    )*)?
                 }
-            )?
+            }
 
             macros::repository_entity! {
                 $(#[$meta])*
@@ -127,19 +132,17 @@ macro_rules! repository {
                 }
             }
 
-            $(
-                macros::repository_entity! {
-                    #[derive(Default)]
-                    $(#[$update_meta])*
-                    pub struct [<$name Update>] {
-                        $(
-                            #[serde(skip_serializing_if = "Option::is_none")]
-                            $(#[$update_field_meta])*
-                            pub $update_field: Option<$update_ty>,
-                        )*
-                    }
+            macros::repository_entity! {
+                #[derive(Default)]
+                $($(#[$update_meta])*)?
+                pub struct [<$name Update>] {
+                    $($(
+                        #[serde(skip_serializing_if = "Option::is_none")]
+                        $(#[$update_field_meta])*
+                        pub $update_field: Option<$update_ty>,
+                    )*)?
                 }
-            )?
+            }
 
             type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
@@ -147,12 +150,131 @@ macro_rules! repository {
             pub trait [<$name Repository>] {
                 async fn save(&self, new: [<Create $name>]) -> [<$name RepositoryResult>]<$name>;
                 async fn find_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
-                #[tracing::instrument(skip_all)]
-                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool> {
-                    Ok(self.find_by_id(id).await?.is_some())
-                }
+                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool>;
                 async fn update_by_id(&self, id: [<$name Id>], update: [<$name Update>]) -> [<$name RepositoryResult>]<Option<$name>>;
                 async fn delete_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
+                $(
+                    $(
+                        $(#[$fn_meta])*
+                        async fn $method $sig -> [<$name RepositoryResult>]<$res>;
+                    )*
+                )?
+            }
+
+            pub type [<$name RepositoryDependency>] = std::sync::Arc<dyn [<$name Repository>] + Send + Sync>;
+        }
+    };
+    (
+        $(#[$meta:meta])*
+        $in:ident -> $name:ident -> $out:ident {
+            $(
+                fields {
+                    $(
+                        $(#[$field_meta:meta])*
+                        $field:ident: $ty:ty
+                    ),* $(,)?
+                }
+            )?
+            $(
+                ,
+                $(#[$create_meta:meta])*
+                create {
+                    $(
+                        $(#[$create_field_meta:meta])*
+                        $create_field:ident: $create_ty:ty
+                    ),* $(,)?
+                }
+            )?
+            $(
+                ,
+                $(#[$update_meta:meta])*
+                update {
+                    $(
+                        $(#[$update_field_meta:meta])*
+                        $update_field:ident: $update_ty:ty
+                    ),* $(,)?
+                }
+            )? $(,)?
+        } $({
+            $(
+                $(#[$fn_meta:meta])*
+                $method:ident $sig:tt -> $res:ty;
+            )*
+        })?
+    ) => {
+        macros::paste::paste! {
+            macros::repository_entity! {
+                $($(#[$create_meta])*)?
+                pub struct [<Create $name>] {
+                    pub r#in: $in,
+                    pub out: $out,
+                    $($(
+                        $(#[$create_field_meta])*
+                        pub $create_field: $create_ty,
+                    )*)?
+                }
+
+            }
+            impl [<Create $name>] {
+                fn get_id_string(&self) -> String {
+                    format!("{}_{}", self.r#in, self.out)
+                }
+
+                #[cfg(feature = "surrealdb")]
+                fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
+                    surrealdb::RecordId::from_table_key(table, self.get_id_string())
+                }
+            }
+
+            macros::repository_entity! {
+                $(#[$meta])*
+                pub struct $name {
+                    pub id: String,
+                    pub r#in: $in,
+                    pub out: $out,
+                    $($(
+                        $(#[$field_meta])*
+                        pub $field: $ty,
+                    )*)?
+                }
+            }
+
+            macros::repository_entity! {
+                #[derive(Default)]
+                $($(#[$update_meta])*)?
+                pub struct [<$name Update>] {
+                    $($(
+                        #[serde(skip_serializing_if = "Option::is_none")]
+                        $(#[$update_field_meta])*
+                        pub $update_field: Option<$update_ty>,
+                    )*)?
+                }
+            }
+
+            type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+
+            #[macros::async_trait::async_trait]
+            pub trait [<$name Repository>] {
+                const TABLE: &str = stringify!([<$name:snake>]);
+
+                fn get_id_string(in_id: &$in, out_id: &$out) -> String {
+                    format!("{in_id}_{out_id}")
+                }
+
+                #[cfg(feature = "surrealdb")]
+                fn get_id(in_id: &$in, out_id: &$out) -> surrealdb::RecordId {
+                    surrealdb::RecordId::from_table_key(Self::TABLE, Self::get_id_string(in_id, out_id))
+                }
+
+                async fn save(&self, new: [<Create $name>]) -> [<$name RepositoryResult>]<$name>;
+                async fn find_all_by_in(&self, r#in: $in, limit: u64, offset: u64) -> [<$name RepositoryResult>]<Vec<$name>>;
+                async fn exists_by_in(&self, r#in: $in) -> [<$name RepositoryResult>]<bool>;
+                async fn find_all_by_out(&self, out: $out, limit: u64, offset: u64) -> [<$name RepositoryResult>]<Vec<$name>>;
+                async fn exists_by_out(&self, out: $out) -> [<$name RepositoryResult>]<bool>;
+                async fn find_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<Option<$name>>;
+                async fn exists_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<bool>;
+                async fn update_by_in_and_out(&self, r#in: $in, out: $out, update: [<$name Update>]) -> [<$name RepositoryResult>]<Option<$name>>;
+                async fn delete_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<Option<$name>>;
                 $(
                     $(
                         $(#[$fn_meta])*
