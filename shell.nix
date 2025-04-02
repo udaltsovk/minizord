@@ -9,7 +9,7 @@
   packages = with pkgs; [
     rust-bin.nightly.latest.default
 
-    cargo-watch
+    watchexec
     surrealdb-migrations
     protobuf
 
