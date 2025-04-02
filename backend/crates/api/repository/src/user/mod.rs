@@ -1,4 +1,4 @@
-use macros::{RepositoryId, repository};
+use macros::{RepositoryId, crud_repository};
 use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 use ulid::Ulid;
@@ -11,12 +11,15 @@ pub mod surreal;
 #[derive(Deserialize, Serialize, Display, Clone, Copy, PartialEq, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum UserRole {
+    #[strum(serialize = "organizator")]
     Organizator,
+    #[strum(serialize = "mentor")]
     Mentor,
+    #[strum(serialize = "participant")]
     Participant,
 }
 
-repository! {
+crud_repository! {
     User {
         id: Ulid,
         fields {

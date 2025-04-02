@@ -1,47 +1,34 @@
-use macros::{RepositoryId, repository};
+use macros::{RepositoryId, urd_repository};
 use ulid::Ulid;
-
-use crate::user::UserId;
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+urd_repository! {
     Profile {
         id: Ulid,
         fields {
-            has_avatar: bool,
             name: String,
             surname: String,
             city: String,
             bio: String,
             portfolio_urls: Vec<String>,
         },
-        create {
-            user: UserId,
-            has_avatar: bool,
+        upsert {
             name: String,
             surname: String,
             city: String,
             bio: String,
             portfolio_urls: Vec<String>,
         },
-        update {
-            name: String,
-            surname: String,
-            city: String,
-            bio: String,
-            portfolio_urls: Vec<String>,
-        }
     }
 }
 
-impl CreateProfile {
+impl UpsertProfile {
     #[tracing::instrument(skip_all, level = "trace")]
-    fn into_entity(self) -> Profile {
+    fn into_entity(self, id: ProfileId) -> Profile {
         Profile {
-            id: ProfileId::from(<UserId as Into<Ulid>>::into(self.user)),
-            has_avatar: self.has_avatar,
+            id,
             name: self.name,
             surname: self.surname,
             city: self.city,

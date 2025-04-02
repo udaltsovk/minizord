@@ -1,11 +1,11 @@
 use actix_web::{
-    HttpResponse, delete, get, patch, post,
+    HttpResponse, delete, get, put,
     web::{Data, Json, ReqData},
 };
 use actix_web_lab::extract::Path;
 use actix_web_validation::Validated;
 use dto::{
-    profile::{CreateProfile, Profile, ProfileUpdate},
+    profile::{Profile, UpsertProfile},
     user::User,
 };
 use macros::handler_implementation;
@@ -21,27 +21,27 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "create_profile",
+            operation_id = "upsert_current_profile",
             request_body(
                 description = "",
-                content = CreateProfile
+                content = UpsertProfile
             ),
             responses(
-                (status = 201, description = "", body = Profile),
+                (status = 200, description = "", body = Profile),
                 (status = 409, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
-        #[post("/me")]
-        create(
+        #[put("/me")]
+        upsert_current(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
-            Validated(Json(body)): Validated<Json<CreateProfile>>
-        ) -> HttpResponse {
+            Validated(Json(body)): Validated<Json<UpsertProfile>>
+        ) -> Json<Profile> {
             let resp: Profile = profile_service
-                .create(user.id, body)
+                .upsert_by_id(user.id, body)
                 .await?;
-            HttpResponse::Created().json(resp)
+            Json(resp)
         }
 
         ///
@@ -68,40 +68,6 @@ handler_implementation! {
         ) -> Json<Profile> {
             let res = profile_service
                 .get_by_id(user.id)
-                .await?;
-            Json(res)
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "update_current_profile",
-            request_body(
-                description = "",
-                content = ProfileUpdate
-            ),
-            security(
-                ("participant" = []),
-                ("mentor" = []),
-                ("organizator" = []),
-            ),
-            responses(
-                (status = 200, description = "", body = Profile),
-                (status = 409, description = "", body = HandlerError),
-                (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
-            ),
-        )]
-        #[patch("/me")]
-        update_current(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-            Validated(Json(body)): Validated<Json<ProfileUpdate>>,
-        ) -> Json<Profile> {
-            let res = profile_service
-                .update_by_id(user.id, body)
                 .await?;
             Json(res)
         }
@@ -138,6 +104,43 @@ handler_implementation! {
         ///
         ///
         #[openapi(
+            operation_id = "upsert_profile_by_id",
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
+            request_body(
+                description = "",
+                content = UpsertProfile
+            ),
+            security(
+                ("organizator" = []),
+            ),
+            responses(
+                (status = 200, description = "", body = Profile),
+                (status = 409, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 400, description = "", body = ValidationError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+        )]
+        #[put("/{profile_id}")]
+        upsert_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            Path(profile_id): Path<Ulid>,
+            Validated(Json(body)): Validated<Json<UpsertProfile>>,
+        ) -> Json<Profile> {
+            let res = profile_service
+                .upsert_by_id(profile_id, body)
+                .await?;
+            Json(res)
+        }
+
+
+        ///
+        ///
+        ///
+        #[openapi(
             operation_id = "get_profile_by_id",
             params(
                 ("profile_id" = Ulid, description = "")
@@ -161,42 +164,6 @@ handler_implementation! {
         ) -> Json<Profile> {
             let res = profile_service
                 .get_by_id(profile_id)
-                .await?;
-            Json(res)
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "update_profile_by_id",
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
-            request_body(
-                description = "",
-                content = ProfileUpdate
-            ),
-            security(
-                ("organizator" = []),
-            ),
-            responses(
-                (status = 200, description = "", body = Profile),
-                (status = 409, description = "", body = HandlerError),
-                (status = 404, description = "", body = HandlerError),
-                (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
-            ),
-        )]
-        #[patch("/{profile_id}")]
-        update_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            Path(profile_id): Path<Ulid>,
-            Validated(Json(body)): Validated<Json<ProfileUpdate>>,
-        ) -> Json<Profile> {
-            let res = profile_service
-                .update_by_id(profile_id, body)
                 .await?;
             Json(res)
         }

@@ -768,25 +768,25 @@
           }
         ]
       },
-      "post": {
+      "put": {
         "tags": [
           "Profiles"
         ],
         "description": "\n\n\n\n",
-        "operationId": "create_profile",
+        "operationId": "upsert_current_profile",
         "requestBody": {
           "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateProfile"
+                "$ref": "#/components/schemas/UpsertProfile"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "",
             "content": {
               "application/json": {
@@ -849,87 +849,6 @@
             }
           },
           "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "participant": []
-          },
-          {
-            "mentor": []
-          },
-          {
-            "organizator": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "update_current_profile",
-        "requestBody": {
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProfileUpdate"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Profile"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "409": {
             "description": "",
             "content": {
               "application/json": {
@@ -1026,71 +945,12 @@
           }
         ]
       },
-      "delete": {
+      "put": {
         "tags": [
           "Profiles"
         ],
         "description": "\n\n\n\n",
-        "operationId": "delete_profile_by_id",
-        "parameters": [
-          {
-            "name": "profile_id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "ulid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "organizator": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "update_profile_by_id",
+        "operationId": "upsert_profile_by_id",
         "parameters": [
           {
             "name": "profile_id",
@@ -1108,7 +968,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProfileUpdate"
+                "$ref": "#/components/schemas/UpsertProfile"
               }
             }
           },
@@ -1181,6 +1041,65 @@
             "organizator": []
           }
         ]
+      },
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_profile_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
       }
     }
   },
@@ -1188,17 +1107,6 @@
     "schemas": {
       "ApiError": {
         "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "InvalidInput"
-            ],
-            "properties": {
-              "InvalidInput": {
-                "type": "string"
-              }
-            }
-          },
           {
             "type": "object",
             "required": [
@@ -1279,50 +1187,6 @@
           }
         ],
         "description": ""
-      },
-      "CreateProfile": {
-        "type": "object",
-        "description": "",
-        "required": [
-          "name",
-          "surname",
-          "city",
-          "bio",
-          "portfolio_urls"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "",
-            "maxLength": 128,
-            "minLength": 1
-          },
-          "surname": {
-            "type": "string",
-            "description": "",
-            "maxLength": 128,
-            "minLength": 1
-          },
-          "city": {
-            "type": "string",
-            "maxLength": 128,
-            "minLength": 1
-          },
-          "bio": {
-            "type": "string",
-            "description": "",
-            "maxLength": 4096,
-            "minLength": 0
-          },
-          "portfolio_urls": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 0
-            },
-            "description": ""
-          }
-        }
       },
       "CreateUser": {
         "type": "object",
@@ -1464,50 +1328,42 @@
           }
         }
       },
-      "ProfileUpdate": {
+      "UpsertProfile": {
         "type": "object",
         "description": "",
+        "required": [
+          "name",
+          "surname",
+          "city",
+          "bio",
+          "portfolio_urls"
+        ],
         "properties": {
           "name": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "",
             "maxLength": 128,
             "minLength": 1
           },
           "surname": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "",
             "maxLength": 128,
             "minLength": 1
           },
           "city": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "maxLength": 128,
             "minLength": 1
           },
           "bio": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "",
             "maxLength": 4096,
             "minLength": 0
           },
           "portfolio_urls": {
-            "type": [
-              "array",
-              "null"
-            ],
+            "type": "array",
             "items": {
               "type": "string",
               "minLength": 0

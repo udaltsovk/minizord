@@ -1,8 +1,6 @@
 DEFINE TABLE OVERWRITE profile
     SCHEMAFULL;
 
-DEFINE FIELD OVERWRITE has_avatar ON profile
-    TYPE bool;
 DEFINE FIELD OVERWRITE bio ON profile
     TYPE string;
 DEFINE FIELD OVERWRITE name ON profile

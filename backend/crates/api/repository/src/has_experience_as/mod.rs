@@ -1,11 +1,11 @@
-use macros::repository;
+use macros::crud_repository;
 
 use crate::{specialization::SpecializationId, user::UserId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+crud_repository! {
     UserId -> HasExperienceAs -> SpecializationId { }
 }
 

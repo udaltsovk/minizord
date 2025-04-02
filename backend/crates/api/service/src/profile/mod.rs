@@ -1,4 +1,4 @@
-use dto::profile::{CreateProfile, Profile, ProfileUpdate};
+use dto::profile::{Profile, UpsertProfile};
 use macros::service;
 use ulid::Ulid;
 
@@ -6,10 +6,9 @@ pub mod implementation;
 
 service! {
     Profile {
-        create(&self, id: Ulid, new: CreateProfile) -> Profile;
+        upsert_by_id(&self, id: Ulid, object: UpsertProfile) -> Profile;
         find_by_id(&self, id: Ulid) -> Option<Profile>;
         get_by_id(&self, id: Ulid) -> Profile;
-        update_by_id(&self, id: Ulid, update: ProfileUpdate) -> Profile;
         delete_by_id(&self, id: Ulid) -> ();
     }
 }

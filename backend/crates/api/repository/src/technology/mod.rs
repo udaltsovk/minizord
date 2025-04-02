@@ -1,10 +1,10 @@
-use macros::{RepositoryId, repository};
+use macros::{RepositoryId, crud_repository};
 use ulid::Ulid;
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+crud_repository! {
     Technology {
         id: Ulid,
         fields {

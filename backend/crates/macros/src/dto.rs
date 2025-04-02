@@ -63,6 +63,16 @@ macro_rules! dto {
                 }
             )?
             $(,
+                upsert
+                $(#[$upsert_meta:meta])*
+                {
+                    $(
+                        $(#[$upsert_field_meta:meta])*
+                        $upsert_field:ident: $upsert_ty:ty
+                    ),* $(,)?
+                }
+            )?
+            $(,
                 update
                 $(#[$update_meta:meta])*
                 {
@@ -81,6 +91,15 @@ macro_rules! dto {
                     $(
                         $(#[$create_field_meta])*
                         pub $create_field: $create_ty,
+                    )*
+                }
+            })?
+            $(macros::derive_dto! {
+                $(#[$upsert_meta])*
+                pub struct [<Upsert $name>] {
+                    $(
+                        $(#[$upsert_field_meta])*
+                        pub $upsert_field: $upsert_ty,
                     )*
                 }
             })?

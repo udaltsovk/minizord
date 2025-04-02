@@ -1,11 +1,11 @@
-use macros::repository;
+use macros::crud_repository;
 
 use crate::{team::TeamId, technology::TechnologyId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+crud_repository! {
     TeamId -> Uses -> TechnologyId { }
 }
 

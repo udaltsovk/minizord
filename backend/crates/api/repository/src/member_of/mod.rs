@@ -1,11 +1,11 @@
-use macros::repository;
+use macros::crud_repository;
 
 use crate::{specialization::SpecializationId, team::TeamId, user::UserId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+crud_repository! {
     UserId -> MemberOf -> TeamId {
         fields {
             accepted: bool,

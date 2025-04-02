@@ -11,10 +11,6 @@ pub mod validation;
 #[derive(thiserror::Error, IntoResponses, ToSchema, Debug)]
 #[schema(as = ApiError)]
 pub enum HandlerError {
-    #[response(status = 400)]
-    #[error("Invalid input: {0}")]
-    InvalidInput(String),
-
     #[response(status = "default")]
     #[error("Authentication error: {0}")]
     Authentication(
@@ -62,22 +58,11 @@ impl From<ServiceError> for HandlerError {
         }
     }
 }
-
-#[derive(Serialize, Deserialize, ToSchema, Debug)]
-///
-pub struct ApiError {
-    ///
-    pub error: String,
-    ///
-    pub description: String,
-}
-
 impl HandlerError {
     #[tracing::instrument(skip_all, level = "trace")]
     pub fn as_api_error(&self) -> ApiError {
         ApiError {
             error: match self {
-                Self::InvalidInput(..) => "invalid_input",
                 Self::Authentication(err) => err.error_name(),
                 Self::Unauthorized(..) => "unauthorized",
                 Self::Forbidden | Self::ForbiddenWithMsg(..) => "access_denied",
@@ -90,13 +75,11 @@ impl HandlerError {
         }
     }
 }
-
 impl ResponseError for HandlerError {
     #[tracing::instrument(skip_all, level = "trace")]
     fn status_code(&self) -> StatusCode {
         use StatusCode as SC;
         match self {
-            Self::InvalidInput(..) => SC::BAD_REQUEST,
             Self::Authentication(err) => err.status_code(),
             Self::Unauthorized(..) => SC::UNAUTHORIZED,
             Self::Forbidden | Self::ForbiddenWithMsg(..) => SC::FORBIDDEN,
@@ -110,4 +93,13 @@ impl ResponseError for HandlerError {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code()).json(self.as_api_error())
     }
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Debug)]
+///
+pub struct ApiError {
+    ///
+    pub error: String,
+    ///
+    pub description: String,
 }

@@ -3,7 +3,7 @@ use std::sync::Arc;
 use macros::{RepositoryId, implementation};
 use ulid::Ulid;
 
-use super::{CreateProfile, Profile, ProfileId, ProfileUpdate};
+use super::{Profile, ProfileId, UpsertProfile};
 use crate::common::adapters::surrealdb::SurrealDB;
 
 impl From<ProfileId> for Ulid {
@@ -17,13 +17,17 @@ implementation! {
     ProfileRepository {
         db: Arc<SurrealDB>
     } as Surreal {
-        save(&self, new: CreateProfile) -> Profile {
-            let entity = new.into_entity();
-            self.db.0
-                .create(entity.id.record_id())
-                .content(entity)
+        upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
+            let entity = object.into_entity(id);
+            let result: Option<Profile> = self.db.0
+                .query(r#"
+                    UPSERT ONLY type::record($id) CONTENT <object>$object
+                "#)
+                .bind(("id", entity.id.clone()))
+                .bind(("object", entity))
                 .await?
-                .unwrap()
+                .take(0)?;
+            result.unwrap()
         }
 
         find_by_id(&self, id: ProfileId) -> Option<Profile> {
@@ -34,13 +38,6 @@ implementation! {
 
         exists_by_id(&self, id: ProfileId) -> bool {
             self.find_by_id(id).await?.is_some()
-        }
-
-        update_by_id(&self, id: ProfileId, update: ProfileUpdate) -> Option<Profile> {
-            self.db.0
-                .update(id.record_id())
-                .merge(update)
-                .await?
         }
 
         delete_by_id(&self, id: ProfileId) -> Option<Profile> {

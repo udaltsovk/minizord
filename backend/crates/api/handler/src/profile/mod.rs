@@ -6,7 +6,7 @@ use actix_web::{
 use actix_web_lab::extract::Path;
 use actix_web_validation::Validated;
 use dto::{
-    profile::{CreateProfile, Profile, ProfileUpdate},
+    profile::{Profile, UpsertProfile},
     user::User,
 };
 use macros::handler;
@@ -27,34 +27,27 @@ handler! {
                 cfg.app_data(Data::new(profile_service))
                     .service(scope("/profiles")
                         .wrap(from_fn(auth_middleware))
-                        .service(Self::create())
+                        .service(Self::upsert_current())
                         .service(Self::get_current())
-                        .service(Self::update_current())
                         .service(Self::delete_current())
                         .service(Self::get_by_id())
                         .service(scope("")
                             .wrap(from_fn(organizator_auth_middleware))
-                            .service(Self::update_by_id())
+                            .service(Self::upsert_by_id())
                             .service(Self::delete_by_id())
                     ));
             }
         }
 
-        create(
+        upsert_current(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
-            body: Validated<Json<CreateProfile>>,
-        ) -> HttpResponse;
+            body: Validated<Json<UpsertProfile>>,
+        ) -> Json<Profile>;
 
         get_current(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
-        ) -> Json<Profile>;
-
-        update_current(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-            body: Validated<Json<ProfileUpdate>>,
         ) -> Json<Profile>;
 
         delete_current(
@@ -62,15 +55,15 @@ handler! {
             user: ReqData<User>,
         ) -> HttpResponse;
 
+        upsert_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            profile_id: Path<Ulid>,
+            body: Validated<Json<UpsertProfile>>,
+        ) -> Json<Profile>;
+
         get_by_id(
             profile_service: Data<ProfileServiceDependency>,
             profile_id: Path<Ulid>,
-        ) -> Json<Profile>;
-
-        update_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
-            body: Validated<Json<ProfileUpdate>>,
         ) -> Json<Profile>;
 
         delete_by_id(

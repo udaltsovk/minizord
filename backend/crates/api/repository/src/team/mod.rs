@@ -1,4 +1,4 @@
-use macros::{RepositoryId, repository};
+use macros::{RepositoryId, crud_repository};
 use ulid::Ulid;
 
 use crate::user::UserId;
@@ -6,7 +6,7 @@ use crate::user::UserId;
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+crud_repository! {
     Team {
         id: Ulid,
         fields {

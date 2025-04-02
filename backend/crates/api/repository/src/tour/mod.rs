@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use macros::{RepositoryId, repository};
+use macros::{RepositoryId, crud_repository};
 use ulid::Ulid;
 
 use crate::specialization::SpecializationId;
@@ -7,7 +7,7 @@ use crate::specialization::SpecializationId;
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-repository! {
+crud_repository! {
     Tour {
         id: Ulid,
         fields {
