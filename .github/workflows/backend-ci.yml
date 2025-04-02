@@ -15,21 +15,75 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
+  format:
+    name: Format code using Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Set up Rust
-        run: |
-          rustup update nightly --no-self-update
-          rustup default nightly
-      - name: Install cargo-audit
-        run: cargo install cargo-audit
-      - name: Build
-        run: cd ./backend && cargo build --all
-      - name: Test
-        run: cd ./backend && cargo test --all
-      - name: Clippy
-        run: cd ./backend && cargo clippy -- -D warnings
-      - name: Audit
-        run: cd ./backend && cargo audit
+    - uses: actions/checkout@master
+    - name: Install Rust
+      run: |
+        rustup update nightly --no-self-update
+        rustup default nightly
+        rustup component add rustfmt
+    - name: Run Rustfmt
+      run: |
+        cd ./backend 
+        cargo fmt --all -- --check
+  lint:
+    name: Lint using Clippy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Install Rust
+      run: |
+        rustup update nightly --no-self-update
+        rustup default nightly
+        rustup component add clippy
+    - name: Run Clippy
+      run: |
+        cd ./backend
+        cargo clippy --all -- -D warnings
+  audit:
+    name: Audit using cargo-audit
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Install Rust
+      run: |
+        rustup update nightly --no-self-update
+        rustup default nightly
+    - name: Install cargo-audit
+      run: cargo install cargo-audit
+    - name: Run cargo-audit
+      run: |
+        cd ./backend 
+        cargo audit
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        build: [stable, nightly, macos, win64]
+        include:
+          - build: stable
+            os: ubuntu-latest
+            rust: stable
+          - build: nightly
+            os: ubuntu-latest
+            rust: nightly
+          - build: macos
+            os: macos-latest
+            rust: stable
+          - build: win64
+            os: windows-latest
+            rust: stable-x86_64-pc-windows-msvc
+    steps:
+    - uses: actions/checkout@master
+    - name: Install Rust
+      run: |
+        rustup update ${{ matrix.rust }} --no-self-update
+        rustup default ${{ matrix.rust }}
+    - name: Run tests
+      run: |
+        cd ./backend 
+        cargo test --all
