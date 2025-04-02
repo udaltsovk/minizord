@@ -18,8 +18,11 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - name: Set up Rust
-        uses: actions/checkout@master
+        run: |
+          rustup update nightly --no-self-update
+          rustup default nightly
       - name: Install cargo-audit
         run: cargo install cargo-audit
       - name: Build
