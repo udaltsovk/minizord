@@ -22,10 +22,10 @@ jobs:
       - name: Install cargo-audit
         run: cargo install cargo-audit
       - name: Build
-        run: cd ./backend && cargo build --all --verbose
+        run: cd ./backend && cargo build --all
       - name: Test
-        run: cd ./backend && cargo test --all --verbose
+        run: cd ./backend && cargo test --all
       - name: Clippy
-        run: cd ./backend && cargo clippy --verbose -- -D warnings
+        run: cd ./backend && cargo clippy -- -D warnings
       - name: Audit
         run: cd ./backend && cargo audit
