@@ -21,7 +21,8 @@ implementation! {
             let entity = object.into_entity(id);
             let result: Option<Profile> = self.db.0
                 .query(r#"
-                    UPSERT ONLY type::record($id) CONTENT <object>$object
+                    UPSERT ONLY type::record($id) 
+                        CONTENT <object>$object
                 "#)
                 .bind(("id", entity.id.clone()))
                 .bind(("object", entity))

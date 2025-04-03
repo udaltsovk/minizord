@@ -1,10 +1,10 @@
-use macros::{RepositoryId, urd_repository};
+use macros::{RepositoryId, entity, urd_repository};
 use ulid::Ulid;
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-urd_repository! {
+entity! {
     Profile {
         id: Ulid,
         fields {
@@ -22,6 +22,10 @@ urd_repository! {
             portfolio_urls: Vec<String>,
         },
     }
+}
+
+urd_repository! {
+    Profile
 }
 
 impl UpsertProfile {

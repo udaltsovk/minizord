@@ -1,10 +1,10 @@
-use macros::{RepositoryId, crud_repository};
+use macros::{RepositoryId, crud_repository, entity};
 use ulid::Ulid;
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     Technology {
         id: Ulid,
         fields {
@@ -16,7 +16,11 @@ crud_repository! {
         update {
             name: String,
         }
-    } {
+    }
+}
+
+crud_repository! {
+    Technology {
         find_by_name(&self, name: &str) -> Option<Technology>;
         exists_by_name(&self, name: &str) -> bool;
     }

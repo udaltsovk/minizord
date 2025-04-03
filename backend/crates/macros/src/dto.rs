@@ -8,9 +8,9 @@ macro_rules! derive_dto {
             serde::Deserialize,
             utoipa::ToSchema,
             validator::Validate,
-            Debug,
             Clone,
             PartialEq,
+            Debug,
         )]
         $item
     };

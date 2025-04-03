@@ -1,4 +1,4 @@
-use macros::{RepositoryId, crud_repository};
+use macros::{RepositoryId, crud_repository, entity};
 use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 use ulid::Ulid;
@@ -19,7 +19,7 @@ pub enum UserRole {
     Participant,
 }
 
-crud_repository! {
+entity! {
     User {
         id: Ulid,
         fields {
@@ -42,7 +42,11 @@ crud_repository! {
             role: UserRole,
             profile: Option<ProfileId>,
         }
-    } {
+    }
+}
+
+crud_repository! {
+    User {
         find_by_email(&self, email: &str) -> Option<User>;
         exists_by_email(&self, email: &str) -> bool;
         find_by_username(&self, username: &str) -> Option<User>;

@@ -1,12 +1,16 @@
-use macros::crud_repository;
+use macros::{crud_repository, entity};
 
 use crate::{team::TeamId, technology::TechnologyId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     TeamId -> Uses -> TechnologyId { }
+}
+
+crud_repository! {
+    TeamId -> Uses -> TechnologyId
 }
 
 impl CreateUses {

@@ -1,21 +1,33 @@
-use macros::crud_repository;
+use macros::{entity, urd_repository};
 
 use crate::{specialization::SpecializationId, user::UserId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    UserId -> HasExperienceAs -> SpecializationId { }
+entity! {
+    UserId -> HasExperienceAs -> SpecializationId {
+        fields {
+            level: u16,
+        },
+        upsert {
+            level: u16,
+        }
+    }
 }
 
-impl CreateHasExperienceAs {
+urd_repository! {
+    UserId -> HasExperienceAs -> SpecializationId
+}
+
+impl UpsertHasExperienceAs {
     #[tracing::instrument(skip_all, level = "trace")]
     fn into_entity(self) -> HasExperienceAs {
         HasExperienceAs {
             id: self.get_id_string(),
             r#in: self.r#in,
             out: self.out,
+            level: self.level,
         }
     }
 }

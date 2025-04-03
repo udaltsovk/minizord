@@ -1,11 +1,11 @@
-use macros::crud_repository;
+use macros::{crud_repository, entity};
 
 use crate::user::UserId;
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     UserId -> Reviewed -> UserId {
         fields {
             score: u16,
@@ -20,6 +20,10 @@ crud_repository! {
             review: String,
         }
     }
+}
+
+crud_repository! {
+    UserId -> Reviewed -> UserId
 }
 
 impl CreateReviewed {

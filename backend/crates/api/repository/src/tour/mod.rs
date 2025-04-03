@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use macros::{RepositoryId, crud_repository};
+use macros::{RepositoryId, crud_repository, entity};
 use ulid::Ulid;
 
 use crate::specialization::SpecializationId;
@@ -7,7 +7,7 @@ use crate::specialization::SpecializationId;
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     Tour {
         id: Ulid,
         fields {
@@ -30,7 +30,11 @@ crud_repository! {
             ends_at: DateTime<Utc>,
             required_specializations: Vec<SpecializationId>,
         }
-    } {
+    }
+}
+
+crud_repository! {
+    Tour {
         find_by_name(&self, name: &str) -> Option<Tour>;
         exists_by_name(&self, name: &str) -> bool;
     }

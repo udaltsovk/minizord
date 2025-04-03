@@ -1,4 +1,4 @@
-use macros::crud_repository;
+use macros::{crud_repository, entity};
 
 use crate::{
     specialization::SpecializationId, technology::TechnologyId, tour::TourId,
@@ -8,7 +8,7 @@ use crate::{
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     UserId -> ParticipatedIn -> TourId {
         fields {
             score: u16,
@@ -26,6 +26,10 @@ crud_repository! {
             technologies: Vec<TechnologyId>,
         }
     }
+}
+
+crud_repository! {
+    UserId -> ParticipatedIn -> TourId
 }
 
 impl CreateParticipatedIn {

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use macros::implementation;
 
-use super::{CreateHasExperienceAs, HasExperienceAs, HasExperienceAsUpdate};
+use super::{HasExperienceAs, UpsertHasExperienceAs};
 use crate::{
     common::adapters::surrealdb::SurrealDB, specialization::SpecializationId,
     user::UserId,
@@ -12,12 +12,21 @@ implementation! {
     HasExperienceAsRepository {
         db: Arc<SurrealDB>
     } as Surreal {
-        save(&self, new: CreateHasExperienceAs) -> HasExperienceAs {
-            self.db.0
-                .create(new.get_id(Self::TABLE))
-                .content(new.into_entity())
+        upsert_by_in_and_out(&self, r#in: UserId, out: SpecializationId, object: UpsertHasExperienceAs) -> HasExperienceAs {
+            let result: Option<HasExperienceAs> = self.db.0
+                .query(
+                    r#"
+                        RELATE ONLY (type::record($in))->(type::record($id))->(type::record($out))
+                            CONTENT <object>$object
+                    "#
+                )
+                .bind(("in", r#in))
+                .bind(("id", object.get_id(Self::TABLE)))
+                .bind(("out", out))
+                .bind(("object", object))
                 .await?
-                .unwrap()
+                .take(0)?;
+            result.unwrap()
         }
 
         find_all_by_in(&self, r#in: UserId, limit: u64, offset: u64) -> Vec<HasExperienceAs> {
@@ -72,13 +81,6 @@ implementation! {
 
         exists_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
-        }
-
-        update_by_in_and_out(&self, r#in: UserId, out: SpecializationId, update: HasExperienceAsUpdate) -> Option<HasExperienceAs> {
-            self.db.0
-                .update(Self::get_id(&r#in, &out))
-                .merge(update)
-                .await?
         }
 
         delete_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> Option<HasExperienceAs> {

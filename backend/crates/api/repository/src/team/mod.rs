@@ -1,4 +1,4 @@
-use macros::{RepositoryId, crud_repository};
+use macros::{RepositoryId, crud_repository, entity};
 use ulid::Ulid;
 
 use crate::user::UserId;
@@ -6,7 +6,7 @@ use crate::user::UserId;
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     Team {
         id: Ulid,
         fields {
@@ -22,7 +22,11 @@ crud_repository! {
         update {
             name: String,
         }
-    } {
+    }
+}
+
+crud_repository! {
+    Team {
         find_by_tour_and_name(&self, tour: Ulid, name: &str) -> Option<Team>;
         exists_by_tour_and_name(&self, tour: Ulid, name: &str) -> bool;
         find_by_tour_and_lead(&self, tour: Ulid, lead: UserId) -> Option<Team>;

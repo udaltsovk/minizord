@@ -1,11 +1,11 @@
-use macros::crud_repository;
+use macros::{crud_repository, entity};
 
 use crate::{specialization::SpecializationId, team::TeamId, user::UserId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     UserId -> MemberOf -> TeamId {
         fields {
             accepted: bool,
@@ -19,6 +19,10 @@ crud_repository! {
             specialization: SpecializationId,
         }
     }
+}
+
+crud_repository! {
+    UserId -> MemberOf -> TeamId
 }
 
 impl CreateMemberOf {

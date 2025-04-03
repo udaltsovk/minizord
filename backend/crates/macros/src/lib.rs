@@ -4,6 +4,7 @@ pub extern crate stringcase;
 
 mod auth;
 mod dto;
+mod entity;
 mod handler;
 mod implementation;
 mod repository;

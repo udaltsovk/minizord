@@ -1,11 +1,11 @@
-use macros::crud_repository;
+use macros::{crud_repository, entity};
 
 use crate::{team::TeamId, user::UserId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
+entity! {
     UserId -> AppliedToJoin -> TeamId {
         fields {
             application: String,
@@ -17,6 +17,10 @@ crud_repository! {
             application: String,
         }
     }
+}
+
+crud_repository! {
+    UserId -> AppliedToJoin -> TeamId
 }
 
 impl CreateAppliedToJoin {
