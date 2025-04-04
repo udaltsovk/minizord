@@ -1,15 +1,14 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
-use ulid::Ulid;
 
 use super::{Profile, ProfileId, UpsertProfile};
 use crate::common::adapters::surrealdb::SurrealDB;
 
-impl From<ProfileId> for Ulid {
+impl From<ProfileId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(id: ProfileId) -> Self {
-        Self::from_string(&id.to_string()).unwrap()
+        Self::from_string(&id.to_string()).expect("Got invalid ProfileId")
     }
 }
 
@@ -28,7 +27,7 @@ implementation! {
                 .bind(("object", entity))
                 .await?
                 .take(0)?;
-            result.unwrap()
+            result.expect("Failed to save Profile object!")
         }
 
         find_by_id(&self, id: ProfileId) -> Option<Profile> {

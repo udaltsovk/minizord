@@ -1,17 +1,9 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
-use ulid::Ulid;
 
 use super::{CreateTechnology, Technology, TechnologyId, TechnologyUpdate};
 use crate::common::adapters::surrealdb::SurrealDB;
-
-impl From<TechnologyId> for Ulid {
-    #[tracing::instrument(skip_all, level = "trace")]
-    fn from(id: TechnologyId) -> Self {
-        Self::from_string(&id.to_string()).unwrap()
-    }
-}
 
 implementation! {
     TechnologyRepository {
@@ -23,7 +15,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .unwrap()
+                .expect("Failed to save Technology object!")
         }
 
         find_by_id(&self, id: TechnologyId) -> Option<Technology> {

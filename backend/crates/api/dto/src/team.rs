@@ -52,8 +52,8 @@ impl From<TeamEntity> for Team {
         Self {
             id: entity.id.into(),
             name: entity.name,
-            lead: entity.lead,
-            tour: entity.tour,
+            lead: entity.lead.into(),
+            tour: entity.tour.into(),
         }
     }
 }

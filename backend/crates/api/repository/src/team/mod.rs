@@ -1,7 +1,7 @@
 use macros::{RepositoryId, crud_repository, entity};
 use ulid::Ulid;
 
-use crate::user::UserId;
+use crate::{tour::TourId, user::UserId};
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
@@ -11,13 +11,13 @@ entity! {
         id: Ulid,
         fields {
             name: String,
-            lead: Ulid,
-            tour: Ulid,
+            lead: UserId,
+            tour: TourId,
         },
         create {
             name: String,
-            lead: Ulid,
-            tour: Ulid,
+            lead: UserId,
+            tour: TourId,
         },
         update {
             name: String,
@@ -27,12 +27,12 @@ entity! {
 
 crud_repository! {
     Team {
-        find_by_tour_and_name(&self, tour: Ulid, name: &str) -> Option<Team>;
-        exists_by_tour_and_name(&self, tour: Ulid, name: &str) -> bool;
-        find_by_tour_and_lead(&self, tour: Ulid, lead: UserId) -> Option<Team>;
-        exists_by_tour_and_lead(&self, tour: Ulid, lead: UserId) -> bool;
-        find_all_by_tour(&self, tour: Ulid, limit: u64, offset: u64) -> Vec<Team>;
-        exists_by_tour(&self, tour: Ulid) -> bool;
+        find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team>;
+        exists_by_tour_and_name(&self, tour: TourId, name: &str) -> bool;
+        find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team>;
+        exists_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> bool;
+        find_all_by_tour(&self, tour: TourId, limit: u64, offset: u64) -> Vec<Team>;
+        exists_by_tour(&self, tour: TourId) -> bool;
     }
 }
 

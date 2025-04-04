@@ -100,11 +100,13 @@ implementation! {
                 ))?
             }
             self.get_by_id(id).await?;
-            if update.username.is_some()
-                && self.user_repository
-                    .exists_by_username(update.username.as_ref().unwrap())
-                    .await? {
-                Err(ServiceError::AlreadyExists("User with provided username".into()))?
+            if let Some(username) = update.username.as_ref() {
+                if self.user_repository
+                    .exists_by_username(username)
+                    .await?
+                {
+                    Err(ServiceError::AlreadyExists("User with provided username".into()))?
+                }
             }
 
             self.user_repository
@@ -119,7 +121,7 @@ implementation! {
                     }
                 )
                 .await?
-                .unwrap()
+                .expect("Got unchecked self ID")
                 .into()
         }
 
@@ -159,7 +161,7 @@ implementation! {
                     }
                 )
                 .await?
-                .unwrap();
+                .expect("Got unchecked self ID");
 
             let token = generate_jwt(&user, &self.secret);
 

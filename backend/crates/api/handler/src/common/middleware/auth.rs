@@ -37,7 +37,9 @@ pub async fn auth_middleware(
         Some(claims) => claims,
     };
 
-    if claims.iat >= Utc::now().timestamp() as usize {
+    if claims.iat
+        >= usize::try_from(Utc::now().timestamp()).unwrap_or(usize::MAX)
+    {
         Err(AuthenticationError::InvalidCredentials)?;
     }
 

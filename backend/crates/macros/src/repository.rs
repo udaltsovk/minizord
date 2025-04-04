@@ -18,7 +18,7 @@ macro_rules! crud_repository {
             )*
         })?
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
             #[macros::async_trait::async_trait]
@@ -49,7 +49,7 @@ macro_rules! crud_repository {
             )*
         })?
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
             #[macros::async_trait::async_trait]
@@ -99,7 +99,7 @@ macro_rules! urd_repository {
             )*
         })?
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
             #[macros::async_trait::async_trait]
@@ -129,7 +129,7 @@ macro_rules! urd_repository {
             )*
         })?
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
             #[macros::async_trait::async_trait]

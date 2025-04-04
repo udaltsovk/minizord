@@ -27,7 +27,7 @@ macro_rules! dto {
             ),* $(,)?
         }
     )*) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             $(macros::derive_dto! {
                 $(#[$meta])*
                 pub struct $name {
@@ -84,7 +84,7 @@ macro_rules! dto {
             )? $(,)?
         }
     )*) => {
-        macros::paste::paste! {$(
+        $crate::paste::paste! {$(
             $(macros::derive_dto! {
                 $(#[$create_meta])*
                 pub struct [<Create $name>] {

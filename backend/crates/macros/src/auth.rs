@@ -4,7 +4,7 @@ macro_rules! auth_middlewares {
         access_levels: [$($access_level:ident),*],
         $(,)?
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             #[derive(PartialEq, strum_macros::Display, Debug)]
             pub enum TokenType {
                 $($access_level),*

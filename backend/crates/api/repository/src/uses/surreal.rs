@@ -17,7 +17,7 @@ implementation! {
                 .create(new.get_id(Self::TABLE))
                 .content(new.into_entity())
                 .await?
-                .unwrap()
+                .expect("Failed to save Uses object!")
         }
 
         find_all_by_in(&self, r#in: TeamId, limit: u64, offset: u64) -> Vec<Uses> {
@@ -25,13 +25,13 @@ implementation! {
                 .query(
                     r#"
                         SELECT * FROM type::table($table)
-                            WHERE in = type::string($in)
+                            WHERE in = type::record($in)
                             LIMIT $limit
                             START AT $offset
                     "#
                 )
                 .bind(("table", Self::TABLE))
-                .bind(("in", r#in.to_string()))
+                .bind(("in", r#in))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
                 .await?
@@ -47,13 +47,13 @@ implementation! {
                 .query(
                     r#"
                         SELECT * FROM type::table($table)
-                            WHERE out = type::string($out)
+                            WHERE out = type::record($out)
                             LIMIT $limit
                             START AT $offset
                     "#
                 )
                 .bind(("table", Self::TABLE))
-                .bind(("out", out.to_string()))
+                .bind(("out", out))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
                 .await?
@@ -69,14 +69,14 @@ implementation! {
                 .query(
                     r#"
                         SELECT * FROM type::table($table)
-                            WHERE in = type::string($in) 
-                                && out = type::string($out)
+                            WHERE in = type::record($in) 
+                                && out = type::record($out)
                             LIMIT 1
                     "#
                 )
                 .bind(("table", Self::TABLE))
-                .bind(("in", r#in.to_string()))
-                .bind(("out", out.to_string()))
+                .bind(("in", r#in))
+                .bind(("out", out))
                 .await?
                 .take(0)?
         }

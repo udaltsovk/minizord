@@ -58,14 +58,14 @@ fn _flatten_errors(
                         _flatten_errors(
                             errors,
                             Some(actual_path),
-                            Some(indent + 1),
+                            Some(indent.saturating_add(1)),
                         )
                     })
                     .collect::<Vec<_>>(),
                 ValidationErrorsKind::Struct(struct_errors) => _flatten_errors(
                     struct_errors,
                     Some(actual_path),
-                    Some(indent + 1),
+                    Some(indent.saturating_add(1)),
                 ),
             }
         })

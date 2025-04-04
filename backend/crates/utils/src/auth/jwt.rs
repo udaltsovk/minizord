@@ -16,19 +16,22 @@ pub struct Claims {
 
 #[tracing::instrument(skip_all, level = "debug")]
 pub fn new(entity: &str, id: Ulid, secret: &str) -> String {
-    let current_time = Utc::now().timestamp() as usize;
+    let current_time =
+        usize::try_from(Utc::now().timestamp()).unwrap_or(usize::MAX);
     let mut header = Header::new(Algorithm::HS256);
     header.kid = Some(entity.to_string());
-    encode(
+    match encode(
         &header,
         &Claims {
-            exp: current_time + TOKEN_LIFETIME,
+            exp: current_time.saturating_add(TOKEN_LIFETIME),
             iat: current_time,
             sub: id.to_string(),
         },
         &EncodingKey::from_secret(secret.as_bytes()),
-    )
-    .unwrap()
+    ) {
+        Ok(token) => token,
+        Err(err) => panic!("{err}"),
+    }
 }
 
 #[tracing::instrument(skip_all, level = "debug")]

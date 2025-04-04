@@ -1,15 +1,14 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
-use ulid::Ulid;
 
 use super::{CreateTour, Tour, TourId, TourUpdate};
 use crate::common::adapters::surrealdb::SurrealDB;
 
-impl From<TourId> for Ulid {
+impl From<TourId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(id: TourId) -> Self {
-        Self::from_string(&id.to_string()).unwrap()
+        Self::from_string(&id.to_string()).expect("Got invalid TourId")
     }
 }
 
@@ -23,7 +22,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .unwrap()
+                .expect("Failed to save Tour object!")
         }
 
         find_by_id(&self, id: TourId) -> Option<Tour> {

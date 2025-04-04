@@ -60,14 +60,19 @@ impl OpenApi {
     }
 
     pub fn as_json() -> String {
-        OpenApi::openapi().to_pretty_json().unwrap()
+        OpenApi::openapi()
+            .to_pretty_json()
+            .expect("Failed to build pretty-printed OpenApi JSON")
     }
 }
 
 struct Security;
 impl Modify for Security {
     fn modify(&self, openapi: &mut OpenApiStruct) {
-        let components = openapi.components.as_mut().unwrap();
+        let components = openapi
+            .components
+            .as_mut()
+            .expect("Failed do get mutable components");
 
         let scheme = SecurityScheme::Http(
             Http::builder()

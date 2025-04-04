@@ -1,15 +1,16 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
-use ulid::Ulid;
 
 use super::{CreateTeam, Team, TeamId, TeamUpdate};
-use crate::{common::adapters::surrealdb::SurrealDB, user::UserId};
+use crate::{
+    common::adapters::surrealdb::SurrealDB, tour::TourId, user::UserId,
+};
 
-impl From<TeamId> for Ulid {
+impl From<TeamId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(id: TeamId) -> Self {
-        Self::from_string(&id.to_string()).unwrap()
+        Self::from_string(&id.to_string()).expect("Got invalid TeamId")
     }
 }
 
@@ -23,7 +24,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .unwrap()
+                .expect("Failed to save Team object!")
         }
 
         find_by_id(&self, id: TeamId) -> Option<Team> {
@@ -36,70 +37,70 @@ implementation! {
             self.find_by_id(id).await?.is_some()
         }
 
-        find_by_tour_and_name(&self, tour: Ulid, name: &str) -> Option<Team> {
+        find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team> {
             self.db.0
                 .query(
                     r#"
                         SELECT * FROM type::table($team_table)
                             WHERE 
-                                tour = type::string($tour_id)
+                                tour = type::record($tour_id)
                                 name = type::string($name)
                             LIMIT 1
                     "#
                 )
                 .bind(("team_table", TeamId::TABLE))
-                .bind(("tour_id", tour.to_string()))
+                .bind(("tour_id", tour))
                 .bind(("name", name.to_string()))
                 .await?
                 .take(0)?
         }
 
-        exists_by_tour_and_name(&self, tour: Ulid, name: &str) -> bool {
+        exists_by_tour_and_name(&self, tour: TourId, name: &str) -> bool {
             self.find_by_tour_and_name(tour, name).await?.is_some()
         }
 
-        find_by_tour_and_lead(&self, tour: Ulid, lead: UserId) -> Option<Team> {
+        find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team> {
             self.db.0
                 .query(
                     r#"
                         SELECT * FROM type::table($team_table)
                             WHERE 
-                                tour = type::string($tour_id)
-                                lead = type::string($lead_id)
+                                tour = type::record($tour_id)
+                                lead = type::record($lead_id)
                             LIMIT 1
                     "#
                 )
                 .bind(("team_table", TeamId::TABLE))
-                .bind(("tour_id", tour.to_string()))
-                .bind(("lead_id", lead.to_string()))
+                .bind(("tour_id", tour))
+                .bind(("lead_id", lead))
                 .await?
                 .take(0)?
         }
 
-        exists_by_tour_and_lead(&self, tour: Ulid, lead: UserId) -> bool {
+        exists_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> bool {
             self.find_by_tour_and_lead(tour, lead).await?.is_some()
         }
 
-        find_all_by_tour(&self, tour: Ulid, limit: u64, offset: u64) -> Vec<Team> {
+        find_all_by_tour(&self, tour: TourId, limit: u64, offset: u64) -> Vec<Team> {
             self.db.0
                 .query(
                     r#"
                         SELECT * FROM type::table($team_table)
                             WHERE 
-                                tour = type::string($tour_id)
+                                tour = type::record($tour_id)
                             LIMIT $limit
                             START AT $offset
                     "#
                 )
                 .bind(("team_table", TeamId::TABLE))
-                .bind(("tour_id", tour.to_string()))
+                .bind(("tour_id", tour))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
                 .await?
                 .take(0)?
         }
 
-        exists_by_tour(&self, tour: Ulid) -> bool {
+        exists_by_tour(&self, tour: TourId) -> bool {
             !self.find_all_by_tour(tour, 1, 0).await?.is_empty()
         }
 

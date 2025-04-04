@@ -1,15 +1,14 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
-use ulid::Ulid;
 
 use super::{CreateUser, User, UserId, UserUpdate};
 use crate::common::adapters::surrealdb::SurrealDB;
 
-impl From<UserId> for Ulid {
+impl From<UserId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(id: UserId) -> Self {
-        Self::from_string(&id.to_string()).unwrap()
+        Self::from_string(&id.to_string()).expect("Got invalid UserId")
     }
 }
 
@@ -23,7 +22,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .unwrap()
+                .expect("Failed to save User object!")
         }
 
         find_by_id(&self, id: UserId) -> Option<User> {

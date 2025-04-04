@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
-use ulid::Ulid;
 
 use super::{
     CreateSpecialization, Specialization, SpecializationId,
@@ -9,10 +8,11 @@ use super::{
 };
 use crate::common::adapters::surrealdb::SurrealDB;
 
-impl From<SpecializationId> for Ulid {
+impl From<SpecializationId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(id: SpecializationId) -> Self {
-        Self::from_string(&id.to_string()).unwrap()
+        Self::from_string(&id.to_string())
+            .expect("Got invalid SpecializationId")
     }
 }
 
@@ -26,7 +26,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .unwrap()
+                .expect("Failed to save Specialization object!")
         }
 
         find_by_id(&self, id: SpecializationId) -> Option<Specialization> {

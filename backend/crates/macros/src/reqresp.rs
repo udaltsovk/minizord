@@ -11,7 +11,7 @@ macro_rules! request {
             } $(,)?
         )*
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             $(
                 #[derive(serde::Deserialize, utoipa::ToSchema, validator::Validate, Debug, Clone)]
                 $(#[$meta])*
@@ -39,7 +39,7 @@ macro_rules! response {
             } $(,)?
         )*
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             $(
                 #[derive(serde::Serialize, utoipa::ToSchema, Debug, Clone)]
                 $(#[$meta])*

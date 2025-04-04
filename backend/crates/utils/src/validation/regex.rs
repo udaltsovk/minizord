@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use lazy_static::lazy_static;
 use regex::Regex;
 

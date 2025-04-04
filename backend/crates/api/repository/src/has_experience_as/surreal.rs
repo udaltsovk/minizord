@@ -26,7 +26,7 @@ implementation! {
                 .bind(("object", object))
                 .await?
                 .take(0)?;
-            result.unwrap()
+            result.expect("Failed to save HasExperienceAs object!")
         }
 
         find_all_by_in(&self, r#in: UserId, limit: u64, offset: u64) -> Vec<HasExperienceAs> {
@@ -34,13 +34,13 @@ implementation! {
                 .query(
                     r#"
                         SELECT * FROM type::table($table)
-                            WHERE in = type::string($in)
+                            WHERE in = type::record($in)
                             LIMIT $limit
                             START AT $offset
                     "#
                 )
                 .bind(("table", Self::TABLE))
-                .bind(("in", r#in.to_string()))
+                .bind(("in", r#in))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
                 .await?
@@ -56,13 +56,13 @@ implementation! {
                 .query(
                     r#"
                         SELECT * FROM type::table($table)
-                            WHERE out = type::string($out)
+                            WHERE out = type::record($out)
                             LIMIT $limit
                             START AT $offset
                     "#
                 )
                 .bind(("table", Self::TABLE))
-                .bind(("out", out.to_string()))
+                .bind(("out", out))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
                 .await?

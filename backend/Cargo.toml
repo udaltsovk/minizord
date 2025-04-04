@@ -35,6 +35,9 @@ ulid = { version = "1.2", features = ["serde"] }
 
 surrealdb = "2.2"
 
+aws-config = { version = "1.6", features = ["behavior-version-latest"] }
+aws-sdk-s3 = "1.82"
+
 tonic = "0.12"
 
 utoipa = { version = "5.3", features = [

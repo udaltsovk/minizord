@@ -5,6 +5,7 @@ edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 
 [dependencies]
+
 lazy_static = "1.4"
 
 serde.workspace = true

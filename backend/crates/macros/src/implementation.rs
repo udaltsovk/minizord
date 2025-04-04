@@ -15,7 +15,7 @@ macro_rules! implementation {
             )*
         }
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             $(#[$impl_meta])*
             pub struct [<$impl_name $trait_name>] {
                 $($(
@@ -62,7 +62,7 @@ macro_rules! handler_implementation {
             )*
         }
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             pub use routes::OpenApi;
             mod routes {
                 use super::*;

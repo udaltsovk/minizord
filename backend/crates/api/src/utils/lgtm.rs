@@ -1,4 +1,4 @@
-use std::{str::FromStr, time::Duration};
+use std::time::Duration;
 
 use actix_web::{
     body::MessageBody,
@@ -20,6 +20,7 @@ use tracing_actix_web::{
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{
     EnvFilter,
+    filter::Directive,
     fmt::{
         self, Layer,
         format::{Compact, DefaultFields, Format},
@@ -31,6 +32,11 @@ use tracing_subscriber::{
 
 use crate::config;
 
+#[inline]
+fn parse_directive(directive: &'static str) -> Directive {
+    directive.parse().expect("Failed to parse directive")
+}
+
 pub struct LGTM {
     logger_provider: SdkLoggerProvider,
     tracer_provider: SdkTracerProvider,
@@ -40,23 +46,22 @@ impl LGTM {
     fn filter_layer() -> EnvFilter {
         EnvFilter::builder()
             .with_default_directive(
-                LevelFilter::from_str(if cfg!(debug_assertions) {
-                    "debug"
+                if cfg!(debug_assertions) {
+                    LevelFilter::DEBUG
                 } else {
-                    "info"
-                })
-                .unwrap()
+                    LevelFilter::INFO
+                }
                 .into(),
             )
             .from_env_lossy()
-            .add_directive("tokio=off".parse().unwrap())
-            .add_directive("runtime=off".parse().unwrap())
-            .add_directive("hyper=off".parse().unwrap())
-            .add_directive("opentelemetry=off".parse().unwrap())
-            .add_directive("tonic=off".parse().unwrap())
-            .add_directive("h2=off".parse().unwrap())
-            .add_directive("tower=off".parse().unwrap())
-            .add_directive("reqwest=off".parse().unwrap())
+            .add_directive(parse_directive("tokio=off"))
+            .add_directive(parse_directive("runtime=off"))
+            .add_directive(parse_directive("hyper=off"))
+            .add_directive(parse_directive("opentelemetry=off"))
+            .add_directive(parse_directive("tonic=off"))
+            .add_directive(parse_directive("h2=off"))
+            .add_directive(parse_directive("tower=off"))
+            .add_directive(parse_directive("reqwest=off"))
     }
 
     #[inline]
@@ -80,7 +85,7 @@ impl LGTM {
                         LogExporter::builder().with_tonic(),
                     )
                     .build()
-                    .unwrap(),
+                    .expect("Failed to build exporter!"),
                 )
                 .build(),
             )
@@ -96,7 +101,7 @@ impl LGTM {
                         SpanExporter::builder().with_tonic(),
                     )
                     .build()
-                    .unwrap(),
+                    .expect("Failed to build exporter!"),
                 )
                 .build(),
             )

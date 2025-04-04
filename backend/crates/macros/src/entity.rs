@@ -57,7 +57,7 @@ macro_rules! entity {
             )? $(,)?
         }
     )*) => {
-        macros::paste::paste! {$(
+        $crate::paste::paste! {$(
             #[cfg(feature = "surrealdb")]
             macros::derive_entity! {
                 #[serde(transparent)]
@@ -197,7 +197,7 @@ macro_rules! entity {
             )? $(,)?
         }
     ) => {
-        macros::paste::paste! {
+        $crate::paste::paste! {
             macros::derive_entity! {
                 $($(#[$create_meta])*)?
                 pub struct [<Create $name>] {
