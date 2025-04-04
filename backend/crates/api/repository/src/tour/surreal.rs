@@ -3,7 +3,7 @@ use std::sync::Arc;
 use macros::{RepositoryId, implementation};
 
 use super::{CreateTour, Tour, TourId, TourUpdate};
-use crate::common::adapters::surrealdb::SurrealDB;
+use crate::common::{RepositoryError, adapters::surrealdb::SurrealDB};
 
 impl From<TourId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
@@ -22,7 +22,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .expect("Failed to save Tour object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_by_id(&self, id: TourId) -> Option<Tour> {

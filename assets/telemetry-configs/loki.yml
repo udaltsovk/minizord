@@ -26,7 +26,7 @@ storage_config:
     active_index_directory: /loki/index
     cache_location: /loki/index_cache
   aws:
-    s3: http://minioadmin:minioadmin@minio.:9000/loki
+    s3: http://minioadmin:minioadmin@s3.:9000/loki
     s3forcepathstyle: true
 
 limits_config:

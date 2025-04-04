@@ -5,9 +5,9 @@ edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 
 [features]
-default = ["surrealdb"]
+default = ["surrealdb", "s3"]
 surrealdb = ["repository/surrealdb"]
-
+s3 = ["repository/s3"]
 
 [dependencies]
 macros.workspace = true
@@ -20,4 +20,10 @@ thiserror.workspace = true
 
 ulid.workspace = true
 
+bytes.workspace = true
+
+tokio.workspace = true
+
 tracing.workspace = true
+
+actix-multipart.workspace = true

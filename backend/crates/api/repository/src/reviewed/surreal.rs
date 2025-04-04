@@ -3,7 +3,10 @@ use std::sync::Arc;
 use macros::implementation;
 
 use super::{CreateReviewed, Reviewed, ReviewedUpdate};
-use crate::{common::adapters::surrealdb::SurrealDB, user::UserId};
+use crate::{
+    common::{RepositoryError, adapters::surrealdb::SurrealDB},
+    user::UserId,
+};
 
 implementation! {
     ReviewedRepository {
@@ -14,7 +17,7 @@ implementation! {
                 .create(new.get_id(Self::TABLE))
                 .content(new.into_entity())
                 .await?
-                .expect("Failed to save Reviewed object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_all_by_in(&self, r#in: UserId, limit: u64, offset: u64) -> Vec<Reviewed> {

@@ -22,6 +22,8 @@ validator.workspace = true
 chrono.workspace = true
 ulid.workspace = true
 
-tracing.workspace = true 
+bytes.workspace = true
+
+tracing.workspace = true
 
 utoipa.workspace = true

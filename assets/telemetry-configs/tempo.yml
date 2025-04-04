@@ -12,13 +12,13 @@ query_frontend:
   trace_by_id:
     duration_slo: 100ms
   metrics:
-    max_duration: 120h                # maximum duration of a metrics query, increase for local setups
+    max_duration: 120h # maximum duration of a metrics query, increase for local setups
     query_backend_after: 5m
     duration_slo: 5s
     throughput_bytes_slo: 1.073741824e+09
 
 distributor:
-  receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
+  receivers: # this configuration will listen on all ports and protocols that tempo is capable of.
     otlp:
       protocols:
         http:
@@ -29,7 +29,7 @@ ingester:
 
 compactor:
   compaction:
-    block_retention: 24h                # overall Tempo trace retention. set for demo purposes
+    block_retention: 24h # overall Tempo trace retention. set for demo purposes
 
 metrics_generator:
   registry:
@@ -50,12 +50,12 @@ storage:
     backend: s3
     s3:
       bucket: tempo
-      endpoint: minio:9000
+      endpoint: s3:9000
       access_key: minioadmin
       secret_key: minioadmin
       insecure: true
     wal:
-      path: /var/tempo/wal             # where to store the wal locally
+      path: /var/tempo/wal # where to store the wal locally
     local:
       path: /var/tempo/blocks
 

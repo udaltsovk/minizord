@@ -4,7 +4,9 @@ use macros::implementation;
 
 use super::{CreateParticipatedIn, ParticipatedIn, ParticipatedInUpdate};
 use crate::{
-    common::adapters::surrealdb::SurrealDB, tour::TourId, user::UserId,
+    common::{RepositoryError, adapters::surrealdb::SurrealDB},
+    tour::TourId,
+    user::UserId,
 };
 
 implementation! {
@@ -16,7 +18,7 @@ implementation! {
                 .create(new.get_id(Self::TABLE))
                 .content(new.into_entity())
                 .await?
-                .expect("Failed to save ParticipatedIn object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_all_by_in(&self, r#in: UserId, limit: u64, offset: u64) -> Vec<ParticipatedIn> {

@@ -524,13 +524,11 @@ version = "0.1.0"
 dependencies = [
  "actix-contrib-logger",
  "actix-cors",
- "actix-multipart",
  "actix-rt",
  "actix-web",
  "actix-web-lab",
  "actix-web-prom",
  "actix-web-validation",
- "dto",
  "env-vars-config",
  "handler",
  "log",
@@ -540,7 +538,6 @@ dependencies = [
  "opentelemetry_sdk 0.29.0",
  "repository",
  "service",
- "tonic",
  "tracing",
  "tracing-actix-web",
  "tracing-opentelemetry 0.30.0",
@@ -1107,53 +1104,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "axum"
-version = "0.7.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edca88bc138befd0323b20752846e6587272d3b03b0343c8ea28a6f819e6e71f"
-dependencies = [
- "async-trait",
- "axum-core",
- "bytes",
- "futures-util",
- "http 1.2.0",
- "http-body 1.0.1",
- "http-body-util",
- "itoa",
- "matchit",
- "memchr",
- "mime",
- "percent-encoding",
- "pin-project-lite",
- "rustversion",
- "serde",
- "sync_wrapper",
- "tower 0.5.2",
- "tower-layer",
- "tower-service",
-]
-
-[[package]]
-name = "axum-core"
-version = "0.4.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09f2bd6146b97ae3359fa0cc6d6b376d9539582c7b4220f041a33ec24c226199"
-dependencies = [
- "async-trait",
- "bytes",
- "futures-util",
- "http 1.2.0",
- "http-body 1.0.1",
- "http-body-util",
- "mime",
- "pin-project-lite",
- "rustversion",
- "sync_wrapper",
- "tower-layer",
- "tower-service",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1517,6 +1467,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6fac387a98bb7c37292057cffc56d62ecb629900026402633ae9160df93a8766"
 dependencies = [
  "nom",
+]
+
+[[package]]
+name = "cfb"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d38f2da7a0a2c4ccf0065be06397cc26a81f4e528be095826eee9d4adbb8c60f"
+dependencies = [
+ "byteorder",
+ "fnv",
+ "uuid",
 ]
 
 [[package]]
@@ -2141,6 +2102,7 @@ checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
 name = "dto"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "chrono",
  "macros",
  "repository",
@@ -2655,11 +2617,11 @@ dependencies = [
 name = "handler"
 version = "0.1.0"
 dependencies = [
+ "actix-multipart",
  "actix-web",
  "actix-web-lab",
  "actix-web-validation",
  "dto",
- "log",
  "macros",
  "serde",
  "serde_json",
@@ -2893,7 +2855,6 @@ dependencies = [
  "http 1.2.0",
  "http-body 1.0.1",
  "httparse",
- "httpdate",
  "itoa",
  "pin-project-lite",
  "smallvec",
@@ -3187,6 +3148,15 @@ dependencies = [
  "equivalent",
  "hashbrown 0.15.2",
  "serde",
+]
+
+[[package]]
+name = "infer"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a588916bfdfd92e71cacef98a63d9b1f0d74d6599980d11894290e7ddefffcf7"
+dependencies = [
+ "cfb",
 ]
 
 [[package]]
@@ -3512,12 +3482,6 @@ checksum = "8263075bb86c5a1b1427b5ae862e8889656f126e9f77c484496e8b47cf5c5558"
 dependencies = [
  "regex-automata 0.1.10",
 ]
-
-[[package]]
-name = "matchit"
-version = "0.7.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e7465ac9959cc2b1404e8e2367b43684a6d13790fe23056cc8c6c5a6b7bcb94"
 
 [[package]]
 name = "matrixmultiply"
@@ -4735,9 +4699,12 @@ name = "repository"
 version = "0.1.0"
 dependencies = [
  "aws-sdk-s3",
+ "bytes",
  "chrono",
  "include_dir",
+ "infer",
  "macros",
+ "mime_guess",
  "serde",
  "strum 0.27.1",
  "strum_macros 0.27.1",
@@ -5416,10 +5383,13 @@ dependencies = [
 name = "service"
 version = "0.1.0"
 dependencies = [
+ "actix-multipart",
+ "bytes",
  "dto",
  "macros",
  "repository",
  "thiserror 2.0.12",
+ "tokio",
  "tracing",
  "ulid",
  "utils",
@@ -6225,12 +6195,9 @@ version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877c5b330756d856ffcc4553ab34a5684481ade925ecc54bcd1bf02b1d0d4d52"
 dependencies = [
- "async-stream",
  "async-trait",
- "axum",
  "base64 0.22.1",
  "bytes",
- "h2 0.4.8",
  "http 1.2.0",
  "http-body 1.0.1",
  "http-body-util",
@@ -6240,7 +6207,6 @@ dependencies = [
  "percent-encoding",
  "pin-project",
  "prost",
- "socket2",
  "tokio",
  "tokio-stream",
  "tower 0.4.13",

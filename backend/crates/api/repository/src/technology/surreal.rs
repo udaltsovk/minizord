@@ -3,7 +3,7 @@ use std::sync::Arc;
 use macros::{RepositoryId, implementation};
 
 use super::{CreateTechnology, Technology, TechnologyId, TechnologyUpdate};
-use crate::common::adapters::surrealdb::SurrealDB;
+use crate::common::{RepositoryError, adapters::surrealdb::SurrealDB};
 
 implementation! {
     TechnologyRepository {
@@ -15,7 +15,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .expect("Failed to save Technology object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_by_id(&self, id: TechnologyId) -> Option<Technology> {

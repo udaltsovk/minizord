@@ -14,26 +14,45 @@ services:
       SURREAL_USER: root
       SURREAL_PASS: root
       SURREAL_PATH: rocksdb:/var/lib/surrealdb
+  s3:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - s3:/data
+    command: server /data --console-address ":9001"
+  init-buckets:
+    image: minio/mc
+    depends_on:
+      - s3
+    entrypoint: >
+      sh -c "until mc alias set myminio http://s3:9000 minioadmin minioadmin; do sleep 1; done &&
+             mc mb myminio/loki &&
+             mc mb myminio/tempo &&
+             mc mb myminio/mimir &&
+             mc mb myminio/images &&
+             mc policy set public myminio/loki"
   grafana:
-    container_name: grafana
     image: grafana/grafana:main
     ports:
       - "3001:3000"
     volumes:
       - grafana:/var/lib/grafana
   prometheus:
-    container_name: prometheus
     image: prom/prometheus:main
     volumes:
       - prometheus:/prometheus
       - ../assets/telemetry-configs/prometheus-dev.yml:/etc/prometheus/prometheus.yml
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--enable-feature=native-histograms'
-      - '--web.listen-address=:9091'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--enable-feature=native-histograms"
+      - "--web.listen-address=:9091"
     network_mode: "host"
   loki:
-    container_name: loki
     image: grafana/loki:3.4.1
     restart: always
     ports:
@@ -42,9 +61,8 @@ services:
       - ../assets/telemetry-configs/loki.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     depends_on:
-      - minio
+      - s3
   tempo:
-    container_name: tempo
     image: grafana/tempo:latest
     restart: always
     ports:
@@ -54,10 +72,9 @@ services:
       - tempo:/var/tempo
     command: -config.file=/etc/tempo/tempo-config.yaml
     depends_on:
-      - minio
+      - s3
       - prometheus
   mimir:
-    container_name: mimir
     image: grafana/mimir:latest
     restart: always
     ports:
@@ -66,40 +83,16 @@ services:
       - ../assets/telemetry-configs/mimir.yml:/etc/mimir/mimir.yaml
     command: --config.file=/etc/mimir/mimir.yaml
     depends_on:
-      - minio
+      - s3
   otel-collector:
-    container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
       - ../assets/telemetry-configs/otel-collector.yml:/etc/otelcol-contrib/config.yaml
     ports:
       - "4317:4317"
-  minio:
-    container_name: minio
-    image: minio/minio:latest
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - minio:/data
-    command: server /data --console-address ":9001"
-  init-buckets:
-    image: minio/mc
-    depends_on:
-      - minio
-    entrypoint: >
-      sh -c "until mc alias set myminio http://minio:9000 minioadmin minioadmin; do sleep 1; done &&
-             mc mb myminio/loki &&
-             mc mb myminio/tempo &&
-             mc mb myminio/mimir &&
-             mc mb myminio/images &&
-             mc policy set public myminio/loki"
 volumes:
   db:
+  s3:
   prometheus:
-  minio:
   tempo:
   grafana:

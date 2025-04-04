@@ -62,6 +62,8 @@ impl LGTM {
             .add_directive(parse_directive("h2=off"))
             .add_directive(parse_directive("tower=off"))
             .add_directive(parse_directive("reqwest=off"))
+            .add_directive(parse_directive("aws=off"))
+            .add_directive(parse_directive("rustls=off"))
     }
 
     #[inline]

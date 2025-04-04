@@ -55,7 +55,8 @@ use handler::{
     user::{UserHandler, implementation::ImplementedUserHandler},
 };
 use repository::{
-    common::adapters::surrealdb::SurrealDB,
+    common::adapters::{s3::S3, surrealdb::SurrealDB},
+    image::s3::S3ImageRepository,
     profile::surreal::SurrealProfileRepository,
     user::surreal::SurrealUserRepository,
 };
@@ -81,10 +82,10 @@ env_vars_config! {
     JWT_SECRET: String = "ohrfwahl;fhjjhawefhjaewfjhhjawfjbklbjlhjeawfjhjhwarjhjhhawhfhjhjfwahl",
     OTEL_ENDPOINT: String = "http://localhost:4317",
     OTEL_SERVICE_NAME: String = "megazord_api",
-    MINIO_BASE_URL: String = "http://localhost:9000",
-    MINIO_USER: String = "minioadmin",
-    MINIO_PASSWORD: String = "minioadmin",
-    MINIO_BUCKET: String = "megazord-api-bucket",
+    S3_BASE_URL: String = "http://localhost:9000",
+    S3_ACCESS_KEY: String = "minioadmin",
+    S3_SECRET_KEY: String = "minioadmin",
+    S3_REGION: String = "custom",
 }
 
 #[derive(Clone)]
@@ -128,27 +129,33 @@ pub struct Api {
 }
 impl Api {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn setup(db: SurrealDB) -> Self {
+    pub fn setup(db: SurrealDB, s3: S3) -> Self {
         let surreal_client = Arc::new(db);
+        let s3_client = Arc::new(s3);
 
         let user_repository =
             SurrealUserRepository::new(surreal_client.clone());
         let profile_repository =
             SurrealProfileRepository::new(surreal_client.clone());
+        let image_repository = S3ImageRepository::new(s3_client.clone());
 
         let password_hasher = PasswordHasher::new();
 
+        let user_service = ImplementedUserService::new(
+            user_repository.clone(),
+            config::JWT_SECRET.clone(),
+            password_hasher.clone(),
+        );
+        let profile_service = ImplementedProfileService::new(
+            user_repository.clone(),
+            profile_repository.clone(),
+            image_repository.clone(),
+        );
+
         Self {
             config: AppConfig {
-                user_service: ImplementedUserService::new(
-                    user_repository.clone(),
-                    config::JWT_SECRET.clone(),
-                    password_hasher.clone(),
-                ),
-                profile_service: ImplementedProfileService::new(
-                    user_repository.clone(),
-                    profile_repository.clone(),
-                ),
+                user_service,
+                profile_service,
                 openapi: OpenApi::openapi(),
             },
         }

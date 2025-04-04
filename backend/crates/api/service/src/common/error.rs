@@ -14,11 +14,22 @@ pub enum ServiceError {
     #[error("{0}")]
     AlreadyExists(String),
 
+    #[error("{0}")]
+    PayloadTooLarge(String),
+
+    #[error(
+        "expected file of one of the folowing mime types: {supported}, but got `{got}`"
+    )]
+    UnsupportedMediaType { supported: String, got: String },
+
     #[error("Hasher error: {0}")]
     Hasher(#[from] utils::auth::password_hashing::Error),
 
     #[error("{0}")]
     Database(String),
+
+    #[error("{0}")]
+    Internal(String),
 }
 
 impl From<RepositoryError> for ServiceError {
@@ -27,7 +38,13 @@ impl From<RepositoryError> for ServiceError {
         use RepositoryError as RE;
         match err {
             #[cfg(feature = "surrealdb")]
-            RE::SurrealDB(..) => Self::Database(err.to_string()),
+            RE::SurrealDB(..) | RE::FailedToSaveObject => {
+                Self::Database(err.to_string())
+            },
+            #[cfg(feature = "s3")]
+            RE::S3(..) | RE::S3BrokenImage | RE::S3ByteStream(..) => {
+                Self::Database(err.to_string())
+            },
         }
     }
 }

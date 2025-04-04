@@ -1,3 +1,4 @@
+use actix_multipart::form::MultipartForm;
 use actix_web::{
     HttpResponse, delete, get, put,
     web::{Data, Json, ReqData},
@@ -13,7 +14,10 @@ use service::profile::ProfileServiceDependency;
 use ulid::Ulid;
 use utoipa::path as openapi;
 
-use crate::common::{HandlerError, ValidationError};
+use crate::{
+    common::{HandlerError, ValidationError},
+    profile::UploadForm,
+};
 
 handler_implementation! {
     ProfileHandler as Implemented {
@@ -28,8 +32,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Profile),
-                (status = 409, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[put("/me")]
@@ -56,7 +60,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Profile),
-                (status = 403, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
                 (status = 401, description = "", body = HandlerError),
             ),
 
@@ -84,8 +88,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
                 (status = 401, description = "", body = HandlerError),
             ),
         )]
@@ -117,7 +120,6 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Profile),
-                (status = 409, description = "", body = HandlerError),
                 (status = 404, description = "", body = HandlerError),
                 (status = 400, description = "", body = ValidationError),
                 (status = 403, description = "", body = HandlerError),
@@ -182,8 +184,8 @@ handler_implementation! {
             responses(
                 (status = 204, description = ""),
                 (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
                 (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
             ),
         )]
         #[delete("/{profile_id}")]
@@ -193,6 +195,194 @@ handler_implementation! {
         ) -> HttpResponse {
             profile_service
                 .delete_by_id(profile_id)
+                .await?;
+            HttpResponse::NoContent().finish()
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            operation_id = "upsert_current_profile_image",
+            request_body(
+                description = "",
+                content = UploadForm,
+                content_type = "multipart/form-data",
+            ),
+            responses(
+                (status = 200, description = ""),
+                (status = 415, description = "", body = HandlerError),
+                (status = 413, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+        )]
+        #[put("/me/image")]
+        upsert_image_current(
+            profile_service: Data<ProfileServiceDependency>,
+            user: ReqData<User>,
+            MultipartForm(form): MultipartForm<UploadForm>,
+        ) -> HttpResponse {
+            profile_service
+               .upsert_image_by_id(user.id, form.file)
+               .await?;
+
+            HttpResponse::Ok().finish()
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            operation_id = "get_current_profile_image",
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizator" = []),
+            ),
+            responses(
+                (status = 200, description = ""),
+                (status = 404, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+
+        )]
+        #[get("/me/image")]
+        get_image_current(
+            profile_service: Data<ProfileServiceDependency>,
+            user: ReqData<User>,
+        ) -> HttpResponse {
+            let res = profile_service
+                .get_image_by_id(user.id)
+                .await?;
+            HttpResponse::Ok()
+               .content_type(res.content_type.clone())
+               .body(res.data)
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            operation_id = "delete_current_profile_image",
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizator" = []),
+            ),
+            responses(
+                (status = 204, description = ""),
+                (status = 404, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+        )]
+        #[delete("/me/image")]
+        delete_image_current(
+            profile_service: Data<ProfileServiceDependency>,
+            user: ReqData<User>,
+        ) -> HttpResponse {
+            profile_service
+                .delete_image_by_id(user.id)
+                .await?;
+            HttpResponse::NoContent().finish()
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            operation_id = "upsert_profile_image_by_id",
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
+            request_body(
+                description = "",
+                content = UploadForm,
+                content_type = "multipart/form-data",
+            ),
+            security(
+                ("organizator" = []),
+            ),
+            responses(
+                (status = 200, description = ""),
+                (status = 415, description = "", body = HandlerError),
+                (status = 413, description = "", body = HandlerError),
+                (status = 404, description = "", body = HandlerError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+        )]
+        #[put("/{profile_id}/image")]
+        upsert_image_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            Path(profile_id): Path<Ulid>,
+            MultipartForm(form): MultipartForm<UploadForm>,
+        ) -> HttpResponse {
+            profile_service
+               .upsert_image_by_id(profile_id, form.file)
+               .await?;
+
+            HttpResponse::Ok().finish()
+        }
+
+
+        ///
+        ///
+        ///
+        #[openapi(
+            operation_id = "get_profile_image_by_id",
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizator" = []),
+            ),
+            responses(
+                (status = 200, description = ""),
+                (status = 404, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+        )]
+        #[get("/{profile_id}/image")]
+        get_image_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            Path(profile_id): Path<Ulid>,
+        ) -> HttpResponse {
+            let res = profile_service
+                .get_image_by_id(profile_id)
+                .await?;
+            HttpResponse::Ok()
+              .content_type(res.content_type.clone())
+              .body(res.data)
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            operation_id = "delete_profile_image_by_id",
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
+            security(
+                ("organizator" = []),
+            ),
+            responses(
+                (status = 204, description = ""),
+                (status = 404, description = "", body = HandlerError),
+                (status = 403, description = "", body = HandlerError),
+                (status = 401, description = "", body = HandlerError),
+            ),
+        )]
+        #[delete("/{profile_id}/image")]
+        delete_image_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            Path(profile_id): Path<Ulid>,
+        ) -> HttpResponse {
+            profile_service
+                .delete_image_by_id(profile_id)
                 .await?;
             HttpResponse::NoContent().finish()
         }

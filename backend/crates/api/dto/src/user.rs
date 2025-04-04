@@ -17,18 +17,19 @@ use utoipa::ToSchema;
     Clone,
     Copy,
     PartialEq,
-    Default,
     Debug,
 )]
 #[serde(rename_all = "snake_case")]
 #[schema(default = "participant")]
 pub enum UserRole {
     ///
+    #[strum(serialize = "organizator")]
     Organizator,
     ///
+    #[strum(serialize = "mentor")]
     Mentor,
     ///
-    #[default]
+    #[strum(serialize = "participant")]
     Participant,
 }
 impl From<UserRole> for UserEntityRole {

@@ -6,7 +6,7 @@ use super::{
     CreateSpecialization, Specialization, SpecializationId,
     SpecializationUpdate,
 };
-use crate::common::adapters::surrealdb::SurrealDB;
+use crate::common::{RepositoryError, adapters::surrealdb::SurrealDB};
 
 impl From<SpecializationId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
@@ -26,7 +26,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .expect("Failed to save Specialization object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_by_id(&self, id: SpecializationId) -> Option<Specialization> {

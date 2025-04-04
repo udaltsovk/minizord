@@ -4,7 +4,9 @@ use macros::{RepositoryId, implementation};
 
 use super::{CreateTeam, Team, TeamId, TeamUpdate};
 use crate::{
-    common::adapters::surrealdb::SurrealDB, tour::TourId, user::UserId,
+    common::{RepositoryError, adapters::surrealdb::SurrealDB},
+    tour::TourId,
+    user::UserId,
 };
 
 impl From<TeamId> for ulid::Ulid {
@@ -24,7 +26,7 @@ implementation! {
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
-                .expect("Failed to save Team object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_by_id(&self, id: TeamId) -> Option<Team> {

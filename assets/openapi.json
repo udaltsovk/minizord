@@ -745,7 +745,7 @@
               }
             }
           },
-          "403": {
+          "404": {
             "description": "",
             "content": {
               "application/json": {
@@ -806,7 +806,7 @@
               }
             }
           },
-          "409": {
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -828,16 +828,6 @@
           "204": {
             "description": ""
           },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
           "401": {
             "description": "",
             "content": {
@@ -848,7 +838,7 @@
               }
             }
           },
-          "403": {
+          "404": {
             "description": "",
             "content": {
               "application/json": {
@@ -1024,8 +1014,355 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_profile_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
           },
-          "409": {
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/profiles/me/image": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_profile_image",
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "upsert_current_profile_image",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_current_profile_image",
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/profiles/{profile_id}/image": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_profile_image_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "upsert_profile_image_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "415": {
             "description": "",
             "content": {
               "application/json": {
@@ -1047,7 +1384,7 @@
           "Profiles"
         ],
         "description": "\n\n\n\n",
-        "operationId": "delete_profile_by_id",
+        "operationId": "delete_profile_image_by_id",
         "parameters": [
           {
             "name": "profile_id",
@@ -1170,6 +1507,28 @@
             ],
             "properties": {
               "AlreadyExists": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "PayloadTooLarge"
+            ],
+            "properties": {
+              "PayloadTooLarge": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "UnsupportedMediaType"
+            ],
+            "properties": {
+              "UnsupportedMediaType": {
                 "type": "string"
               }
             }
@@ -1325,6 +1684,20 @@
               "minLength": 0
             },
             "description": ""
+          }
+        }
+      },
+      "UploadForm": {
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "Изображение, которое будет загружено.\nРазмер не должен превышать 5.7 МБ.\nРазрешённые MIME типы: `image/jpeg`, `image/pjpeg`, `image/png`, `image/webp`",
+            "contentMediaType": "application/octet-stream"
           }
         }
       },

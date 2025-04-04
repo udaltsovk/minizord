@@ -59,7 +59,7 @@ impl OpenApi {
         SwaggerUi::new("/openapi/{_}*").url("/openapi.json", api)
     }
 
-    pub fn as_json() -> String {
+    pub fn json_string() -> String {
         OpenApi::openapi()
             .to_pretty_json()
             .expect("Failed to build pretty-printed OpenApi JSON")

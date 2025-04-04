@@ -39,6 +39,14 @@ pub enum HandlerError {
     #[error("{0} already exists")]
     AlreadyExists(String),
 
+    #[response(status = 413)]
+    #[error("Payload size exceeds the limit of {0}")]
+    PayloadTooLarge(String),
+
+    #[response(status = 415)]
+    #[error("Unsupported media type: {0}")]
+    UnsupportedMediaType(String),
+
     #[response(status = 500)]
     #[error("{0}")]
     Internal(String),
@@ -53,8 +61,12 @@ impl From<ServiceError> for HandlerError {
             SE::Forbidden(msg) => Self::ForbiddenWithMsg(msg),
             SE::NotFound(msg) => Self::NotFound(msg),
             SE::AlreadyExists(msg) => Self::AlreadyExists(msg),
+            SE::PayloadTooLarge(msg) => Self::PayloadTooLarge(msg),
+            SE::UnsupportedMediaType {
+                ..
+            } => Self::UnsupportedMediaType(err.to_string()),
             SE::Hasher(msg) => Self::Internal(msg.to_string()),
-            SE::Database(msg) => Self::Internal(msg),
+            SE::Database(msg) | SE::Internal(msg) => Self::Internal(msg),
         }
     }
 }
@@ -68,6 +80,10 @@ impl HandlerError {
                 Self::Forbidden | Self::ForbiddenWithMsg(..) => "access_denied",
                 Self::NotFound(..) => "not_found",
                 Self::AlreadyExists(..) => "already_exists",
+                Self::PayloadTooLarge(..) => "payload_too_large",
+                Self::UnsupportedMediaType {
+                    ..
+                } => "unsupported_media_type",
                 Self::Internal(..) => "internal_error",
             }
             .to_string(),
@@ -85,6 +101,10 @@ impl ResponseError for HandlerError {
             Self::Forbidden | Self::ForbiddenWithMsg(..) => SC::FORBIDDEN,
             Self::NotFound(..) => SC::NOT_FOUND,
             Self::AlreadyExists(..) => SC::CONFLICT,
+            Self::PayloadTooLarge(..) => SC::PAYLOAD_TOO_LARGE,
+            Self::UnsupportedMediaType {
+                ..
+            } => SC::UNSUPPORTED_MEDIA_TYPE,
             Self::Internal(..) => SC::INTERNAL_SERVER_ERROR,
         }
     }

@@ -4,7 +4,8 @@ use macros::implementation;
 
 use super::{CreateUses, Uses, UsesUpdate};
 use crate::{
-    common::adapters::surrealdb::SurrealDB, team::TeamId,
+    common::{RepositoryError, adapters::surrealdb::SurrealDB},
+    team::TeamId,
     technology::TechnologyId,
 };
 
@@ -17,7 +18,7 @@ implementation! {
                 .create(new.get_id(Self::TABLE))
                 .content(new.into_entity())
                 .await?
-                .expect("Failed to save Uses object!")
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_all_by_in(&self, r#in: TeamId, limit: u64, offset: u64) -> Vec<Uses> {

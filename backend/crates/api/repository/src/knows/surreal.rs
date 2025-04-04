@@ -4,7 +4,8 @@ use macros::implementation;
 
 use super::{Knows, UpsertKnows};
 use crate::{
-    common::adapters::surrealdb::SurrealDB, technology::TechnologyId,
+    common::{RepositoryError, adapters::surrealdb::SurrealDB},
+    technology::TechnologyId,
     user::UserId,
 };
 
@@ -26,7 +27,7 @@ implementation! {
                 .bind(("object", object))
                 .await?
                 .take(0)?;
-            result.expect("Failed to save Knows object!")
+            result.ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         find_all_by_in(&self, r#in: UserId, limit: u64, offset: u64) -> Vec<Knows> {

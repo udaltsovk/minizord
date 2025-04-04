@@ -12,7 +12,7 @@ dto.workspace = true
 service = { path = "../service" }
 
 thiserror.workspace = true
-log.workspace = true
+#log.workspace = true
 
 serde.workspace = true
 serde_json.workspace = true
@@ -31,3 +31,4 @@ utoipa-actix-web.workspace = true
 actix-web.workspace = true
 actix-web-lab.workspace = true
 actix-web-validation.workspace = true
+actix-multipart.workspace = true
