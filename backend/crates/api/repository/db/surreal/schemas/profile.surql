@@ -11,3 +11,5 @@ DEFINE FIELD OVERWRITE city ON profile
     TYPE string;
 DEFINE FIELD OVERWRITE portfolio_urls ON profile
     TYPE set<string>;
+DEFINE FIELD OVERWRITE has_avatar ON profile
+    TYPE bool;

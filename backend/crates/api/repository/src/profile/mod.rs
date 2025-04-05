@@ -13,6 +13,7 @@ entity! {
             city: String,
             bio: String,
             portfolio_urls: Vec<String>,
+            has_avatar: bool,
         },
         upsert {
             name: String,
@@ -20,6 +21,7 @@ entity! {
             city: String,
             bio: String,
             portfolio_urls: Vec<String>,
+            has_avatar: bool,
         },
     }
 }
@@ -38,6 +40,7 @@ impl UpsertProfile {
             city: self.city,
             bio: self.bio,
             portfolio_urls: self.portfolio_urls,
+            has_avatar: self.has_avatar,
         }
     }
 }

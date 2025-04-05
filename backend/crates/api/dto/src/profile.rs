@@ -1,5 +1,7 @@
 use macros::dto;
-use repository::profile::Profile as ProfileEntity;
+use repository::profile::{
+    Profile as ProfileEntity, UpsertProfile as UpsertProfileEntity,
+};
 use ulid::Ulid;
 use utils::validation::validate_portfolio_urls;
 
@@ -29,6 +31,9 @@ dto! {
             ///
             #[schema(min_length = 0)]
             portfolio_urls: Vec<String>,
+
+            ///
+            has_avatar: bool,
         },
         upsert
         ///
@@ -71,6 +76,20 @@ impl From<ProfileEntity> for Profile {
             city: entity.city,
             bio: entity.bio,
             portfolio_urls: entity.portfolio_urls.clone(),
+            has_avatar: entity.has_avatar,
+        }
+    }
+}
+impl From<Profile> for UpsertProfileEntity {
+    #[tracing::instrument(skip_all, level = "trace")]
+    fn from(dto: Profile) -> Self {
+        Self {
+            name: dto.name,
+            surname: dto.surname,
+            city: dto.city,
+            bio: dto.bio,
+            portfolio_urls: dto.portfolio_urls,
+            has_avatar: dto.has_avatar,
         }
     }
 }

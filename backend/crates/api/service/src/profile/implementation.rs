@@ -8,7 +8,8 @@ use macros::implementation;
 use repository::{
     image::ImageRepositoryDependency,
     profile::{
-        ProfileRepositoryDependency, UpsertProfile as UpsertProfileEntity,
+        ProfileId, ProfileRepositoryDependency,
+        UpsertProfile as UpsertProfileEntity,
     },
     user::{UserRepositoryDependency, UserUpdate as UserEntityUpdate},
 };
@@ -29,19 +30,33 @@ implementation! {
             id: Ulid,
             object: UpsertProfile,
         ) -> Profile {
-            self.profile_repository
+            let profile_id: ProfileId = id.into();
+            let profile = self.profile_repository
+                .find_by_id(profile_id.clone())
+                .await?;
+            let profile = self.profile_repository
                 .upsert_by_id(
-                    id.into(),
+                    profile_id.clone(),
                     UpsertProfileEntity {
                         name: object.name,
                         surname: object.surname,
                         city: object.city,
                         bio: object.bio,
                         portfolio_urls: object.portfolio_urls.clone(),
+                        has_avatar: profile.map(|p| p.has_avatar).unwrap_or(false),
                     }
                 )
-                .await?
-                .into()
+                .await?;
+            self.user_repository
+                .update_by_id(
+                    id.into(),
+                    UserEntityUpdate {
+                        profile: Some(Some(profile_id.clone())),
+                        ..Default::default()
+                    }
+                )
+                .await?;
+            profile.into()
         }
 
         find_by_id(
@@ -90,7 +105,7 @@ implementation! {
             id: Ulid,
             file: TempFile,
         ) -> () {
-            self.get_by_id(id).await?;
+            let mut profile = self.get_by_id(id).await?;
 
             if file.size > MAX_IMAGE_SIZE {
                 Err(ServiceError::PayloadTooLarge("5.7 MB".into()))?;
@@ -125,13 +140,26 @@ implementation! {
                     }.into(),
                 )
                 .await?;
+
+            profile.has_avatar = true;
+            self.profile_repository
+                .upsert_by_id(
+                    profile.id.into(),
+                    profile.into(),
+                )
+                .await?;
         }
 
         find_image_by_id(
             &self,
             id: Ulid,
         ) -> Option<Image> {
-            self.get_by_id(id).await?;
+            let profile = self.get_by_id(id).await?;
+
+            if !profile.has_avatar {
+                return Ok(None);
+            }
+
             self.image_repository
                 .find_by_id(id.into())
                 .await?
@@ -154,10 +182,19 @@ implementation! {
             &self,
             id: Ulid,
         ) -> () {
-            self.get_by_id(id).await?;
+            let mut profile = self.get_by_id(id).await?;
             self.get_image_by_id(id).await?;
+
             self.image_repository
                 .delete_by_id(id.into())
+                .await?;
+
+            profile.has_avatar = false;
+            self.profile_repository
+                .upsert_by_id(
+                    profile.id.into(),
+                    profile.into()
+                )
                 .await?;
         }
     }
