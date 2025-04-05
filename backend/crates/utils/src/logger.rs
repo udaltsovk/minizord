@@ -1,9 +1,10 @@
-use actix_contrib_logger::middleware::Logger;
-use log::Level;
+#[cfg(feature = "actix-web")]
+use {actix_contrib_logger::middleware::Logger, log::Level};
 
-pub struct CustomLogger;
-
-impl CustomLogger {
+#[cfg(feature = "actix-web")]
+pub struct CustomActixLogger;
+#[cfg(feature = "actix-web")]
+impl CustomActixLogger {
     #[allow(clippy::new_ret_no_self)]
     pub fn new() -> Logger {
         Logger::new("%a \"%r\" %s (took %D ms to serve)")

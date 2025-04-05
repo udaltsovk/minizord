@@ -3,14 +3,14 @@ resolver = "2"
 members = [
     "crates/macros",
     "crates/utils",
-    "crates/api/repository",
-    "crates/api/dto",
-    "crates/api/service",
-    "crates/api/handler",
-    "crates/api",
-    "crates/mail",
-    "crates/telegram",
+    "crates/api*",
+    "crates/mail*",
+    "crates/telegram*",
 ]
+
+[workspace.package]
+license = "MIT"
+edition = "2024"
 
 [workspace.dependencies]
 macros = { path = "./crates/macros" }
@@ -46,7 +46,7 @@ surrealdb = "2.2"
 
 aws-sdk-s3 = { version = "1.82", features = ["behavior-version-latest"] }
 
-#tonic = "0.12"
+tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost"] }
 
 utoipa = { version = "5.3", features = [
     "actix_extras",

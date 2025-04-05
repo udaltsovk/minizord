@@ -39,7 +39,12 @@
 
 use std::{fmt::Display, sync::Arc};
 
-use ::utils::auth::password_hashing::PasswordHasher;
+use ::utils::{
+    adapters::{S3, SurrealDB},
+    auth::password_hashing::PasswordHasher,
+    lgtm::LGTM,
+    logger::CustomActixLogger,
+};
 use actix_web::{
     App, HttpRequest, HttpResponse, HttpServer,
     middleware::{Compress, NormalizePath, TrailingSlash},
@@ -55,9 +60,7 @@ use handler::{
     user::{UserHandler, implementation::ImplementedUserHandler},
 };
 use repository::{
-    common::adapters::{s3::S3, surrealdb::SurrealDB},
-    image::s3::S3ImageRepository,
-    profile::surreal::SurrealProfileRepository,
+    image::s3::S3ImageRepository, profile::surreal::SurrealProfileRepository,
     user::surreal::SurrealUserRepository,
 };
 use service::{
@@ -66,7 +69,7 @@ use service::{
     },
     user::{UserServiceDependency, implementation::ImplementedUserService},
 };
-use utils::{lgtm::LGTM, logger::CustomLogger, openapi::OpenApi, validation};
+use utils::{openapi::OpenApi, validation};
 use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::{AppExt, service_config::ServiceConfig};
 
@@ -92,7 +95,6 @@ env_vars_config! {
 struct AppConfig {
     user_service: UserServiceDependency,
     profile_service: ProfileServiceDependency,
-    openapi: OpenApiStruct,
 }
 impl AppConfig {
     #[tracing::instrument(skip_all, level = "trace")]
@@ -126,10 +128,12 @@ fn input_err_handler<'a, T: Display>(
 
 pub struct Api {
     config: AppConfig,
+    openapi: OpenApiStruct,
+    lgtm: LGTM,
 }
 impl Api {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn setup(db: SurrealDB, s3: S3) -> Self {
+    pub fn setup(lgtm: LGTM, db: SurrealDB, s3: S3) -> Self {
         let surreal_client = Arc::new(db);
         let s3_client = Arc::new(s3);
 
@@ -156,18 +160,19 @@ impl Api {
             config: AppConfig {
                 user_service,
                 profile_service,
-                openapi: OpenApi::openapi(),
             },
+            openapi: OpenApi::openapi(),
+            lgtm,
         }
     }
 
     pub async fn run(self) -> std::io::Result<()> {
         log::info!("Starting the web server");
-        let config = self.config.clone();
+
         HttpServer::new(move || {
             App::new()
                 .validator_error_handler(Arc::new(validation::error_handler))
-                .wrap(LGTM::metrics_middleware())
+                .wrap(self.lgtm.metrics_middleware())
                 .wrap(CatchPanic::default())
                 .wrap(Compress::default())
                 .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
@@ -176,10 +181,10 @@ impl Api {
                     TrailingSlash::Trim
                 }))
                 .wrap(LGTM::tracing_middleware())
-                .wrap(CustomLogger::new())
+                .wrap(CustomActixLogger::new())
                 .into_utoipa_app()
-                .openapi(config.openapi.clone())
-                .configure(config.clone().build())
+                .openapi(self.openapi.clone())
+                .configure(self.config.clone().build())
                 .openapi_service(OpenApi::ui_service)
                 .into_app()
         })
@@ -187,7 +192,7 @@ impl Api {
         .run()
         .await?;
 
-        log::info!("Shutting down web server");
+        log::info!("Shutting down the web server");
         Ok(())
     }
 

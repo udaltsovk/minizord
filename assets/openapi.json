@@ -1646,7 +1646,8 @@
           "surname",
           "city",
           "bio",
-          "portfolio_urls"
+          "portfolio_urls",
+          "has_avatar"
         ],
         "properties": {
           "id": {
@@ -1683,6 +1684,10 @@
               "type": "string",
               "minLength": 0
             },
+            "description": ""
+          },
+          "has_avatar": {
+            "type": "boolean",
             "description": ""
           }
         }

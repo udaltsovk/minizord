@@ -1,13 +1,10 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
+use utils::adapters::SurrealDB;
 
 use super::{CreateTeam, Team, TeamId, TeamUpdate};
-use crate::{
-    common::{RepositoryError, adapters::surrealdb::SurrealDB},
-    tour::TourId,
-    user::UserId,
-};
+use crate::{common::RepositoryError, tour::TourId, user::UserId};
 
 impl From<TeamId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]

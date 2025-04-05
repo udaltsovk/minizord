@@ -8,7 +8,6 @@ use surrealdb_migrations::MigrationRunner;
 
 #[derive(Clone)]
 pub struct SurrealDB(pub Surreal<Client>);
-
 impl SurrealDB {
     #[tracing::instrument(skip_all, level = "debug")]
     async fn setup(

@@ -1,12 +1,11 @@
 use std::sync::Arc;
 
 use macros::implementation;
+use utils::adapters::SurrealDB;
 
 use super::{HasExperienceAs, UpsertHasExperienceAs};
 use crate::{
-    common::{RepositoryError, adapters::surrealdb::SurrealDB},
-    specialization::SpecializationId,
-    user::UserId,
+    common::RepositoryError, specialization::SpecializationId, user::UserId,
 };
 
 implementation! {

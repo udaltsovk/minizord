@@ -1,16 +1,18 @@
 [package]
 name = "repository"
 version = "0.1.0"
-edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
+license.workspace = true
+edition.workspace = true
 
 [features]
 default = ["surrealdb", "s3"]
-surrealdb = ["dep:surrealdb", "dep:surrealdb-migrations", "dep:include_dir"]
-s3 = ["dep:aws-sdk-s3", "dep:infer", "dep:mime_guess"]
+surrealdb = ["dep:surrealdb", "utils/surrealdb"]
+s3 = ["dep:aws-sdk-s3", "utils/s3"]
 
 [dependencies]
 macros.workspace = true
+utils.workspace = true
 
 thiserror.workspace = true
 #log.workspace = true
@@ -27,9 +29,4 @@ bytes.workspace = true
 tracing.workspace = true
 
 surrealdb = { workspace = true, optional = true }
-surrealdb-migrations = { version = "2.2", optional = true }
-include_dir = { version = "0.7", optional = true }
-
 aws-sdk-s3 = { workspace = true, optional = true }
-infer = { version = "0.19", optional = true }
-mime_guess = { version = "2.0", optional = true }

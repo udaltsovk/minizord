@@ -1,10 +1,5 @@
-use std::time::Duration;
+use std::{borrow::Cow, sync::Arc, time::Duration};
 
-use actix_web::{
-    body::MessageBody,
-    dev::{ServiceRequest, ServiceResponse},
-};
-use actix_web_prom::{PrometheusMetrics, PrometheusMetricsBuilder};
 use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
 use opentelemetry_otlp::{LogExporter, SpanExporter, WithExportConfig};
@@ -13,10 +8,7 @@ use opentelemetry_sdk::{
     logs::{BatchLogProcessor, SdkLogger, SdkLoggerProvider},
     trace::{BatchSpanProcessor, SdkTracerProvider, Tracer},
 };
-use tracing::{Span, Subscriber, level_filters::LevelFilter};
-use tracing_actix_web::{
-    DefaultRootSpanBuilder, Level, RootSpanBuilder, TracingLogger,
-};
+use tracing::{Subscriber, level_filters::LevelFilter};
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{
     EnvFilter,
@@ -29,17 +21,27 @@ use tracing_subscriber::{
     registry::LookupSpan,
     util::SubscriberInitExt,
 };
+#[cfg(feature = "actix-web")]
+use {
+    actix_web_prom::{PrometheusMetrics, PrometheusMetricsBuilder},
+    actix_web_specific::CustomLevelRootSpanBuilder,
+    tracing_actix_web::{RootSpanBuilder, TracingLogger},
+};
 
-use crate::config;
+#[cfg(feature = "actix-web")]
+mod actix_web_specific;
 
 #[inline]
 fn parse_directive(directive: &'static str) -> Directive {
     directive.parse().expect("Failed to parse directive")
 }
 
+#[derive(Clone, Debug)]
 pub struct LGTM {
-    logger_provider: SdkLoggerProvider,
-    tracer_provider: SdkTracerProvider,
+    otel_endpoint: String,
+    otel_service_name: Cow<'static, str>,
+    logger_provider: Option<Arc<SdkLoggerProvider>>,
+    tracer_provider: Option<Arc<SdkTracerProvider>>,
 }
 impl LGTM {
     #[inline]
@@ -72,18 +74,18 @@ impl LGTM {
     }
 
     #[inline]
-    fn configure_exporter<T: WithExportConfig>(exporter: T) -> T {
+    fn configure_exporter<T: WithExportConfig>(&self, exporter: T) -> T {
         exporter
-            .with_endpoint(config::OTEL_ENDPOINT.clone())
+            .with_endpoint(&self.otel_endpoint)
             .with_timeout(Duration::from_secs(5))
     }
 
     #[inline]
-    fn logger_provider() -> SdkLoggerProvider {
-        SdkLoggerProvider::builder()
+    fn configure_logger_provider(mut self) -> Self {
+        let logger_provider = SdkLoggerProvider::builder()
             .with_log_processor(
                 BatchLogProcessor::builder(
-                    Self::configure_exporter(
+                    self.configure_exporter(
                         LogExporter::builder().with_tonic(),
                     )
                     .build()
@@ -91,15 +93,17 @@ impl LGTM {
                 )
                 .build(),
             )
-            .build()
+            .build();
+        self.logger_provider = Some(Arc::new(logger_provider));
+        self
     }
 
     #[inline]
-    fn tracer_provider() -> SdkTracerProvider {
-        SdkTracerProvider::builder()
+    fn configure_tracer_provider(mut self) -> Self {
+        let tracer_provider = SdkTracerProvider::builder()
             .with_span_processor(
                 BatchSpanProcessor::builder(
-                    Self::configure_exporter(
+                    self.configure_exporter(
                         SpanExporter::builder().with_tonic(),
                     )
                     .build()
@@ -107,48 +111,65 @@ impl LGTM {
                 )
                 .build(),
             )
-            .build()
+            .build();
+        self.tracer_provider = Some(Arc::new(tracer_provider));
+        self
     }
 
     #[inline]
     fn log_layer(
-        provider: &SdkLoggerProvider,
+        &self,
     ) -> OpenTelemetryTracingBridge<SdkLoggerProvider, SdkLogger> {
-        OpenTelemetryTracingBridge::new(provider)
+        OpenTelemetryTracingBridge::new(
+            &self
+                .logger_provider
+                .clone()
+                .expect("Called `LGTM::trace_layer` too early"),
+        )
     }
 
     #[inline]
     fn trace_layer<S: Subscriber + for<'span> LookupSpan<'span>>(
-        provider: &SdkTracerProvider,
+        &self,
     ) -> OpenTelemetryLayer<S, Tracer> {
         OpenTelemetryLayer::new(
-            provider.tracer(config::OTEL_SERVICE_NAME.clone()),
+            self.tracer_provider
+                .clone()
+                .expect("Called `LGTM::trace_layer` too early")
+                .tracer(self.otel_service_name.clone()),
         )
     }
 
-    pub fn init() -> Self {
-        let logger_provider = Self::logger_provider();
-        let tracer_provider = Self::tracer_provider();
+    pub fn init(
+        otel_endpoint: impl Into<String>,
+        otel_service_name: impl Into<Cow<'static, str>>,
+    ) -> Self {
+        let lgtm = Self {
+            otel_endpoint: otel_endpoint.into(),
+            otel_service_name: otel_service_name.into(),
+            logger_provider: None,
+            tracer_provider: None,
+        }
+        .configure_logger_provider()
+        .configure_tracer_provider();
 
         tracing_subscriber::registry()
             .with(Self::filter_layer())
             .with(Self::fmt_layer())
-            .with(Self::log_layer(&logger_provider))
-            .with(Self::trace_layer(&tracer_provider))
+            .with(lgtm.log_layer())
+            .with(lgtm.trace_layer())
             .init();
-
-        Self {
-            logger_provider,
-            tracer_provider,
-        }
+        lgtm
     }
 
+    #[cfg(feature = "actix-web")]
     pub fn tracing_middleware() -> TracingLogger<impl RootSpanBuilder> {
         TracingLogger::<CustomLevelRootSpanBuilder>::new()
     }
 
-    pub fn metrics_middleware() -> PrometheusMetrics {
-        PrometheusMetricsBuilder::new(config::OTEL_SERVICE_NAME.as_str())
+    #[cfg(feature = "actix-web")]
+    pub fn metrics_middleware(&self) -> PrometheusMetrics {
+        PrometheusMetricsBuilder::new(&self.otel_service_name)
             .endpoint("/metrics")
             .mask_unmatched_patterns("UNKNOWN")
             .build()
@@ -158,34 +179,15 @@ impl LGTM {
     pub fn shutdown(&self) -> OTelSdkResult {
         log::info!("Shutting down LGTM stack");
 
-        self.tracer_provider.shutdown()?;
-        self.logger_provider.shutdown()?;
+        self.tracer_provider
+            .clone()
+            .expect("Called `LGTM::shutdown` too early")
+            .shutdown()?;
+        self.logger_provider
+            .clone()
+            .expect("Called `LGTM::shutdown` too early")
+            .shutdown()?;
 
         Ok(())
-    }
-}
-impl Drop for LGTM {
-    fn drop(&mut self) {
-        self.shutdown().expect("Failed to shut down LGTM stack");
-    }
-}
-
-pub struct CustomLevelRootSpanBuilder;
-
-impl RootSpanBuilder for CustomLevelRootSpanBuilder {
-    fn on_request_start(request: &ServiceRequest) -> Span {
-        let level = if request.path() == "/metrics" {
-            Level::TRACE
-        } else {
-            Level::INFO
-        };
-        tracing_actix_web::root_span!(level = level, request)
-    }
-
-    fn on_request_end<B: MessageBody>(
-        span: Span,
-        outcome: &Result<ServiceResponse<B>, actix_web::Error>,
-    ) {
-        DefaultRootSpanBuilder::on_request_end(span, outcome);
     }
 }

@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
+use utils::adapters::SurrealDB;
 
 use super::{CreateTechnology, Technology, TechnologyId, TechnologyUpdate};
-use crate::common::{RepositoryError, adapters::surrealdb::SurrealDB};
+use crate::common::RepositoryError;
 
 implementation! {
     TechnologyRepository {

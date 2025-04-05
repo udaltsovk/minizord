@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
+use utils::adapters::SurrealDB;
 
 use super::{CreateUser, User, UserId, UserUpdate};
-use crate::common::{RepositoryError, adapters::surrealdb::SurrealDB};
+use crate::common::RepositoryError;
 
 impl From<UserId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]

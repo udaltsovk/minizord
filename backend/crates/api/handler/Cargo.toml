@@ -1,8 +1,9 @@
 [package]
 name = "handler"
 version = "0.1.0"
-edition = "2024"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
 macros.workspace = true

@@ -1,10 +1,17 @@
-use api::{Api, config, utils::lgtm::LGTM};
-use repository::common::adapters::{s3::S3, surrealdb::SurrealDB};
+use api::{Api, config};
+use utils::{
+    adapters::{S3, SurrealDB},
+    lgtm::LGTM,
+};
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     config::init();
-    let _lgtm = LGTM::init();
+
+    let lgtm = LGTM::init(
+        config::OTEL_ENDPOINT.clone(),
+        config::OTEL_SERVICE_NAME.clone(),
+    );
 
     let db = SurrealDB::init(
         &config::DB_ADDRESS,
@@ -25,5 +32,8 @@ async fn main() -> std::io::Result<()> {
     )
     .await;
 
-    Api::setup(db, s3).run().await
+    Api::setup(lgtm.clone(), db, s3).run().await?;
+
+    lgtm.shutdown().expect("Failed to shut down LGTM stuff");
+    Ok(())
 }

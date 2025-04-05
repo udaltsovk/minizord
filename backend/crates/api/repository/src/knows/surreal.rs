@@ -1,13 +1,10 @@
 use std::sync::Arc;
 
 use macros::implementation;
+use utils::adapters::SurrealDB;
 
 use super::{Knows, UpsertKnows};
-use crate::{
-    common::{RepositoryError, adapters::surrealdb::SurrealDB},
-    technology::TechnologyId,
-    user::UserId,
-};
+use crate::{common::RepositoryError, technology::TechnologyId, user::UserId};
 
 implementation! {
     KnowsRepository {

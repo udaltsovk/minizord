@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use macros::{RepositoryId, implementation};
+use utils::adapters::SurrealDB;
 
 use super::{CreateTour, Tour, TourId, TourUpdate};
-use crate::common::{RepositoryError, adapters::surrealdb::SurrealDB};
+use crate::common::RepositoryError;
 
 impl From<TourId> for ulid::Ulid {
     #[tracing::instrument(skip_all, level = "trace")]
