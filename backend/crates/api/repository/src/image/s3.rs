@@ -1,12 +1,14 @@
-use aws_sdk_s3::operation::get_object::GetObjectError;
-use aws_sdk_s3::primitives::ByteStream;
-use macros::implementation;
 use std::sync::Arc;
-use aws_sdk_s3::operation::head_object::HeadObjectError;
+
+use aws_sdk_s3::{
+    operation::{get_object::GetObjectError, head_object::HeadObjectError},
+    primitives::ByteStream,
+};
+use macros::implementation;
 use tracing::instrument;
 
 use super::{Image, ImageId, UpsertImage};
-use crate::common::{adapters::s3::S3, RepositoryError};
+use crate::common::{RepositoryError, adapters::s3::S3};
 
 #[instrument(level = "trace")]
 fn mime_extension(content_type: &str) -> String {
