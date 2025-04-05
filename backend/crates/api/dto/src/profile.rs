@@ -1,7 +1,7 @@
-use macros::dto;
-use repository::profile::{
+use entity::profile::{
     Profile as ProfileEntity, UpsertProfile as UpsertProfileEntity,
 };
+use macros::dto;
 use ulid::Ulid;
 use utils::validation::validate_portfolio_urls;
 

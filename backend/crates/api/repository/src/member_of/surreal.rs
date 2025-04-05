@@ -1,10 +1,14 @@
 use std::sync::Arc;
 
+use entity::{
+    member_of::{CreateMemberOf, MemberOf, MemberOfUpdate},
+    team::TeamId,
+    user::UserId,
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{CreateMemberOf, MemberOf, MemberOfUpdate};
-use crate::{common::RepositoryError, team::TeamId, user::UserId};
+use crate::common::RepositoryError;
 
 implementation! {
     MemberOfRepository {

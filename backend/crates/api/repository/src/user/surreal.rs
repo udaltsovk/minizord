@@ -1,17 +1,10 @@
 use std::sync::Arc;
 
-use macros::{RepositoryId, implementation};
+use entity::user::{CreateUser, User, UserId, UserUpdate};
+use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
-use super::{CreateUser, User, UserId, UserUpdate};
 use crate::common::RepositoryError;
-
-impl From<UserId> for ulid::Ulid {
-    #[tracing::instrument(skip_all, level = "trace")]
-    fn from(id: UserId) -> Self {
-        Self::from_string(&id.to_string()).expect("Got invalid UserId")
-    }
-}
 
 implementation! {
     UserRepository {

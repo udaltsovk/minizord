@@ -1,17 +1,14 @@
 use std::sync::Arc;
 
-use macros::{RepositoryId, implementation};
+use entity::{
+    team::{CreateTeam, Team, TeamId, TeamUpdate},
+    tour::TourId,
+    user::UserId,
+};
+use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
-use super::{CreateTeam, Team, TeamId, TeamUpdate};
-use crate::{common::RepositoryError, tour::TourId, user::UserId};
-
-impl From<TeamId> for ulid::Ulid {
-    #[tracing::instrument(skip_all, level = "trace")]
-    fn from(id: TeamId) -> Self {
-        Self::from_string(&id.to_string()).expect("Got invalid TeamId")
-    }
-}
+use crate::common::RepositoryError;
 
 implementation! {
     TeamRepository {

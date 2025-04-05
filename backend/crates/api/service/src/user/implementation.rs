@@ -2,11 +2,12 @@ use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     user::{CreateUser, User, UserUpdate},
 };
-use macros::implementation;
-use repository::user::{
+use entity::user::{
     CreateUser as CreateUserEntity, User as UserEntity,
-    UserRepositoryDependency, UserUpdate as UserEntityUpdate,
+    UserUpdate as UserEntityUpdate,
 };
+use macros::implementation;
+use repository::user::UserRepositoryDependency;
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
 

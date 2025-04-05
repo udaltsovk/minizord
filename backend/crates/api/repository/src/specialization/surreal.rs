@@ -1,21 +1,13 @@
 use std::sync::Arc;
 
-use macros::{RepositoryId, implementation};
-use utils::adapters::SurrealDB;
-
-use super::{
+use entity::specialization::{
     CreateSpecialization, Specialization, SpecializationId,
     SpecializationUpdate,
 };
-use crate::common::RepositoryError;
+use macros::{EntityId, implementation};
+use utils::adapters::SurrealDB;
 
-impl From<SpecializationId> for ulid::Ulid {
-    #[tracing::instrument(skip_all, level = "trace")]
-    fn from(id: SpecializationId) -> Self {
-        Self::from_string(&id.to_string())
-            .expect("Got invalid SpecializationId")
-    }
-}
+use crate::common::RepositoryError;
 
 implementation! {
     SpecializationRepository {

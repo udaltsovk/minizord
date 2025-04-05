@@ -10,10 +10,10 @@ macro_rules! service {
             )*
         }
     ) => {
-        $crate::paste::paste! {
+        $crate::pastey::paste! {
             type [<$name ServiceResult>]<T> = Result<T, crate::common::ServiceError>;
 
-            #[macros::async_trait::async_trait]
+            #[$crate::async_trait::async_trait]
             pub trait [<$name Service>] {
                 $(
                     $(#[$fn_meta])*

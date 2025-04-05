@@ -1,10 +1,14 @@
 use std::sync::Arc;
 
+use entity::{
+    team::TeamId,
+    technology::TechnologyId,
+    uses::{CreateUses, Uses, UsesUpdate},
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{CreateUses, Uses, UsesUpdate};
-use crate::{common::RepositoryError, team::TeamId, technology::TechnologyId};
+use crate::common::RepositoryError;
 
 implementation! {
     UsesRepository {

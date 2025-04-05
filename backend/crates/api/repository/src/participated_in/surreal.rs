@@ -1,10 +1,16 @@
 use std::sync::Arc;
 
+use entity::{
+    participated_in::{
+        CreateParticipatedIn, ParticipatedIn, ParticipatedInUpdate,
+    },
+    tour::TourId,
+    user::UserId,
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{CreateParticipatedIn, ParticipatedIn, ParticipatedInUpdate};
-use crate::{common::RepositoryError, tour::TourId, user::UserId};
+use crate::common::RepositoryError;
 
 implementation! {
     ParticipatedInRepository {

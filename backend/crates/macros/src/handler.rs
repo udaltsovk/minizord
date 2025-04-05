@@ -15,7 +15,7 @@ macro_rules! handler {
             $(;)?
         }
     ) => {
-        $crate::paste::paste! {
+        $crate::pastey::paste! {
             pub use implementation::OpenApi;
 
             type [<$name HandlerResult>]<T> = Result<T, crate::common::HandlerError>;
@@ -34,7 +34,7 @@ macro_rules! handler {
                 }
             }
 
-            #[macros::async_trait::async_trait]
+            #[$crate::async_trait::async_trait]
             trait [<$name HandlerHelper>] {
                 $(
                     async fn $method $sig -> [<$name HandlerResult>]<$res>;

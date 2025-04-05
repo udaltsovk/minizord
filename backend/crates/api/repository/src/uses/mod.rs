@@ -1,25 +1,9 @@
-use macros::{crud_repository, entity};
-
-use crate::{team::TeamId, technology::TechnologyId};
+use entity::{team::TeamId, technology::TechnologyId, uses};
+use macros::crud_repository;
 
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-entity! {
-    TeamId -> Uses -> TechnologyId { }
-}
-
 crud_repository! {
-    TeamId -> Uses -> TechnologyId
-}
-
-impl CreateUses {
-    #[tracing::instrument(skip_all, level = "trace")]
-    fn into_entity(self) -> Uses {
-        Uses {
-            id: self.get_id_string(),
-            r#in: self.r#in,
-            out: self.out,
-        }
-    }
+    TeamId -> uses -> TechnologyId
 }

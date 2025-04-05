@@ -1,5 +1,5 @@
+use entity::user::{User as UserEntity, UserRole as UserEntityRole};
 use macros::dto;
-use repository::user::{User as UserEntity, UserRole as UserEntityRole};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use ulid::Ulid;

@@ -1,5 +1,5 @@
+use entity::team::Team as TeamEntity;
 use macros::dto;
-use repository::team::Team as TeamEntity;
 use ulid::Ulid;
 use utils::validation::RE_SENTENCE;
 

@@ -1,10 +1,14 @@
 use std::sync::Arc;
 
+use entity::{
+    mentors::{CreateMentors, Mentors, MentorsUpdate},
+    team::TeamId,
+    user::UserId,
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{CreateMentors, Mentors, MentorsUpdate};
-use crate::{common::RepositoryError, team::TeamId, user::UserId};
+use crate::common::RepositoryError;
 
 implementation! {
     MentorsRepository {

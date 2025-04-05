@@ -8,10 +8,17 @@ edition.workspace = true
 
 default-run = "api"
 
+[lib]
+name = "api"
+path = "./src/lib.rs"
+
+[[bin]]
+name = "api"
+path = "./src/main.rs"
+
 [[bin]]
 name = "gen-openapi"
 path = "./src/gen_openapi.rs"
-
 
 [features]
 default = ["scalar"]
@@ -22,9 +29,9 @@ swagger = ["utoipa-swagger-ui"]
 env-vars-config.workspace = true
 utils = { workspace = true, features = ["actix-web"] }
 
-repository = { path = "./repository" }
-service = { path = "./service", features = ["surrealdb", "s3"] }
-handler = { path = "./handler" }
+api-repository = { path = "./repository" }
+api-service = { path = "./service", features = ["surrealdb", "s3"] }
+api-handler = { path = "./handler" }
 
 log.workspace = true
 

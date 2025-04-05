@@ -1,20 +1,25 @@
 [package]
-name = "service"
+name = "api-service"
 version = "0.1.0"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true
 edition.workspace = true
 
+[lib]
+name = "service"
+path = "./src/lib.rs"
+
 [features]
-surrealdb = ["repository/surrealdb"]
-s3 = ["repository/s3"]
+surrealdb = ["api-repository/surrealdb"]
+s3 = ["api-repository/s3"]
 
 [dependencies]
 macros.workspace = true
 utils.workspace = true
-dto.workspace = true
 
-repository = { path = "../repository" }
+api-entity = { path = "../entity" }
+api-repository = { path = "../repository" }
+api-dto = { path = "../dto" }
 
 thiserror.workspace = true
 

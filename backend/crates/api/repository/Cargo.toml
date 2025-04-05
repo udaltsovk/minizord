@@ -1,23 +1,28 @@
 [package]
-name = "repository"
+name = "api-repository"
 version = "0.1.0"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true
 edition.workspace = true
 
+[lib]
+name = "repository"
+path = "./src/lib.rs"
+
 [features]
-surrealdb = ["dep:surrealdb", "macros/surrealdb", "utils/surrealdb"]
-s3 = ["dep:aws-sdk-s3", "utils/s3"]
+surrealdb = ["dep:surrealdb", "api-entity/surrealdb", "macros/surrealdb", "utils/surrealdb"]
+s3 = ["dep:aws-sdk-s3", "api-entity/s3", "utils/s3"]
 
 [dependencies]
 macros.workspace = true
 utils.workspace = true
 
+api-entity = { path = "../entity" }
+
 thiserror.workspace = true
 #log.workspace = true
 
 serde.workspace = true
-strum.workspace = true
 strum_macros.workspace = true
 
 chrono.workspace = true

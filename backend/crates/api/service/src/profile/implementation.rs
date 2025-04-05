@@ -4,14 +4,14 @@ use dto::{
     image::Image,
     profile::{Profile, UpsertProfile},
 };
+use entity::{
+    profile::{ProfileId, UpsertProfile as UpsertProfileEntity},
+    user::UserUpdate as UserEntityUpdate,
+};
 use macros::implementation;
 use repository::{
-    image::ImageRepositoryDependency,
-    profile::{
-        ProfileId, ProfileRepositoryDependency,
-        UpsertProfile as UpsertProfileEntity,
-    },
-    user::{UserRepositoryDependency, UserUpdate as UserEntityUpdate},
+    image::ImageRepositoryDependency, profile::ProfileRepositoryDependency,
+    user::UserRepositoryDependency,
 };
 use ulid::Ulid;
 

@@ -1,10 +1,13 @@
 use std::sync::Arc;
 
+use entity::{
+    reviewed::{CreateReviewed, Reviewed, ReviewedUpdate},
+    user::UserId,
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{CreateReviewed, Reviewed, ReviewedUpdate};
-use crate::{common::RepositoryError, user::UserId};
+use crate::common::RepositoryError;
 
 implementation! {
     ReviewedRepository {

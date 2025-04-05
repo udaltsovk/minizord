@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
+use entity::{specialization::SpecializationId, tour::Tour as TourEntity};
 use macros::dto;
-use repository::{specialization::SpecializationId, tour::Tour as TourEntity};
 use ulid::Ulid;
 use utils::validation::RE_SENTENCE;
 

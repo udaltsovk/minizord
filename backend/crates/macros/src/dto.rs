@@ -27,8 +27,8 @@ macro_rules! dto {
             ),* $(,)?
         }
     )*) => {
-        $crate::paste::paste! {
-            $(macros::derive_dto! {
+        $crate::pastey::paste! {
+            $($crate::derive_dto! {
                 $(#[$meta])*
                 pub struct $name {
                     $(
@@ -84,8 +84,8 @@ macro_rules! dto {
             )? $(,)?
         }
     )*) => {
-        $crate::paste::paste! {$(
-            $(macros::derive_dto! {
+        $crate::pastey::paste! {$(
+            $($crate::derive_dto! {
                 $(#[$create_meta])*
                 pub struct [<Create $name>] {
                     $(
@@ -94,7 +94,7 @@ macro_rules! dto {
                     )*
                 }
             })?
-            $(macros::derive_dto! {
+            $($crate::derive_dto! {
                 $(#[$upsert_meta])*
                 pub struct [<Upsert $name>] {
                     $(
@@ -103,7 +103,7 @@ macro_rules! dto {
                     )*
                 }
             })?
-            macros::derive_dto! {
+            $crate::derive_dto! {
                 $(#[$meta])*
                 pub struct $name {
                     $(#[$id_meta])*
@@ -116,7 +116,7 @@ macro_rules! dto {
                     )?
                 }
             }
-            $(macros::derive_dto! {
+            $($crate::derive_dto! {
                 $(#[$update_meta])*
                 pub struct [<$name Update>] {
                     $(

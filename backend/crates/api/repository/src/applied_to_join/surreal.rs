@@ -1,10 +1,16 @@
 use std::sync::Arc;
 
+use entity::{
+    applied_to_join::{
+        AppliedToJoin, AppliedToJoinUpdate, CreateAppliedToJoin,
+    },
+    team::TeamId,
+    user::UserId,
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{AppliedToJoin, AppliedToJoinUpdate, CreateAppliedToJoin};
-use crate::{common::RepositoryError, team::TeamId, user::UserId};
+use crate::common::RepositoryError;
 
 implementation! {
     AppliedToJoinRepository {

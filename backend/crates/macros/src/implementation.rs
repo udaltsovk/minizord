@@ -15,7 +15,7 @@ macro_rules! implementation {
             )*
         }
     ) => {
-        $crate::paste::paste! {
+        $crate::pastey::paste! {
             $(#[$impl_meta])*
             pub struct [<$impl_name $trait_name>] {
                 $($(
@@ -34,7 +34,7 @@ macro_rules! implementation {
                 }
             }
 
-            #[macros::async_trait::async_trait]
+            #[$crate::async_trait::async_trait]
             impl super::$trait_name for [<$impl_name $trait_name>] {
                 $(
                     #[tracing::instrument(skip_all)]
@@ -62,7 +62,7 @@ macro_rules! handler_implementation {
             )*
         }
     ) => {
-        $crate::paste::paste! {
+        $crate::pastey::paste! {
             pub use routes::OpenApi;
             mod routes {
                 use super::*;
@@ -98,7 +98,7 @@ macro_rules! handler_implementation {
             struct [<$impl_name $trait_name Helper>];
             #[allow(unused_variables)]
             #[doc(hidden)]
-            #[macros::async_trait::async_trait]
+            #[$crate::async_trait::async_trait]
             impl super::[<$trait_name Helper>] for [<$impl_name $trait_name Helper>] {
                 $(
                     async fn $method $sig -> super::[<$trait_name Result>]<$res> {

@@ -9,7 +9,6 @@ edition.workspace = true
 surrealdb = ["dep:surrealdb", "dep:surrealdb-migrations", "dep:include_dir"]
 s3 = ["dep:aws-sdk-s3"]
 actix-web = [
-    "dep:log", 
     "dep:actix-web", 
     "dep:actix-contrib-logger", 
     "dep:tracing-actix-web", 
@@ -17,7 +16,7 @@ actix-web = [
 ]
 
 [dependencies]
-log = { workspace = true, optional = true }
+log.workspace = true
 
 lazy_static = "1.4"
 

@@ -1,12 +1,14 @@
 use std::sync::Arc;
 
+use entity::{
+    has_experience_as::{HasExperienceAs, UpsertHasExperienceAs},
+    specialization::SpecializationId,
+    user::UserId,
+};
 use macros::implementation;
 use utils::adapters::SurrealDB;
 
-use super::{HasExperienceAs, UpsertHasExperienceAs};
-use crate::{
-    common::RepositoryError, specialization::SpecializationId, user::UserId,
-};
+use crate::common::RepositoryError;
 
 implementation! {
     HasExperienceAsRepository {

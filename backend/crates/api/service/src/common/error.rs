@@ -35,6 +35,7 @@ pub enum ServiceError {
 impl From<RepositoryError> for ServiceError {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(err: RepositoryError) -> Self {
+        #[allow(unused_imports)]
         use RepositoryError as RE;
         match err {
             #[cfg(feature = "surrealdb")]

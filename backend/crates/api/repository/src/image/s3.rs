@@ -4,11 +4,11 @@ use aws_sdk_s3::{
     operation::{get_object::GetObjectError, head_object::HeadObjectError},
     primitives::ByteStream,
 };
+use entity::image::{Image, ImageId, UpsertImage};
 use macros::implementation;
 use tracing::instrument;
 use utils::adapters::S3;
 
-use super::{Image, ImageId, UpsertImage};
 use crate::common::RepositoryError;
 
 #[instrument(level = "trace")]
@@ -17,7 +17,6 @@ fn mime_extension(content_type: &str) -> String {
         .split('/')
         .nth(1)
         .map(|ext| {
-            // Handle special cases
             match ext {
                 "jpeg" => "jpg",
                 "svg+xml" => "svg",

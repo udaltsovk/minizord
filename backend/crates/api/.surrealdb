@@ -1,5 +1,5 @@
 [core]
-    path = "./crates/api/repository/db/surreal"
+    path = "./repository/db/surreal"
     schema = "full"
 
 [db]

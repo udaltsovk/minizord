@@ -1,10 +1,3 @@
-pub trait RepositoryId: std::fmt::Display {
-    const TABLE: &str;
-
-    #[cfg(feature = "surrealdb")]
-    fn record_id(&self) -> surrealdb::RecordId;
-}
-
 #[macro_export]
 #[allow(clippy::crate_in_macro_def)]
 macro_rules! crud_repository {
@@ -18,25 +11,46 @@ macro_rules! crud_repository {
             )*
         })?
     ) => {
-        $crate::paste::paste! {
-            type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+        $crate::pastey::paste! {
+            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
-            #[macros::async_trait::async_trait]
-            pub trait [<$name Repository>] {
-                async fn save(&self, object: [<Create $name>]) -> [<$name RepositoryResult>]<$name>;
-                async fn find_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool>;
-                async fn update_by_id(&self, id: [<$name Id>], update: [<$name Update>]) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn delete_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
+            #[$crate::async_trait::async_trait]
+            pub trait [<$name:camel Repository>] {
+                async fn save(
+                    &self,
+                    object: [<$name:snake>]::[<Create $name:camel>]
+                ) -> [<$name:camel RepositoryResult>]<[<$name:snake>]::[<$name:camel>]>;
+
+                async fn find_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>]
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>]
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn update_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>],
+                    update: [<$name:snake>]::[<$name:camel Update>]
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn delete_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>]
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
                 $(
                     $(
                         $(#[$fn_meta])*
-                        async fn $method $sig -> [<$name RepositoryResult>]<$res>;
+                        async fn $method $sig -> [<$name:camel RepositoryResult>]<$res>;
                     )*
                 )?
             }
 
-            pub type [<$name RepositoryDependency>] = std::sync::Arc<dyn [<$name Repository>] + Send + Sync>;
+            pub type [<$name:camel RepositoryDependency>] = std::sync::Arc<dyn [<$name:camel Repository>] + Send + Sync>;
         }
     };
     (
@@ -49,11 +63,11 @@ macro_rules! crud_repository {
             )*
         })?
     ) => {
-        $crate::paste::paste! {
-            type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+        $crate::pastey::paste! {
+            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
-            #[macros::async_trait::async_trait]
-            pub trait [<$name Repository>] {
+            #[$crate::async_trait::async_trait]
+            pub trait [<$name:camel Repository>] {
                 const TABLE: &str = stringify!([<$name:snake>]);
 
                 fn get_id_string(in_id: &$in, out_id: &$out) -> String {
@@ -65,15 +79,60 @@ macro_rules! crud_repository {
                     surrealdb::RecordId::from_table_key(Self::TABLE, Self::get_id_string(in_id, out_id))
                 }
 
-                async fn save(&self, object: [<Create $name>]) -> [<$name RepositoryResult>]<$name>;
-                async fn find_all_by_in(&self, r#in: $in, limit: u64, offset: u64) -> [<$name RepositoryResult>]<Vec<$name>>;
-                async fn exists_by_in(&self, r#in: $in) -> [<$name RepositoryResult>]<bool>;
-                async fn find_all_by_out(&self, out: $out, limit: u64, offset: u64) -> [<$name RepositoryResult>]<Vec<$name>>;
-                async fn exists_by_out(&self, out: $out) -> [<$name RepositoryResult>]<bool>;
-                async fn find_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn exists_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<bool>;
-                async fn update_by_in_and_out(&self, r#in: $in, out: $out, update: [<$name Update>]) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn delete_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<Option<$name>>;
+                async fn save(
+                    &self,
+                    object: [<$name:snake>]::[<Create $name:camel>]
+                ) -> [<$name:camel RepositoryResult>]<[<$name:snake>]::[<$name:camel>]>;
+
+                async fn find_all_by_in(
+                    &self,
+                    r#in: $in,
+                    limit: u64,
+                    offset: u64
+                ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_in(
+                    &self,
+                    r#in: $in
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn find_all_by_out(
+                    &self,
+                    out: $out,
+                    limit: u64,
+                    offset: u64
+                ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_out(
+                    &self,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn find_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn update_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out,
+                    update: [<$name:snake>]::[<$name:camel Update>]
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn delete_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
                 $(
                     $(
                         $(#[$fn_meta])*
@@ -82,7 +141,7 @@ macro_rules! crud_repository {
                 )?
             }
 
-            pub type [<$name RepositoryDependency>] = std::sync::Arc<dyn [<$name Repository>] + Send + Sync>;
+            pub type [<$name:camel RepositoryDependency>] = std::sync::Arc<dyn [<$name:camel Repository>] + Send + Sync>;
         }
     };
 }
@@ -99,15 +158,32 @@ macro_rules! urd_repository {
             )*
         })?
     ) => {
-        $crate::paste::paste! {
-            type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+        $crate::pastey::paste! {
+            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
-            #[macros::async_trait::async_trait]
-            pub trait [<$name Repository>] {
-                async fn upsert_by_id(&self, id: [<$name Id>], object: [<Upsert $name>]) -> [<$name RepositoryResult>]<$name>;
-                async fn find_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn exists_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<bool>;
-                async fn delete_by_id(&self, id: [<$name Id>]) -> [<$name RepositoryResult>]<Option<$name>>;
+            #[$crate::async_trait::async_trait]
+            pub trait [<$name:camel Repository>] {
+                async fn upsert_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>],
+                    object: [<$name:snake>]::[<Upsert $name:camel>]
+                ) -> [<$name:camel RepositoryResult>]<[<$name:snake>]::[<$name:camel>]>;
+
+                async fn find_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>]
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>]
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn delete_by_id(
+                    &self,
+                    id: [<$name:snake>]::[<$name:camel Id>]
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
                 $(
                     $(
                         $(#[$fn_meta])*
@@ -116,7 +192,7 @@ macro_rules! urd_repository {
                 )?
             }
 
-            pub type [<$name RepositoryDependency>] = std::sync::Arc<dyn [<$name Repository>] + Send + Sync>;
+            pub type [<$name:camel RepositoryDependency>] = std::sync::Arc<dyn [<$name:camel Repository>] + Send + Sync>;
         }
     };
     (
@@ -129,11 +205,11 @@ macro_rules! urd_repository {
             )*
         })?
     ) => {
-        $crate::paste::paste! {
-            type [<$name RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+        $crate::pastey::paste! {
+            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
 
-            #[macros::async_trait::async_trait]
-            pub trait [<$name Repository>] {
+            #[$crate::async_trait::async_trait]
+            pub trait [<$name:camel Repository>] {
                 const TABLE: &str = stringify!([<$name:snake>]);
 
                 fn get_id_string(in_id: &$in, out_id: &$out) -> String {
@@ -145,23 +221,64 @@ macro_rules! urd_repository {
                     surrealdb::RecordId::from_table_key(Self::TABLE, Self::get_id_string(in_id, out_id))
                 }
 
-                async fn upsert_by_in_and_out(&self, r#in: $in, out: $out, object: [<Upsert $name>]) -> [<$name RepositoryResult>]<$name>;
-                async fn find_all_by_in(&self, r#in: $in, limit: u64, offset: u64) -> [<$name RepositoryResult>]<Vec<$name>>;
-                async fn exists_by_in(&self, r#in: $in) -> [<$name RepositoryResult>]<bool>;
-                async fn find_all_by_out(&self, out: $out, limit: u64, offset: u64) -> [<$name RepositoryResult>]<Vec<$name>>;
-                async fn exists_by_out(&self, out: $out) -> [<$name RepositoryResult>]<bool>;
-                async fn find_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<Option<$name>>;
-                async fn exists_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<bool>;
-                async fn delete_by_in_and_out(&self, r#in: $in, out: $out) -> [<$name RepositoryResult>]<Option<$name>>;
+                async fn upsert_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out,
+                    object: [<$name:snake>]::[<Upsert $name:camel>]
+                ) -> [<$name:camel RepositoryResult>]<[<$name:snake>]::[<$name:camel>]>;
+
+                async fn find_all_by_in(
+                    &self,
+                    r#in: $in,
+                    limit: u64,
+                    offset: u64
+                ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_in(
+                    &self,
+                    r#in: $in
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn find_all_by_out(
+                    &self,
+                    out: $out,
+                    limit: u64,
+                    offset: u64
+                ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_out(
+                    &self,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn find_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
+                async fn exists_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<bool>;
+
+                async fn delete_by_in_and_out(
+                    &self,
+                    r#in: $in,
+                    out: $out
+                ) -> [<$name:camel RepositoryResult>]<Option<[<$name:snake>]::[<$name:camel>]>>;
+
                 $(
                     $(
                         $(#[$fn_meta])*
-                        async fn $method $sig -> [<$name RepositoryResult>]<$res>;
+                        async fn $method $sig -> [<$name:camel RepositoryResult>]<$res>;
                     )*
                 )?
             }
 
-            pub type [<$name RepositoryDependency>] = std::sync::Arc<dyn [<$name Repository>] + Send + Sync>;
+            pub type [<$name:camel RepositoryDependency>] = std::sync::Arc<dyn [<$name:camel Repository>] + Send + Sync>;
         }
     };
 }

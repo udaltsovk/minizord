@@ -15,7 +15,6 @@ edition = "2024"
 [workspace.dependencies]
 macros = { path = "./crates/macros" }
 utils = { path = "./crates/utils" }
-dto = { path = "./crates/api/dto" }
 
 env-vars-config = "0.3"
 
@@ -46,7 +45,7 @@ surrealdb = "2.2"
 
 aws-sdk-s3 = { version = "1.82", features = ["behavior-version-latest"] }
 
-tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost"] }
+tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost", "zstd"] }
 
 utoipa = { version = "5.3", features = [
     "actix_extras",

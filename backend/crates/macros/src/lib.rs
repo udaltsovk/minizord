@@ -38,7 +38,7 @@
 #![deny(clippy::transmute_undefined_repr)] // Detect transmutes with potentially undefined representations
 
 pub extern crate async_trait;
-pub extern crate paste;
+pub extern crate pastey;
 
 mod auth;
 mod dto;
@@ -49,4 +49,4 @@ mod repository;
 mod reqresp;
 mod service;
 
-pub use repository::RepositoryId;
+pub use entity::EntityId;

@@ -1,3 +1,10 @@
+pub trait EntityId: std::fmt::Display {
+    const TABLE: &str;
+
+    #[cfg(feature = "surrealdb")]
+    fn record_id(&self) -> surrealdb::RecordId;
+}
+
 #[macro_export]
 macro_rules! derive_entity {
     (
@@ -57,18 +64,18 @@ macro_rules! entity {
             )? $(,)?
         }
     )*) => {
-        $crate::paste::paste! {$(
+        $crate::pastey::paste! {$(
             #[cfg(feature = "surrealdb")]
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 #[serde(transparent)]
                 pub struct [<$name Id>](surrealdb::RecordId);
             }
             #[cfg(not(feature = "surrealdb"))]
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 #[serde(transparent)]
                 pub struct [<$name Id>]($id_ty);
             }
-            impl macros::RepositoryId for [<$name Id>] {
+            impl macros::EntityId for [<$name Id>] {
                 const TABLE: &str = stringify!([<$name:snake>]);
 
                 #[cfg(feature = "surrealdb")]
@@ -81,7 +88,7 @@ macro_rules! entity {
             impl From<$id_ty> for [<$name Id>] {
                 #[tracing::instrument(skip_all, level = "trace")]
                 fn from(id: $id_ty) -> Self {
-                    Self(surrealdb::RecordId::from_table_key(Self::TABLE, id.to_string()))
+                    Self(surrealdb::RecordId::from_table_key(<Self as macros::EntityId>::TABLE, id.to_string()))
 
                 }
             }
@@ -97,7 +104,16 @@ macro_rules! entity {
             impl From<[<$name Id>]> for surrealdb::RecordId {
                 #[tracing::instrument(skip_all, level = "trace")]
                 fn from(id: [<$name Id>]) -> Self {
-                    id.record_id()
+                    <[<$name Id>] as macros::EntityId>::record_id(&id)
+                }
+            }
+            #[cfg(feature = "surrealdb")]
+            impl From<[<$name Id>]> for $id_ty {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn from(id: [<$name Id>]) -> Self {
+                    use std::str::FromStr;
+                    let name = stringify!([<$name Id>]);
+                    Self::from_str(&id.to_string()).expect("Got invalid {name}")
                 }
             }
             #[cfg(not(feature = "surrealdb"))]
@@ -122,7 +138,7 @@ macro_rules! entity {
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 $($(#[$create_meta])*)?
                 pub struct [<Create $name>] {
                     $($(
@@ -132,7 +148,7 @@ macro_rules! entity {
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 $($(#[$upsert_meta])*)?
                 pub struct [<Upsert $name>] {
                     $($(
@@ -142,7 +158,7 @@ macro_rules! entity {
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 $(#[$meta])*
                 pub struct $name {
                     pub id: [<$name Id>],
@@ -155,7 +171,7 @@ macro_rules! entity {
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 #[derive(Default)]
                 $($(#[$update_meta])*)?
                 pub struct [<$name Update>] {
@@ -211,8 +227,8 @@ macro_rules! entity {
             )? $(,)?
         }
     ) => {
-        $crate::paste::paste! {
-            macros::derive_entity! {
+        $crate::pastey::paste! {
+            $crate::derive_entity! {
                 $($(#[$create_meta])*)?
                 pub struct [<Create $name>] {
                     pub r#in: $in,
@@ -225,17 +241,17 @@ macro_rules! entity {
 
             }
             impl [<Create $name>] {
-                fn get_id_string(&self) -> String {
+                pub fn get_id_string(&self) -> String {
                     format!("{}_{}", self.r#in, self.out)
                 }
 
                 #[cfg(feature = "surrealdb")]
-                fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
+                pub fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
                     surrealdb::RecordId::from_table_key(table, self.get_id_string())
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 $($(#[$upsert_meta])*)?
                 pub struct [<Upsert $name>] {
                     pub r#in: $in,
@@ -248,17 +264,17 @@ macro_rules! entity {
 
             }
             impl [<Upsert $name>] {
-                fn get_id_string(&self) -> String {
+                pub fn get_id_string(&self) -> String {
                     format!("{}_{}", self.r#in, self.out)
                 }
 
                 #[cfg(feature = "surrealdb")]
-                fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
+                pub fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
                     surrealdb::RecordId::from_table_key(table, self.get_id_string())
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 $(#[$meta])*
                 pub struct $name {
                     pub id: String,
@@ -271,7 +287,7 @@ macro_rules! entity {
                 }
             }
 
-            macros::derive_entity! {
+            $crate::derive_entity! {
                 #[derive(Default)]
                 $($(#[$update_meta])*)?
                 pub struct [<$name Update>] {

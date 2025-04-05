@@ -12,6 +12,8 @@
     watchexec
     surrealdb-migrations
     protobuf
+    cargo-udeps
+    cargo-audit
 
     (nodejs_22.override {enableNpm = false;})
     pnpm

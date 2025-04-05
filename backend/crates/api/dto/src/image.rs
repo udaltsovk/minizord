@@ -1,8 +1,6 @@
 use bytes::Bytes;
+use entity::image::{Image as ImageEntity, UpsertImage as UpsertImageEntity};
 use macros::dto;
-use repository::image::{
-    Image as ImageEntity, UpsertImage as UpsertImageEntity,
-};
 
 dto! {
     ///
