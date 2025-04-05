@@ -6,7 +6,7 @@ license.workspace = true
 edition.workspace = true
 
 [features]
-default = ["surrealdb"]
+surrealdb = ["dep:surrealdb"]
 
 [dependencies]
 async-trait = "0.1"

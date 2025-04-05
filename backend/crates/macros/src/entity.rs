@@ -94,17 +94,31 @@ macro_rules! entity {
                 }
             }
             #[cfg(feature = "surrealdb")]
-            impl Into<surrealdb::RecordId> for [<$name Id>] {
+            impl From<[<$name Id>]> for surrealdb::RecordId {
                 #[tracing::instrument(skip_all, level = "trace")]
-                fn into(self) -> surrealdb::RecordId {
-                    self.record_id()
+                fn from(id: [<$name Id>]) -> Self {
+                    id.record_id()
                 }
             }
             #[cfg(not(feature = "surrealdb"))]
-            impl Into<$id_ty> for [<$name Id>] {
+            impl std::fmt::Display for [<$name Id>] {
                 #[tracing::instrument(skip_all, level = "trace")]
-                fn into(self) -> $id_ty {
-                    self.0
+                fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+                    self.0.fmt(formatter)
+                }
+            }
+            #[cfg(not(feature = "surrealdb"))]
+            impl From<$id_ty> for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn from(id: $id_ty) -> Self {
+                    Self(id)
+                }
+            }
+            #[cfg(not(feature = "surrealdb"))]
+            impl From<[<$name Id>]> for $id_ty {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn from(id: [<$name Id>]) -> Self {
+                    id.0
                 }
             }
 

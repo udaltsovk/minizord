@@ -23,7 +23,7 @@ env-vars-config.workspace = true
 utils = { workspace = true, features = ["actix-web"] }
 
 repository = { path = "./repository" }
-service = { path = "./service" }
+service = { path = "./service", features = ["surrealdb", "s3"] }
 handler = { path = "./handler" }
 
 log.workspace = true

@@ -6,7 +6,6 @@ license.workspace = true
 edition.workspace = true
 
 [features]
-default = ["surrealdb", "s3"]
 surrealdb = ["repository/surrealdb"]
 s3 = ["repository/s3"]
 
@@ -15,7 +14,7 @@ macros.workspace = true
 utils.workspace = true
 dto.workspace = true
 
-repository = { path = "../repository", default-features = false }
+repository = { path = "../repository" }
 
 thiserror.workspace = true
 
