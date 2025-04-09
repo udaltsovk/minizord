@@ -2,7 +2,7 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: 'megazord-api-scrap'
+  - job_name: 'minizord-api-scrap'
     metrics_path: /metrics
     static_configs:
       - targets: ['localhost:8080']

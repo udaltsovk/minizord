@@ -26,7 +26,7 @@
 in
   with pkgs;
     mkShell {
-      name = "megazord";
+      name = "minizord";
       buildInputs = packages ++ libraries;
 
       DIRENV_LOG_FORMAT = "";

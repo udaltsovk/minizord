@@ -14,10 +14,11 @@ use utoipa_swagger_ui::SwaggerUi;
 #[derive(OpenApiTrait, Debug)]
 #[openapi(
     info(
-        title = "Megazord API",
+        title = "Minizord API",
+        description = "OpenAPI for the Minizord platform",
         contact(
             name = "GitHub repo",
-            url = "https://github.com/udaltsovk/megazord"
+            url = "https://github.com/udaltsovk/minizord"
         )
     ),
     servers(

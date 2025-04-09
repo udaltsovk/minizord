@@ -1,6 +1,6 @@
 [package]
 name = "api"
-description = "OpenAPI for the Megazord platform"
+description = "API for the Minizord platform"
 version = "0.1.0"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true

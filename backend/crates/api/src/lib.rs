@@ -69,7 +69,7 @@ use service::{
     },
     user::{UserServiceDependency, implementation::ImplementedUserService},
 };
-use utils::{openapi::OpenApi, validation};
+use utils::{OpenApi, validation};
 use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::{AppExt, service_config::ServiceConfig};
 
@@ -78,13 +78,13 @@ pub mod utils;
 env_vars_config! {
     SERVER_ADDRESS: String = "0.0.0.0:8080",
     DB_ADDRESS: String = "localhost:8001",
-    DB_NAMESPACE: String = "megazord",
+    DB_NAMESPACE: String = "minizord",
     DB_NAME: String = "api",
     DB_USER: String = "root",
     DB_PASSWORD: String = "root",
-    JWT_SECRET: String = "ohrfwahl;fhjjhawefhjaewfjhhjawfjbklbjlhjeawfjhjhwarjhjhhawhfhjhjfwahl",
+    JWT_SECRET: String = "P9mzO6aO64hgkVCBN96CfpUXB1x58XA3zmGuoT4HjSdhHgyRBnqv/EsPDCfs9CRT/oEJYSu6YDcvmdrf/utDNQ==",
     OTEL_ENDPOINT: String = "http://localhost:4317",
-    OTEL_SERVICE_NAME: String = "megazord_api",
+    OTEL_SERVICE_NAME: String = "minizord_api",
     S3_BASE_URL: String = "http://localhost:9000",
     S3_ACCESS_KEY: String = "minioadmin",
     S3_SECRET_KEY: String = "minioadmin",

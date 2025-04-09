@@ -1,3 +1,5 @@
 pub mod cors;
-pub mod openapi;
+mod openapi;
 pub mod validation;
+
+pub use openapi::OpenApi;

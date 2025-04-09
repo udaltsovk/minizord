@@ -1,11 +1,11 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Megazord API",
-    "description": "OpenAPI for the Megazord platform",
+    "title": "Minizord API",
+    "description": "OpenAPI for the Minizord platform",
     "contact": {
       "name": "GitHub repo",
-      "url": "https://github.com/udaltsovk/megazord"
+      "url": "https://github.com/udaltsovk/minizord"
     },
     "license": {
       "name": "MIT",
