@@ -1,10 +1,30 @@
-# Cтек мегазорда 2.0:
-- Rust
-- Actix-web
-- Tonic
-- gRPC
-- SurrealDB
-- Kubernetes
-- LGTM
-- Svelte (Vite/SvelteKit, хз)
+# Cтек минизорда:
+- Backend:
+    - API:
+        - Rust
+        - Actix-web
+        - Tonic (client only)
+        - gRPC
+        - SurrealDB
+        - OpenTelematry
+    - Email:
+        - Rust
+        - Actix-web
+        - Lettre
+        - gRPC
+        - SurrealDB
+        - OpenTelematry
+    - Telegram Bot:
+        - Rust
+        - Actix-web
+        - Teloxide
+        - Tonic (client only)
+        - SurrealDB
+        - OpenTelematry
+    - Kubernetes
+- Frontend:
+    - Vite
+    - TypeScript
+    - Svelte
+    - Tailwind CSS
 - HAProxy
