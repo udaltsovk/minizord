@@ -40,11 +40,10 @@
 pub extern crate async_trait;
 pub extern crate pastey;
 
-mod auth;
 mod dto;
 mod entity;
-mod handler;
 mod implementation;
+mod impls;
 mod repository;
 mod reqresp;
 mod service;

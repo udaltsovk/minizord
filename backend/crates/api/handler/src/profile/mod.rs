@@ -16,14 +16,18 @@ use ulid::Ulid;
 use utoipa::ToSchema;
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
 
-use crate::common::middleware::auth::{
-    auth_middleware, organizator_auth_middleware,
+use crate::common::{
+    HandlerError,
+    middleware::auth::{auth_middleware, organizator_auth_middleware},
 };
 
 pub mod implementation;
 
 handler! {
-    Profile with impl(ImplementedProfileHandler) {
+    Profile
+        Err: HandlerError,
+        Impl: ImplementedProfileHandler
+    {
         #routes(profile_service: ProfileServiceDependency) {
             move |cfg: &mut ServiceConfig| {
                 cfg.app_data(Data::new(profile_service))

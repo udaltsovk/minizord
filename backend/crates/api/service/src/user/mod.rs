@@ -5,10 +5,14 @@ use dto::{
 use macros::service;
 use ulid::Ulid;
 
+use crate::common::ServiceError;
+
 pub mod implementation;
 
 service! {
-    User {
+    User
+        Err: ServiceError
+    {
         register(&self, new: CreateUser) -> (User, String);
         login(&self, req: LoginRequest) -> (User, String);
         find_by_id(&self, id: Ulid) -> Option<User>;

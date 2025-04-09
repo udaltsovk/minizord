@@ -3,7 +3,10 @@
 macro_rules! handler {
     (
         $(#[$meta:meta])*
-        $name:ident $(with impl($impl_tt:tt))? {
+        $name:ident
+            Err: $err_ty:ty
+            $(, Impl: $impl_tt:tt)?
+        {
             $(#[$routes_meta:meta])*
             #routes $routes_sig:tt
                 $routes_body:block
@@ -18,7 +21,7 @@ macro_rules! handler {
         $crate::pastey::paste! {
             pub use implementation::OpenApi;
 
-            type [<$name HandlerResult>]<T> = Result<T, crate::common::HandlerError>;
+            type [<$name HandlerResult>]<T> = Result<T, $err_ty>;
 
             pub trait [<$name Handler>] {
                 $(

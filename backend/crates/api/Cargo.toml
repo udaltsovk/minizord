@@ -31,7 +31,7 @@ utils = { workspace = true, features = ["actix-web"] }
 
 api-repository = { path = "./repository" }
 api-service = { path = "./service", features = ["surrealdb", "s3"] }
-api-handler = { path = "./handler" }
+api-handler = { path = "./handler", features = ["actix-web"] }
 
 log.workspace = true
 

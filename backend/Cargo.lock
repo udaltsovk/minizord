@@ -532,7 +532,6 @@ dependencies = [
  "api-service",
  "env-vars-config",
  "log",
- "tonic",
  "tracing",
  "utils",
  "utoipa",
@@ -607,7 +606,6 @@ dependencies = [
  "aws-sdk-s3",
  "bytes",
  "chrono",
- "log",
  "macros",
  "serde",
  "strum_macros 0.27.1",
@@ -6195,7 +6193,6 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
- "zstd",
 ]
 
 [[package]]

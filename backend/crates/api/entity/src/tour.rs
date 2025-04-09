@@ -35,7 +35,7 @@ impl CreateTour {
     pub fn into_entity(self) -> Tour {
         Tour {
             id: TourId::from(Ulid::new()),
-            name: self.name.clone(),
+            name: self.name,
             starts_at: self.starts_at,
             ends_at: self.ends_at,
             max_members: self.max_members,

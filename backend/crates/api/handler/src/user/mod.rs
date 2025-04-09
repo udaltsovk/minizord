@@ -14,14 +14,18 @@ use service::user::UserServiceDependency;
 use ulid::Ulid;
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
 
-use crate::common::middleware::auth::{
-    auth_middleware, organizator_auth_middleware,
+use crate::common::{
+    HandlerError,
+    middleware::auth::{auth_middleware, organizator_auth_middleware},
 };
 
 pub mod implementation;
 
 handler! {
-    User with impl(ImplementedUserHandler) {
+    User
+        Err: HandlerError,
+        Impl: ImplementedUserHandler
+    {
         #routes(user_service: UserServiceDependency) {
             move |cfg: &mut ServiceConfig| {
                 cfg.app_data(Data::new(user_service))

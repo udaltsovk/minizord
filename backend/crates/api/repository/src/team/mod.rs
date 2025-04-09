@@ -5,11 +5,15 @@ use entity::{
 };
 use macros::crud_repository;
 
+use crate::common::RepositoryError;
+
 #[cfg(feature = "surrealdb")]
 pub mod surreal;
 
 crud_repository! {
-    Team {
+    Team
+        Err: RepositoryError
+    {
         find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team>;
         exists_by_tour_and_name(&self, tour: TourId, name: &str) -> bool;
         find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team>;

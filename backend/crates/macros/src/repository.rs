@@ -4,6 +4,7 @@ macro_rules! crud_repository {
     (
         $(#[$meta:meta])*
         $name:ident
+            Err: $err_ty:ty
         $({
             $(
                 $(#[$fn_meta:meta])*
@@ -12,7 +13,7 @@ macro_rules! crud_repository {
         })?
     ) => {
         $crate::pastey::paste! {
-            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+            type [<$name:camel RepositoryResult>]<T> = Result<T, $err_ty>;
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
@@ -56,6 +57,7 @@ macro_rules! crud_repository {
     (
         $(#[$meta:meta])*
         $in:ident -> $name:ident -> $out:ident
+            Err: $err_ty:ty
         $({
             $(
                 $(#[$fn_meta:meta])*
@@ -64,7 +66,7 @@ macro_rules! crud_repository {
         })?
     ) => {
         $crate::pastey::paste! {
-            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+            type [<$name:camel RepositoryResult>]<T> = Result<T, $err_ty>;
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
@@ -151,7 +153,9 @@ macro_rules! crud_repository {
 macro_rules! urd_repository {
     (
         $(#[$meta:meta])*
-        $name:ident $({
+        $name:ident
+            Err: $err_ty:ty
+        $({
             $(
                 $(#[$fn_meta:meta])*
                 $method:ident $sig:tt -> $res:ty;
@@ -159,7 +163,7 @@ macro_rules! urd_repository {
         })?
     ) => {
         $crate::pastey::paste! {
-            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+            type [<$name:camel RepositoryResult>]<T> = Result<T, $err_ty>;
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
@@ -198,6 +202,7 @@ macro_rules! urd_repository {
     (
         $(#[$meta:meta])*
         $in:ident -> $name:ident -> $out:ident
+            Err: $err_ty:ty
         $({
             $(
                 $(#[$fn_meta:meta])*
@@ -206,7 +211,7 @@ macro_rules! urd_repository {
         })?
     ) => {
         $crate::pastey::paste! {
-            type [<$name:camel RepositoryResult>]<T> = Result<T, crate::common::RepositoryError>;
+            type [<$name:camel RepositoryResult>]<T> = Result<T, $err_ty>;
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {

@@ -3,7 +3,9 @@
 macro_rules! service {
     (
         $(#[$meta:meta])*
-        $name:ident {
+        $name:ident
+            Err: $err_ty:ty
+        {
             $(
                 $(#[$fn_meta:meta])*
                 $method:ident $sig:tt -> $res:ty;
@@ -11,7 +13,7 @@ macro_rules! service {
         }
     ) => {
         $crate::pastey::paste! {
-            type [<$name ServiceResult>]<T> = Result<T, crate::common::ServiceError>;
+            type [<$name ServiceResult>]<T> = Result<T, $err_ty>;
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name Service>] {
