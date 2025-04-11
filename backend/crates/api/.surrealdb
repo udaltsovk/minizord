@@ -6,5 +6,5 @@
     address = "ws://localhost:8001"
     username = "root"
     password = "root"
-    ns = "megazord"
+    ns = "minizord"
     db = "api"

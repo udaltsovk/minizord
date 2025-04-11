@@ -9,7 +9,6 @@ use actix_web::{
     web::Data,
 };
 use dto::user::UserRole;
-use macros::auth_middlewares;
 use service::user::UserServiceDependency;
 use ulid::Ulid;
 use utils::{
@@ -19,18 +18,14 @@ use utils::{
 
 use crate::common::{AuthenticationError, HandlerError};
 
-auth_middlewares! {
-    access_levels: [Participant, Mentor, Organizator],
-}
-
 #[tracing::instrument(skip_all, level = "info")]
-pub async fn auth_middleware(
+pub async fn user_extractor_middleware(
     jwt_secret: Data<String>,
     user_service: Data<UserServiceDependency>,
     req: ServiceRequest,
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, actix_web::Error> {
-    let token = extract_auth_from_authorization_header(&req)?;
+    let token = extract_token_from_authorization_header(&req)?;
 
     let claims = jwt::parse(&token, &jwt_secret)
         .ok_or(AuthenticationError::InvalidCredentials)?;
@@ -59,7 +54,6 @@ pub async fn auth_middleware(
         .map_err(|_| AuthenticationError::InvalidCredentials)?;
 
     if user_role != user.role {
-        tracing::debug!("{user_role:#?}");
         Err(AuthenticationError::InvalidCredentials)?
     }
 
@@ -69,7 +63,7 @@ pub async fn auth_middleware(
 
 #[inline]
 #[tracing::instrument(skip_all, level = "trace")]
-pub fn extract_auth_from_authorization_header(
+pub fn extract_token_from_authorization_header(
     req: &ServiceRequest,
 ) -> Result<String, AuthenticationError> {
     let token = req

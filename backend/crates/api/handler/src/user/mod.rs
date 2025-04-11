@@ -7,7 +7,7 @@ use actix_web_lab::extract::Path;
 use actix_web_validation::Validated;
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
-    user::{CreateUser, User, UserUpdate},
+    user::{CreateUser, User, UserRole, UserUpdate},
 };
 use macros::{handler, response};
 use service::user::UserServiceDependency;
@@ -16,7 +16,7 @@ use utoipa_actix_web::{scope, service_config::ServiceConfig};
 
 use crate::common::{
     HandlerError,
-    middleware::auth::{auth_middleware, organizator_auth_middleware},
+    middleware::{UserRoleFilterMiddleware, user_extractor_middleware},
 };
 
 pub mod implementation;
@@ -32,14 +32,14 @@ handler! {
                     .service(scope("/users")
                         .service(Self::login())
                         .service(scope("")
-                            .wrap(from_fn(auth_middleware))
+                            .wrap(from_fn(user_extractor_middleware))
                             .service(Self::get_current())
                             .service(Self::update_current())
                             .service(Self::change_password_current())
                             .service(Self::delete_current())
                             .service(Self::get_by_id())
                             .service(scope("")
-                                .wrap(from_fn(organizator_auth_middleware))
+                                .wrap(UserRoleFilterMiddleware::new(vec![UserRole::Organizator]))
                                 .service(Self::register())
                                 .service(Self::update_by_id())
                                 .service(Self::change_password_by_id())
