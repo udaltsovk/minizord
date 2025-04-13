@@ -11,12 +11,11 @@ use dto::{
 use macros::handler_implementation;
 use service::user::UserServiceDependency;
 use ulid::Ulid;
-use utoipa::path as openapi;
 
 use super::{
     UserAuthResponse, UserHandler, UserHandlerHelper, UserHandlerResult,
 };
-use crate::common::{ApiError, ValidationError};
+use crate::common::{ApiError, ValidationError, openapi};
 
 handler_implementation! {
     UserHandler as Implemented {
