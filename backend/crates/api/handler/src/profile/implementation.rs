@@ -10,15 +10,16 @@ use dto::{
     user::User,
 };
 use macros::handler_implementation;
-use service::profile::ProfileServiceDependency;
-use ulid::Ulid;
-use utoipa::path as openapi;
-
-use super::{ProfileHandler, ProfileHandlerHelper, ProfileHandlerResult};
-use crate::{
-    common::{ApiError, ValidationError},
-    profile::UploadForm,
+use service::{
+    profile::ProfileServiceDependency,
+    profile_image::ProfileImageServiceDependency,
 };
+use ulid::Ulid;
+
+use super::{
+    ProfileHandler, ProfileHandlerHelper, ProfileHandlerResult, UploadForm,
+};
+use crate::common::{ApiError, ValidationError, openapi};
 
 handler_implementation! {
     ProfileHandler as Implemented {
@@ -49,7 +50,7 @@ handler_implementation! {
             Validated(Json(body)): Validated<Json<UpsertProfile>>
         ) -> Json<Profile> {
             let resp: Profile = profile_service
-                .upsert_by_id(user.id, body)
+                .upsert_by_id(user.id, body, None)
                 .await?;
             Json(resp)
         }
@@ -108,42 +109,6 @@ handler_implementation! {
                 .await?;
             HttpResponse::NoContent().finish()
         }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "upsert_profile_by_id",
-            security(
-                ("organizator" = []),
-            ),
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
-            request_body(
-                description = "",
-                content = UpsertProfile
-            ),
-            responses(
-                (status = 200, description = "", body = Profile),
-                (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[put("/{profile_id}")]
-        upsert_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            Path(profile_id): Path<Ulid>,
-            Validated(Json(body)): Validated<Json<UpsertProfile>>,
-        ) -> Json<Profile> {
-            let res = profile_service
-                .upsert_by_id(profile_id, body)
-                .await?;
-            Json(res)
-        }
-
 
         ///
         ///
@@ -230,12 +195,12 @@ handler_implementation! {
         )]
         #[put("/me/image")]
         upsert_image_current(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
             MultipartForm(form): MultipartForm<UploadForm>,
         ) -> HttpResponse {
-            profile_service
-               .upsert_image_by_id(user.id, form.file)
+            profile_image_service
+               .upsert_by_id(user.id, form.file)
                .await?;
 
             HttpResponse::Ok().finish()
@@ -260,11 +225,11 @@ handler_implementation! {
         )]
         #[get("/me/image")]
         get_image_current(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
-            let res = profile_service
-                .get_image_by_id(user.id)
+            let res = profile_image_service
+                .get_by_id(user.id)
                 .await?;
             HttpResponse::Ok()
                .content_type(res.content_type.clone())
@@ -289,53 +254,14 @@ handler_implementation! {
         )]
         #[delete("/me/image")]
         delete_image_current(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
-            profile_service
-                .delete_image_by_id(user.id)
+            profile_image_service
+                .delete_by_id(user.id)
                 .await?;
             HttpResponse::NoContent().finish()
         }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "upsert_profile_image_by_id",
-            security(
-                ("organizator" = []),
-            ),
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
-            request_body(
-                description = "",
-                content = UploadForm,
-                content_type = "multipart/form-data",
-            ),
-            responses(
-                (status = 200, description = ""),
-                (status = 415, description = "", body = ApiError),
-                (status = 413, description = "", body = ApiError),
-                (status = 404, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[put("/{profile_id}/image")]
-        upsert_image_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            Path(profile_id): Path<Ulid>,
-            MultipartForm(form): MultipartForm<UploadForm>,
-        ) -> HttpResponse {
-            profile_service
-               .upsert_image_by_id(profile_id, form.file)
-               .await?;
-
-            HttpResponse::Ok().finish()
-        }
-
 
         ///
         ///
@@ -358,11 +284,11 @@ handler_implementation! {
         )]
         #[get("/{profile_id}/image")]
         get_image_by_id(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             Path(profile_id): Path<Ulid>,
         ) -> HttpResponse {
-            let res = profile_service
-                .get_image_by_id(profile_id)
+            let res = profile_image_service
+                .get_by_id(profile_id)
                 .await?;
             HttpResponse::Ok()
               .content_type(res.content_type.clone())
@@ -389,11 +315,11 @@ handler_implementation! {
         )]
         #[delete("/{profile_id}/image")]
         delete_image_by_id(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             Path(profile_id): Path<Ulid>,
         ) -> HttpResponse {
-            profile_service
-                .delete_image_by_id(profile_id)
+            profile_image_service
+                .delete_by_id(profile_id)
                 .await?;
             HttpResponse::NoContent().finish()
         }

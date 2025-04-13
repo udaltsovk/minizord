@@ -11,7 +11,10 @@ use dto::{
     user::{User, UserRole},
 };
 use macros::handler;
-use service::profile::ProfileServiceDependency;
+use service::{
+    profile::ProfileServiceDependency,
+    profile_image::ProfileImageServiceDependency,
+};
 use ulid::Ulid;
 use utoipa::ToSchema;
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
@@ -28,24 +31,25 @@ handler! {
         Err: HandlerError,
         Impl: ImplementedProfileHandler
     {
-        #routes(profile_service: ProfileServiceDependency) {
+        #routes(
+            profile_service: ProfileServiceDependency,
+            profile_image_service: ProfileImageServiceDependency,
+        ) {
             move |cfg: &mut ServiceConfig| {
                 cfg.app_data(Data::new(profile_service))
+                    .app_data(Data::new(profile_image_service))
                     .service(scope("/profiles")
                         .wrap(from_fn(user_extractor_middleware))
                         .service(Self::upsert_current())
                         .service(Self::get_current())
                         .service(Self::delete_current())
+                        .service(Self::get_by_id())
                         .service(Self::upsert_image_current())
                         .service(Self::get_image_current())
                         .service(Self::delete_image_current())
-                        .service(Self::get_by_id())
-                        .service(Self::get_image_by_id())
                         .service(scope("")
                             .wrap(UserRoleFilterMiddleware::new(vec![UserRole::Organizator]))
-                            .service(Self::upsert_by_id())
                             .service(Self::delete_by_id())
-                            .service(Self::upsert_image_by_id())
                             .service(Self::delete_image_by_id())
                         )
                     );
@@ -68,12 +72,6 @@ handler! {
             user: ReqData<User>,
         ) -> HttpResponse;
 
-        upsert_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
-            body: Validated<Json<UpsertProfile>>,
-        ) -> Json<Profile>;
-
         get_by_id(
             profile_service: Data<ProfileServiceDependency>,
             profile_id: Path<Ulid>,
@@ -85,34 +83,28 @@ handler! {
         ) -> HttpResponse;
 
         upsert_image_current(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
             form: MultipartForm<UploadForm>,
         ) -> HttpResponse;
 
         get_image_current(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse;
 
         delete_image_current(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse;
 
-        upsert_image_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
-            form: MultipartForm<UploadForm>,
-        ) -> HttpResponse;
-
         get_image_by_id(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             profile_id: Path<Ulid>,
         ) -> HttpResponse;
 
         delete_image_by_id(
-            profile_service: Data<ProfileServiceDependency>,
+            profile_image_service: Data<ProfileImageServiceDependency>,
             profile_id: Path<Ulid>,
         ) -> HttpResponse;
     }
