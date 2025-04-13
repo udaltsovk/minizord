@@ -177,7 +177,7 @@ impl LGTM {
     }
 
     pub fn shutdown(&self) -> OTelSdkResult {
-        log::info!("Shutting down LGTM stack");
+        log::info!("Shutting down LGTM stuff");
 
         self.tracer_provider
             .clone()
