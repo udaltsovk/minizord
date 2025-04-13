@@ -14,7 +14,7 @@ lazy_static! {
             .unwrap();
     ///
     pub static ref RE_NAME: Regex =
-        Regex::new(r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)
+        Regex::new(r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#)
             .unwrap();
     ///
     pub static ref RE_TELEGRAM_USERNAME: Regex =
