@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use entity::tour::{CreateTour, Tour, TourId, TourUpdate};
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{TourRepository, TourRepositoryResult};
@@ -32,7 +32,7 @@ implementation! {
 
         find_by_name(&self, name: &str) -> Option<Tour> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/find_by_name.surql"))
+                .query(surql_query!("table/find_by_name"))
                 .bind(("table", TourId::TABLE))
                 .bind(("name", name.to_string()))
                 .await?

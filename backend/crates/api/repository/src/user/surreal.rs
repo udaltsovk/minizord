@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use entity::user::{CreateUser, User, UserId, UserUpdate};
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{UserRepository, UserRepositoryResult};
@@ -32,7 +32,7 @@ implementation! {
 
         find_by_email(&self, email: &str) -> Option<User> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/user/find_by_email.surql"))
+                .query(surql_query!("table/user/find_by_email"))
                 .bind(("table", UserId::TABLE))
                 .bind(("email", email.to_string()))
                 .await?
@@ -45,7 +45,7 @@ implementation! {
 
         find_by_username(&self, username: &str) -> Option<User> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/user/find_by_username.surql"))
+                .query(surql_query!("table/user/find_by_username"))
                 .bind(("table", UserId::TABLE))
                 .bind(("username", username.to_string()))
                 .await?

@@ -5,7 +5,7 @@ use entity::{
     technology::TechnologyId,
     user::UserId,
 };
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{KnowsRepository, KnowsRepositoryResult};
@@ -17,7 +17,7 @@ implementation! {
     } as Surreal {
         upsert_by_in_and_out(&self, r#in: UserId, out: TechnologyId, object: UpsertKnows) -> Knows {
             let result: Option<Knows> = self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/upsert_by_in_and_out.surql"))
+                .query(surql_query!("relation/upsert_by_in_and_out"))
                 .bind(("in", r#in))
                 .bind(("id", object.get_id().record_id()))
                 .bind(("out", out))
@@ -29,7 +29,7 @@ implementation! {
 
         find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Knows> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", KnowsId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
@@ -44,7 +44,7 @@ implementation! {
 
         find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Knows> {
             self.db.0
-                .query("../../db/surreal/queries/relation/find_all_by_out.surql")
+                .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", KnowsId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))

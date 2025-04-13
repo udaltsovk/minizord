@@ -5,7 +5,7 @@ use entity::{
     technology::TechnologyId,
     uses::{CreateUses, Uses, UsesId, UsesUpdate},
 };
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{UsesRepository, UsesRepositoryResult};
@@ -25,7 +25,7 @@ implementation! {
 
         find_all_by_in(&self, r#in: TeamId, limit: u16, offset: u64) -> Vec<Uses> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", UsesId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
@@ -40,7 +40,7 @@ implementation! {
 
         find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Uses> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_out.surql"))
+                .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", UsesId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))

@@ -5,7 +5,7 @@ use entity::{
     tour::TourId,
     user::UserId,
 };
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{TeamRepository, TeamRepositoryResult};
@@ -36,7 +36,7 @@ implementation! {
 
         find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/team/find_by_tour_and_name.surql"))
+                .query(surql_query!("table/team/find_by_tour_and_name"))
                 .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
                 .bind(("name", name.to_string()))
@@ -50,7 +50,7 @@ implementation! {
 
         find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/team/find_by_tour_and_lead.surql"))
+                .query(surql_query!("table/team/find_by_tour_and_lead"))
                 .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
                 .bind(("lead_id", lead))
@@ -64,7 +64,7 @@ implementation! {
 
         find_all_by_tour(&self, tour: TourId, limit: u64, offset: u64) -> Vec<Team> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/team/find_all_by_tour.surql"))
+                .query(surql_query!("table/team/find_all_by_tour"))
                 .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
                 .bind(("limit", limit))

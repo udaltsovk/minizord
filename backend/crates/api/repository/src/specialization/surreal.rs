@@ -4,7 +4,7 @@ use entity::specialization::{
     CreateSpecialization, Specialization, SpecializationId,
     SpecializationUpdate,
 };
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{SpecializationRepository, SpecializationRepositoryResult};
@@ -35,7 +35,7 @@ implementation! {
 
         find_by_name(&self, name: &str) -> Option<Specialization> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/table/find_by_name.surql"))
+                .query(surql_query!("table/find_by_name"))
                 .bind(("table", SpecializationId::TABLE))
                 .bind(("name", name.to_string()))
                 .await?

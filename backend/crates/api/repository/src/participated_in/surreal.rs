@@ -8,7 +8,7 @@ use entity::{
     tour::TourId,
     user::UserId,
 };
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{ParticipatedInRepository, ParticipatedInRepositoryResult};
@@ -28,7 +28,7 @@ implementation! {
 
         find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", ParticipatedInId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
@@ -43,7 +43,7 @@ implementation! {
 
         find_all_by_out(&self, out: TourId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_out.surql"))
+                .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", ParticipatedInId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))

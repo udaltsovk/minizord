@@ -7,7 +7,7 @@ use entity::{
     specialization::SpecializationId,
     user::UserId,
 };
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{HasExperienceAsRepository, HasExperienceAsRepositoryResult};
@@ -19,7 +19,7 @@ implementation! {
     } as Surreal {
         upsert_by_in_and_out(&self, r#in: UserId, out: SpecializationId, object: UpsertHasExperienceAs) -> HasExperienceAs {
             let result: Option<HasExperienceAs> = self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/upsert_by_in_and_out.surql"))
+                .query(surql_query!("relation/upsert_by_in_and_out"))
                 .bind(("in", r#in))
                 .bind(("id", object.get_id().record_id()))
                 .bind(("out", out))
@@ -31,7 +31,7 @@ implementation! {
 
         find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", HasExperienceAsId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
@@ -46,7 +46,7 @@ implementation! {
 
         find_all_by_out(&self, out: SpecializationId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
             self.db.0
-                .query(include_str!("../../db/surreal/queries/relation/find_all_by_out.surql"))
+                .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", HasExperienceAsId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))

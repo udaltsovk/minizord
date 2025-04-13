@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use entity::profile::{Profile, ProfileId, UpsertProfile};
-use macros::{EntityId, implementation};
+use macros::{EntityId, implementation, surql_query};
 use utils::adapters::SurrealDB;
 
 use super::{ProfileRepository, ProfileRepositoryResult};
@@ -14,7 +14,7 @@ implementation! {
         upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
             let entity = object.into_entity(id);
             let result: Option<Profile> = self.db.0
-                .query(include_str!("../../db/surreal/queries/table/upsert_by_id.surql"))
+                .query(surql_query!("table/upsert_by_id"))
                 .bind(("id", entity.id.clone()))
                 .bind(("object", entity))
                 .await?
