@@ -15,6 +15,10 @@
   },
   "servers": [
     {
+      "url": "https://minizord-api.udaltsovk.ru/",
+      "description": "Hosted instance"
+    },
+    {
       "url": "http://localhost:8080/",
       "description": "Local server"
     }
@@ -816,7 +820,18 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -1187,7 +1202,18 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -1443,109 +1469,22 @@
   "components": {
     "schemas": {
       "ApiError": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "Authentication"
-            ],
-            "properties": {
-              "Authentication": {
-                "type": "string",
-                "enum": [
-                  "NoAuthorizationHeader",
-                  "InvalidCredentials",
-                  "InvalidAuthMethod",
-                  "MissingPermissions"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "Unauthorized"
-            ],
-            "properties": {
-              "Unauthorized": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "string",
-            "enum": [
-              "Forbidden"
-            ]
-          },
-          {
-            "type": "object",
-            "required": [
-              "ForbiddenWithMsg"
-            ],
-            "properties": {
-              "ForbiddenWithMsg": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "NotFound"
-            ],
-            "properties": {
-              "NotFound": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "AlreadyExists"
-            ],
-            "properties": {
-              "AlreadyExists": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "PayloadTooLarge"
-            ],
-            "properties": {
-              "PayloadTooLarge": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "UnsupportedMediaType"
-            ],
-            "properties": {
-              "UnsupportedMediaType": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "Internal"
-            ],
-            "properties": {
-              "Internal": {
-                "type": "string"
-              }
-            }
-          }
+        "type": "object",
+        "description": "",
+        "required": [
+          "error",
+          "description"
         ],
-        "description": ""
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": ""
+          },
+          "description": {
+            "type": "string",
+            "description": ""
+          }
+        }
       },
       "CreateUser": {
         "type": "object",
@@ -1568,7 +1507,8 @@
             "type": "string",
             "description": "",
             "maxLength": 20,
-            "minLength": 3
+            "minLength": 3,
+            "pattern": "^[a-zA-Z0-9._-]{3,20}$"
           },
           "password": {
             "type": "string",
@@ -1644,6 +1584,7 @@
           "id",
           "name",
           "surname",
+          "telegram",
           "city",
           "bio",
           "portfolio_urls",
@@ -1658,19 +1599,29 @@
           "name": {
             "type": "string",
             "description": "",
-            "maxLength": 128,
-            "minLength": 1
+            "maxLength": 24,
+            "minLength": 2,
+            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
           },
           "surname": {
             "type": "string",
             "description": "",
-            "maxLength": 128,
-            "minLength": 1
+            "maxLength": 24,
+            "minLength": 2,
+            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+          },
+          "telegram": {
+            "type": "string",
+            "description": "",
+            "maxLength": 32,
+            "minLength": 5,
+            "pattern": "^[A-Za-z\\d_]{5,32}$"
           },
           "city": {
             "type": "string",
-            "maxLength": 128,
-            "minLength": 1
+            "maxLength": 24,
+            "minLength": 2,
+            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
           },
           "bio": {
             "type": "string",
@@ -1712,6 +1663,7 @@
         "required": [
           "name",
           "surname",
+          "telegram",
           "city",
           "bio",
           "portfolio_urls"
@@ -1720,19 +1672,29 @@
           "name": {
             "type": "string",
             "description": "",
-            "maxLength": 128,
-            "minLength": 1
+            "maxLength": 24,
+            "minLength": 2,
+            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
           },
           "surname": {
             "type": "string",
             "description": "",
-            "maxLength": 128,
-            "minLength": 1
+            "maxLength": 24,
+            "minLength": 2,
+            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+          },
+          "telegram": {
+            "type": "string",
+            "description": "",
+            "maxLength": 32,
+            "minLength": 5,
+            "pattern": "^[A-Za-z\\d_]{5,32}$"
           },
           "city": {
             "type": "string",
-            "maxLength": 128,
-            "minLength": 1
+            "maxLength": 24,
+            "minLength": 2,
+            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
           },
           "bio": {
             "type": "string",
@@ -1776,7 +1738,8 @@
             "type": "string",
             "description": "",
             "maxLength": 20,
-            "minLength": 3
+            "minLength": 3,
+            "pattern": "^[a-zA-Z0-9._-]{3,20}$"
           },
           "role": {
             "$ref": "#/components/schemas/UserRole"
@@ -1831,7 +1794,8 @@
             ],
             "description": "",
             "maxLength": 20,
-            "minLength": 3
+            "minLength": 3,
+            "pattern": "^[a-zA-Z0-9._-]{3,20}$"
           }
         }
       },
@@ -1852,7 +1816,7 @@
             ],
             "description": ""
           },
-          "errors": {
+          "field_errors": {
             "oneOf": [
               {
                 "type": "null"
@@ -1862,26 +1826,7 @@
                 "additionalProperties": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "description": "",
-                    "required": [
-                      "message",
-                      "params"
-                    ],
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "description": ""
-                      },
-                      "params": {
-                        "type": "object",
-                        "description": "",
-                        "additionalProperties": {},
-                        "propertyNames": {
-                          "type": "string"
-                        }
-                      }
-                    }
+                    "type": "string"
                   }
                 },
                 "propertyNames": {
