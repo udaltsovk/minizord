@@ -12,17 +12,25 @@ dto! {
     Profile {
         fields {
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             id: Ulid,
 
             ///
-            #[schema(min_length = 2, max_length = 24, pattern = r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)]
+            #[schema(
+                min_length = 2,
+                max_length = 24,
+                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+            )]
             #[garde(skip)]
             name: String,
 
             ///
-            #[schema(min_length = 2, max_length = 24, pattern = r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)]
+            #[schema(
+                min_length = 2,
+                max_length = 24,
+                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+            )]
             #[garde(skip)]
             surname: String,
 
@@ -32,7 +40,11 @@ dto! {
             telegram: String,
 
             //
-            #[schema(min_length = 2, max_length = 24, pattern = r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)]
+            #[schema(
+                min_length = 2,
+                max_length = 24,
+                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+            )]
             #[garde(skip)]
             city: String,
 
@@ -54,12 +66,20 @@ dto! {
         ///
         {
             ///
-            #[schema(min_length = 2, max_length = 24, pattern = r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)]
+            #[schema(
+                min_length = 2,
+                max_length = 24,
+                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+            )]
             #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
             name: String,
 
             ///
-            #[schema(min_length = 2, max_length = 24, pattern = r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)]
+            #[schema(
+                min_length = 2,
+                max_length = 24,
+                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+            )]
             #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
             surname: String,
 
@@ -69,7 +89,12 @@ dto! {
             telegram: String,
 
             //
-            #[schema(min_length = 2, max_length = 24, pattern = r#"^[А-ЯЁ]{1}[а-яё]{1,23}$"#)]
+            #[schema(
+                min_length = 2,
+                max_length = 24,
+                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+            )]
+
             #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
             city: String,
 
@@ -89,6 +114,18 @@ dto! {
     }
 }
 
+impl From<Profile> for UpsertProfile {
+    fn from(dto: Profile) -> Self {
+        Self {
+            name: dto.name,
+            surname: dto.surname,
+            telegram: dto.telegram,
+            city: dto.city,
+            bio: dto.bio,
+            portfolio_urls: dto.portfolio_urls,
+        }
+    }
+}
 impl From<ProfileEntity> for Profile {
     #[tracing::instrument(skip_all, level = "trace")]
     fn from(entity: ProfileEntity) -> Self {

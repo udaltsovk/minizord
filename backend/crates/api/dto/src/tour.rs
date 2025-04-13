@@ -9,7 +9,7 @@ dto! {
     Tour {
         fields {
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             id: Ulid,
 
@@ -29,7 +29,7 @@ dto! {
             ends_at: DateTime<Utc>,
 
             ///
-            #[schema(minimum = 1, maximum = 10)]
+            #[schema(minimum = 1, maximum = 10, examples(5))]
             #[garde(skip)]
             max_members: u16,
 
@@ -56,7 +56,7 @@ dto! {
             ends_at: DateTime<Utc>,
 
             ///
-            #[schema(minimum = 1, maximum = 10)]
+            #[schema(minimum = 1, maximum = 10, examples(5))]
             #[garde(range(min = 1, max = 10))]
             max_members: u16,
 
@@ -83,7 +83,7 @@ dto! {
             ends_at: DateTime<Utc>,
 
             ///
-            #[schema(minimum = 1, maximum = 10)]
+            #[schema(minimum = 1, maximum = 10, examples(5))]
             #[garde(range(min = 1, max = 10))]
             max_members: u16,
 

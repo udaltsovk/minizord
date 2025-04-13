@@ -58,12 +58,12 @@ dto! {
     User {
         fields {
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             id: Ulid,
 
             ///
-            #[schema(format = Email, min_length = 6, max_length = 50)]
+            #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
             #[garde(skip)]
             email: String,
 
@@ -80,7 +80,7 @@ dto! {
         ///
         {
             ///
-            #[schema(format = Email, min_length = 6, max_length = 50)]
+            #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
             #[garde(length(min = 6, max = 50), email)]
             email: String,
 
@@ -102,13 +102,13 @@ dto! {
         ///
         {
             ///
-            #[schema(format = Email, min_length = 6, max_length = 50)]
-            #[garde(length(min = 3, max = 20), pattern(*RE_USERNAME))]
+            #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
+            #[garde(length(min = 6, max = 50), email)]
             email: String,
 
             ///
             #[schema(min_length = 3, max_length = 20, pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#)]
-            #[garde(length(min = 8, max = 100), inner(custom(validate_password)))]
+            #[garde(length(min = 3, max = 20), pattern(*RE_USERNAME))]
             username: String,
         }
     }

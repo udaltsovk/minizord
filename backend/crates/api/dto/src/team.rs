@@ -8,7 +8,7 @@ dto! {
     Team {
         fields {
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             id: Ulid,
 
@@ -18,12 +18,12 @@ dto! {
             name: String,
 
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             lead: Ulid,
 
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             tour: Ulid,
         },
@@ -36,7 +36,7 @@ dto! {
             name: String,
 
             ///
-            #[schema(format = Ulid)]
+            #[schema(format = Ulid, examples(Ulid::default))]
             #[garde(skip)]
             tour: Ulid,
         },
