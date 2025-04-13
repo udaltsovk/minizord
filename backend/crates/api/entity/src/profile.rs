@@ -7,6 +7,7 @@ entity! {
         fields {
             name: String,
             surname: String,
+            telegram: String,
             city: String,
             bio: String,
             portfolio_urls: Vec<String>,
@@ -15,6 +16,7 @@ entity! {
         upsert {
             name: String,
             surname: String,
+            telegram: String,
             city: String,
             bio: String,
             portfolio_urls: Vec<String>,
@@ -30,6 +32,7 @@ impl UpsertProfile {
             id,
             name: self.name,
             surname: self.surname,
+            telegram: self.telegram,
             city: self.city,
             bio: self.bio,
             portfolio_urls: self.portfolio_urls,

@@ -51,7 +51,7 @@ use actix_web::{
     web::{Data, FormConfig, JsonConfig, PathConfig, QueryConfig, get},
 };
 use actix_web_lab::middleware::CatchPanic;
-use actix_web_validation::validator::ValidatorErrorHandlerExt;
+use actix_web_validation::garde::GardeErrorHandlerExt;
 use env_vars_config::env_vars_config;
 use handler::{
     common::{ApiError, ValidationError},
@@ -171,7 +171,7 @@ impl Api {
 
         HttpServer::new(move || {
             App::new()
-                .validator_error_handler(Arc::new(validation::error_handler))
+                .garde_error_handler(Arc::new(validation::error_handler))
                 .wrap(self.lgtm.metrics_middleware())
                 .wrap(CatchPanic::default())
                 .wrap(Compress::default())

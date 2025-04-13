@@ -1,32 +1,10 @@
-use std::{borrow::Cow, collections::HashMap, fmt::Display};
+use std::{collections::HashMap, fmt::Display};
 
 use actix_web::{HttpResponse, ResponseError, http::StatusCode};
 use serde::Serialize;
-use serde_json::Value;
 use utoipa::{IntoResponses, ToSchema};
-use validator::ValidationError as OriginalValidationError;
 
-///
-#[derive(Serialize, ToSchema, Debug)]
-pub struct ValidationErrorFieldError {
-    ///
-    message: String,
-
-    ///
-    #[schema(inline)]
-    params: HashMap<Cow<'static, str>, Value>,
-}
-impl From<OriginalValidationError> for ValidationErrorFieldError {
-    #[tracing::instrument(skip_all, level = "trace")]
-    fn from(err: OriginalValidationError) -> Self {
-        Self {
-            message: err.code.to_string(),
-            params: err.params,
-        }
-    }
-}
-
-type ValidationErrorErrors = HashMap<String, Vec<ValidationErrorFieldError>>;
+type ValidationErrorErrors = HashMap<String, Vec<String>>;
 
 #[derive(Serialize, ToSchema, IntoResponses, Debug)]
 #[response(status = 400)]
@@ -41,7 +19,7 @@ pub struct ValidationError {
     ///
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(inline)]
-    pub errors: Option<ValidationErrorErrors>,
+    pub field_errors: Option<ValidationErrorErrors>,
 }
 impl Display for ValidationError {
     #[tracing::instrument(skip_all, level = "trace")]
@@ -57,7 +35,7 @@ impl ValidationError {
         Self {
             error: "invalid_input".into(),
             description: description.map(|d| d.to_string()),
-            errors,
+            field_errors: errors,
         }
     }
 

@@ -35,7 +35,7 @@ api-handler = { path = "./handler", features = ["actix-web"] }
 
 log.workspace = true
 
-validator.workspace = true
+garde.workspace = true
 
 # tonic.workspace = true
 

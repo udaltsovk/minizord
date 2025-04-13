@@ -22,7 +22,7 @@ lazy_static = "1.4"
 
 serde.workspace = true
 
-validator.workspace = true
+garde.workspace = true
 passwords = "3.1"
 regex = "1.10"
 url = "2.5"

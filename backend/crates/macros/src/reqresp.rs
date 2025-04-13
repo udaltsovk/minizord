@@ -13,7 +13,7 @@ macro_rules! request {
     ) => {
         $crate::pastey::paste! {
             $(
-                #[derive(serde::Deserialize, utoipa::ToSchema, validator::Validate, Debug, Clone)]
+                #[derive(serde::Deserialize, utoipa::ToSchema, garde::Validate, Debug, Clone)]
                 $(#[$meta])*
                 pub struct [<$name Request>] {
                     $(

@@ -27,7 +27,8 @@ serde_json = "1.0"
 strum = "0.27"
 strum_macros = "0.27"
 
-validator = { version = "0.20", features = ["derive"] }
+# validator = { version = "0.20", features = ["derive"] }
+garde = { version = "0.22", features = ["derive", "serde", "url", "email", "email-idna", "regex"] }
 
 chrono = { version = "0.4", features = ["serde"] }
 ulid = { version = "1.2", features = ["serde"] }
@@ -58,7 +59,7 @@ utoipa = { version = "5.3", features = [
 
 actix-web = "4.10"
 actix-web-lab = "0.24"
-actix-web-validation = { version = "0.8", features = ["validator"] }
+actix-web-validation = { version = "0.8", features = ["garde"] }
 actix-multipart = "0.7"
 utoipa-actix-web = "0.1"
 

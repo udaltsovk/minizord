@@ -5,11 +5,15 @@ use macros::dto;
 dto! {
     ///
     Image {
-        ///
-        content_type: String,
-        ///
-        #[schema(value_type = String, format = Binary)]
-        data: Bytes,
+        fields {
+            ///
+            #[garde(skip)]
+            content_type: String,
+            ///
+            #[schema(value_type = String, format = Binary)]
+            #[garde(skip)]
+            data: Bytes,
+        },
     }
 }
 

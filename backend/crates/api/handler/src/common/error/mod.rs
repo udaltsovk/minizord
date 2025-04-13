@@ -2,52 +2,41 @@
 use actix_web::{HttpResponse, ResponseError, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use service::common::ServiceError;
-use utoipa::{IntoResponses, ToSchema};
+use utoipa::ToSchema;
 
 pub mod auth;
 pub mod validation;
 
 ///
-#[derive(thiserror::Error, IntoResponses, ToSchema, Debug)]
-#[schema(as = ApiError)]
+#[derive(thiserror::Error, Debug)]
 pub enum HandlerError {
-    #[response(status = "default")]
-    #[error("Authentication error: {0}")]
-    Authentication(
-        #[from]
-        #[schema(inline)]
-        auth::AuthenticationError,
-    ),
+    #[error("Bad request: {0}")]
+    BadRequest(String),
 
-    #[response(status = 401)]
+    #[error("Authentication error: {0}")]
+    Authentication(#[from] auth::AuthenticationError),
+
     #[error("Authentication error: {0}")]
     Unauthorized(String),
 
-    #[response(status = 403)]
     #[error("Access denied")]
     Forbidden,
 
-    #[response(status = 403)]
     #[error("{0}")]
     ForbiddenWithMsg(String),
 
-    #[response(status = 404)]
     #[error("{0} was not found")]
     NotFound(String),
 
-    #[response(status = 409)]
     #[error("{0} already exists")]
     AlreadyExists(String),
 
-    #[response(status = 413)]
     #[error("Payload size exceeds the limit of {0}")]
     PayloadTooLarge(String),
 
-    #[response(status = 415)]
     #[error("Unsupported media type: {0}")]
     UnsupportedMediaType(String),
 
-    #[response(status = 500)]
     #[error("{0}")]
     Internal(String),
 }
@@ -57,6 +46,7 @@ impl From<ServiceError> for HandlerError {
     fn from(err: ServiceError) -> Self {
         use ServiceError as SE;
         match err {
+            SE::BadRequest(msg) => Self::BadRequest(msg),
             SE::InvalidPassword => Self::Unauthorized(err.to_string()),
             SE::Forbidden(msg) => Self::ForbiddenWithMsg(msg),
             SE::NotFound(msg) => Self::NotFound(msg),
@@ -75,6 +65,7 @@ impl HandlerError {
     pub fn as_api_error(&self) -> ApiError {
         ApiError {
             error: match self {
+                Self::BadRequest(..) => "bad_request",
                 Self::Authentication(err) => err.error_name(),
                 Self::Unauthorized(..) => "unauthorized",
                 Self::Forbidden | Self::ForbiddenWithMsg(..) => "access_denied",
@@ -96,6 +87,7 @@ impl ResponseError for HandlerError {
     fn status_code(&self) -> StatusCode {
         use StatusCode as SC;
         match self {
+            Self::BadRequest(..) => SC::BAD_REQUEST,
             Self::Authentication(err) => err.status_code(),
             Self::Unauthorized(..) => SC::UNAUTHORIZED,
             Self::Forbidden | Self::ForbiddenWithMsg(..) => SC::FORBIDDEN,

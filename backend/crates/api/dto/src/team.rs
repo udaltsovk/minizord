@@ -6,43 +6,48 @@ use utils::validation::RE_SENTENCE;
 dto! {
     ///
     Team {
-        ///
-        #[schema(format = Ulid)]
-        id: Ulid,
         fields {
             ///
-            #[validate(length(min = 1, max = 30), regex(path = *RE_SENTENCE))]
+            #[schema(format = Ulid)]
+            #[garde(skip)]
+            id: Ulid,
+
+            ///
             #[schema(min_length = 1, max_length = 30)]
+            #[garde(skip)]
             name: String,
 
             ///
             #[schema(format = Ulid)]
+            #[garde(skip)]
             lead: Ulid,
 
             ///
             #[schema(format = Ulid)]
+            #[garde(skip)]
             tour: Ulid,
         },
         create
         ///
         {
             ///
-            #[validate(length(min = 3, max = 20))]
             #[schema(min_length = 3, max_length = 20)]
+            #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
             name: String,
 
             ///
             #[schema(format = Ulid)]
+            #[garde(skip)]
             tour: Ulid,
         },
         update
         ///
         {
             ///
-            #[validate(length(min = 3, max = 20))]
             #[schema(min_length = 3, max_length = 20)]
+            #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
             name: String
-        }
+        },
     }
 }
 

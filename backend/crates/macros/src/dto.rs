@@ -7,7 +7,7 @@ macro_rules! derive_dto {
             serde::Serialize,
             serde::Deserialize,
             utoipa::ToSchema,
-            validator::Validate,
+            garde::Validate,
             Clone,
             PartialEq,
             Debug,
@@ -22,37 +22,14 @@ macro_rules! dto {
         $(#[$meta:meta])*
         $name:ident {
             $(
-                $(#[$field_meta:meta])*
-                $field:ident: $ty:ty
-            ),* $(,)?
-        }
-    )*) => {
-        $crate::pastey::paste! {
-            $($crate::derive_dto! {
-                $(#[$meta])*
-                pub struct $name {
-                    $(
-                        $(#[$field_meta])*
-                        pub $field: $ty,
-                    )*
-                }
-            })*
-        }
-    };
-    ($(
-        $(#[$meta:meta])*
-        $name:ident {
-            $(#[$id_meta:meta])*
-            id: $id_ty:ty
-            $(,
-                    fields {
+                fields {
                     $(
                         $(#[$field_meta:meta])*
                         $field:ident: $ty:ty
                     ),* $(,)?
-                }
+                } $(,)?
             )?
-            $(,
+            $(
                 create
                 $(#[$create_meta:meta])*
                 {
@@ -60,9 +37,9 @@ macro_rules! dto {
                         $(#[$create_field_meta:meta])*
                         $create_field:ident: $create_ty:ty
                     ),* $(,)?
-                }
+                } $(,)?
             )?
-            $(,
+            $(
                 upsert
                 $(#[$upsert_meta:meta])*
                 {
@@ -70,9 +47,9 @@ macro_rules! dto {
                         $(#[$upsert_field_meta:meta])*
                         $upsert_field:ident: $upsert_ty:ty
                     ),* $(,)?
-                }
+                } $(,)?
             )?
-            $(,
+            $(
                 update
                 $(#[$update_meta:meta])*
                 {
@@ -80,8 +57,8 @@ macro_rules! dto {
                         $(#[$update_field_meta:meta])*
                         $update_field:ident: $update_ty:ty
                     ),* $(,)?
-                }
-            )? $(,)?
+                } $(,)?
+            )?
         }
     )*) => {
         $crate::pastey::paste! {$(
@@ -106,8 +83,6 @@ macro_rules! dto {
             $crate::derive_dto! {
                 $(#[$meta])*
                 pub struct $name {
-                    $(#[$id_meta])*
-                    pub id: $id_ty,
                     $(
                         $(
                             $(#[$field_meta])*

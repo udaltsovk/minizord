@@ -7,79 +7,90 @@ use utils::validation::RE_SENTENCE;
 dto! {
     ///
     Tour {
-        ///
-        #[schema(format = Ulid)]
-        id: Ulid,
         fields {
             ///
-            #[validate(length(min = 1, max = 30), regex(path = *RE_SENTENCE))]
+            #[schema(format = Ulid)]
+            #[garde(skip)]
+            id: Ulid,
+
+            ///
             #[schema(min_length = 1, max_length = 30)]
+            #[garde(skip)]
             name: String,
 
             ///
             #[schema(format = DateTime)]
+            #[garde(skip)]
             starts_at: DateTime<Utc>,
 
             ///
             #[schema(format = DateTime)]
+            #[garde(skip)]
             ends_at: DateTime<Utc>,
 
             ///
-            #[validate(range(min = 1, max = 10))]
             #[schema(minimum = 1, maximum = 10)]
+            #[garde(skip)]
             max_members: u16,
 
             ///
+            #[garde(skip)]
             required_specializations: Vec<Ulid>,
         },
         create
         ///
         {
             ///
-            #[validate(length(min = 3, max = 20))]
             #[schema(min_length = 3, max_length = 20)]
+            #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
             name: String,
 
             ///
             #[schema(format = DateTime)]
+            #[garde(skip)]
             starts_at: DateTime<Utc>,
 
             ///
             #[schema(format = DateTime)]
+            #[garde(skip)]
             ends_at: DateTime<Utc>,
 
             ///
-            #[validate(range(min = 1, max = 10))]
             #[schema(minimum = 1, maximum = 10)]
+            #[garde(range(min = 1, max = 10))]
             max_members: u16,
 
             ///
+            #[garde(skip)]
             required_specializations: Vec<Ulid>,
         },
         update
         ///
         {
             ///
-            #[validate(length(min = 3, max = 20))]
             #[schema(min_length = 3, max_length = 20)]
+            #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
             name: String,
 
             ///
             #[schema(format = DateTime)]
+            #[garde(skip)]
             starts_at: DateTime<Utc>,
 
             ///
             #[schema(format = DateTime)]
+            #[garde(skip)]
             ends_at: DateTime<Utc>,
 
             ///
-            #[validate(range(min = 1, max = 10))]
             #[schema(minimum = 1, maximum = 10)]
+            #[garde(range(min = 1, max = 10))]
             max_members: u16,
 
             ///
+            #[garde(skip)]
             required_specializations: Vec<Ulid>,
-        }
+        },
     }
 }
 
