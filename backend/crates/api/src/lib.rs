@@ -57,15 +57,24 @@ use handler::{
     common::{ApiError, ValidationError},
     health::{HealthHandler, implementation::ImplementedHealthHandler},
     profile::{ProfileHandler, implementation::ImplementedProfileHandler},
+    review::{ReviewHandler, implementation::ImplementedReviewHandler},
     user::{UserHandler, implementation::ImplementedUserHandler},
 };
 use repository::{
     image::s3::S3ImageRepository, profile::surreal::SurrealProfileRepository,
+    reviewed::surreal::SurrealReviewedRepository,
     user::surreal::SurrealUserRepository,
 };
 use service::{
     profile::{
         ProfileServiceDependency, implementation::ImplementedProfileService,
+    },
+    profile_image::{
+        ProfileImageServiceDependency,
+        implementation::ImplementedProfileImageService,
+    },
+    reviewed::{
+        ReviewedServiceDependency, implementation::ImplementedReviewedService,
     },
     user::{UserServiceDependency, implementation::ImplementedUserService},
 };
@@ -95,6 +104,8 @@ env_vars_config! {
 struct AppConfig {
     user_service: UserServiceDependency,
     profile_service: ProfileServiceDependency,
+    profile_image_service: ProfileImageServiceDependency,
+    reviewed_service: ReviewedServiceDependency,
 }
 impl AppConfig {
     #[tracing::instrument(skip_all, level = "trace")]
@@ -108,12 +119,12 @@ impl AppConfig {
             .app_data(JsonConfig::default().error_handler(input_err_handler))
             .app_data(Data::new(config::JWT_SECRET.to_string()))
             .configure(ImplementedHealthHandler::routes())
-            .configure(ImplementedUserHandler::routes(
-                self.user_service.clone(),
-            ))
+            .configure(ImplementedUserHandler::routes(self.user_service))
             .configure(ImplementedProfileHandler::routes(
-                self.profile_service.clone(),
+                self.profile_service,
+                self.profile_image_service,
             ))
+            .configure(ImplementedReviewHandler::routes(self.reviewed_service))
             .default_service(get().to(Api::not_found));
         }
     }
@@ -142,6 +153,8 @@ impl Api {
         let profile_repository =
             SurrealProfileRepository::new(surreal_client.clone());
         let image_repository = S3ImageRepository::new(s3_client.clone());
+        let reviewed_repository =
+            SurrealReviewedRepository::new(surreal_client.clone());
 
         let password_hasher = PasswordHasher::new();
 
@@ -153,13 +166,22 @@ impl Api {
         let profile_service = ImplementedProfileService::new(
             user_repository.clone(),
             profile_repository.clone(),
+        );
+        let profile_image_service = ImplementedProfileImageService::new(
             image_repository.clone(),
+            profile_service.clone(),
+        );
+        let reviewed_service = ImplementedReviewedService::new(
+            reviewed_repository.clone(),
+            user_service.clone(),
         );
 
         Self {
             config: AppConfig {
                 user_service,
                 profile_service,
+                profile_image_service,
+                reviewed_service,
             },
             openapi: OpenApi::openapi(),
             lgtm,

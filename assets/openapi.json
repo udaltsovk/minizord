@@ -950,93 +950,6 @@
           }
         ]
       },
-      "put": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "upsert_profile_by_id",
-        "parameters": [
-          {
-            "name": "profile_id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "ulid"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpsertProfile"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Profile"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "organizator": []
-          }
-        ]
-      },
       "delete": {
         "tags": [
           "Profiles"
@@ -1315,96 +1228,6 @@
           }
         ]
       },
-      "put": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "upsert_profile_image_by_id",
-        "parameters": [
-          {
-            "name": "profile_id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "ulid"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "",
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/UploadForm"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "organizator": []
-          }
-        ]
-      },
       "delete": {
         "tags": [
           "Profiles"
@@ -1438,6 +1261,682 @@
             }
           },
           "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/reviews/{reviewee_id}": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_reviews_by_reviewee_id_paginated",
+        "parameters": [
+          {
+            "name": "reviewee_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int16",
+              "default": 7,
+              "maximum": 57,
+              "minimum": 0
+            },
+            "style": "form"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int64",
+              "default": 0,
+              "minimum": 0
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "upsert_review_by_id",
+        "parameters": [
+          {
+            "name": "reviewee_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_review_by_id",
+        "parameters": [
+          {
+            "name": "reviewee_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/reviews/my": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_reviews_sent_paginated",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int16",
+              "default": 7,
+              "maximum": 57,
+              "minimum": 0
+            },
+            "style": "form"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int64",
+              "default": 0,
+              "minimum": 0
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/reviews/my/received": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_reviews_received_paginated",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int16",
+              "default": 7,
+              "maximum": 57,
+              "minimum": 0
+            },
+            "style": "form"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int64",
+              "default": 0,
+              "minimum": 0
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/reviews/{reviewer_id}/sent": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_reviews_by_reviewer_id_paginated",
+        "parameters": [
+          {
+            "name": "reviewer_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int16",
+              "default": 7,
+              "maximum": 57,
+              "minimum": 0
+            },
+            "style": "form"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int64",
+              "default": 0,
+              "minimum": 0
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      }
+    },
+    "/reviews/{reviewee_id}/{reviewer_id}": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_review_by_reviewee_id_and_reviewer_id",
+        "parameters": [
+          {
+            "name": "reviewee_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          },
+          {
+            "name": "reviewer_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizator": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_review_by_reviewee_id_and_reviewer_id",
+        "parameters": [
+          {
+            "name": "reviewee_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          },
+          {
+            "name": "reviewer_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -1498,7 +1997,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
+            "format": "idn-email",
             "description": "",
             "maxLength": 50,
             "minLength": 6
@@ -1594,21 +2093,24 @@
           "id": {
             "type": "string",
             "format": "ulid",
-            "description": ""
+            "description": "",
+            "examples": [
+              "00000000000000000000000000"
+            ]
           },
           "name": {
             "type": "string",
             "description": "",
             "maxLength": 24,
             "minLength": 2,
-            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+            "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"
           },
           "surname": {
             "type": "string",
             "description": "",
             "maxLength": 24,
             "minLength": 2,
-            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+            "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"
           },
           "telegram": {
             "type": "string",
@@ -1621,7 +2123,7 @@
             "type": "string",
             "maxLength": 24,
             "minLength": 2,
-            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+            "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"
           },
           "bio": {
             "type": "string",
@@ -1640,6 +2142,49 @@
           "has_avatar": {
             "type": "boolean",
             "description": ""
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "reviewer_id",
+          "reviewee_id",
+          "score",
+          "review"
+        ],
+        "properties": {
+          "reviewer_id": {
+            "type": "string",
+            "format": "ulid",
+            "description": "",
+            "examples": [
+              "00000000000000000000000000"
+            ]
+          },
+          "reviewee_id": {
+            "type": "string",
+            "format": "ulid",
+            "description": "",
+            "examples": [
+              "00000000000000000000000000"
+            ]
+          },
+          "score": {
+            "type": "integer",
+            "format": "u-int16",
+            "description": "",
+            "examples": [
+              7
+            ],
+            "maximum": 10,
+            "minimum": 0
+          },
+          "review": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096
           }
         }
       },
@@ -1674,14 +2219,14 @@
             "description": "",
             "maxLength": 24,
             "minLength": 2,
-            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+            "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"
           },
           "surname": {
             "type": "string",
             "description": "",
             "maxLength": 24,
             "minLength": 2,
-            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+            "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"
           },
           "telegram": {
             "type": "string",
@@ -1694,7 +2239,7 @@
             "type": "string",
             "maxLength": 24,
             "minLength": 2,
-            "pattern": "^[А-ЯЁ]{1}[а-яё]{1,23}$"
+            "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"
           },
           "bio": {
             "type": "string",
@@ -1712,6 +2257,31 @@
           }
         }
       },
+      "UpsertReview": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "score",
+          "review"
+        ],
+        "properties": {
+          "score": {
+            "type": "integer",
+            "format": "u-int16",
+            "description": "",
+            "examples": [
+              7
+            ],
+            "maximum": 10,
+            "minimum": 0
+          },
+          "review": {
+            "type": "string",
+            "description": "",
+            "maxLength": 4096
+          }
+        }
+      },
       "User": {
         "type": "object",
         "description": "",
@@ -1725,11 +2295,14 @@
           "id": {
             "type": "string",
             "format": "ulid",
-            "description": ""
+            "description": "",
+            "examples": [
+              "00000000000000000000000000"
+            ]
           },
           "email": {
             "type": "string",
-            "format": "email",
+            "format": "idn-email",
             "description": "",
             "maxLength": 50,
             "minLength": 6
@@ -1782,7 +2355,7 @@
               "string",
               "null"
             ],
-            "format": "email",
+            "format": "idn-email",
             "description": "",
             "maxLength": 50,
             "minLength": 6
@@ -1869,6 +2442,10 @@
     {
       "name": "Profiles",
       "description": "Profile-related endpoints"
+    },
+    {
+      "name": "Reviews",
+      "description": "Review-related endpoints"
     }
   ]
 }

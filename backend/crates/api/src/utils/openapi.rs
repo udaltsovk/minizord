@@ -44,11 +44,32 @@ use utoipa_swagger_ui::SwaggerUi;
             name = "Profiles",
             description = "Profile-related endpoints"
         ),
+        (
+            name = "Reviews",
+            description = "Review-related endpoints"
+        ),
     ),
     nest(
-        (path = "/health", api = handler::health::implementation::OpenApi, tags = ["Health"]),
-        (path = "/users", api = handler::user::implementation::OpenApi, tags = ["Users"]),
-        (path = "/profiles", api = handler::profile::implementation::OpenApi, tags = ["Profiles"]),
+        (
+            path = "/health",
+            api = handler::health::implementation::OpenApi,
+            tags = ["Health"]
+        ),
+        (
+            path = "/users",
+            api = handler::user::implementation::OpenApi,
+            tags = ["Users"]
+        ),
+        (
+            path = "/profiles",
+            api = handler::profile::implementation::OpenApi,
+            tags = ["Profiles"]
+        ),
+        (
+            path = "/reviews",
+            api = handler::review::implementation::OpenApi,
+            tags = ["Reviews"]
+        ),
     ),
     modifiers(&Security),
 )]

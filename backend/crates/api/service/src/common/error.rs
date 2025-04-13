@@ -2,6 +2,9 @@ use repository::common::RepositoryError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ServiceError {
+    #[error("{0}")]
+    BadRequest(String),
+
     #[error("Invalid password")]
     InvalidPassword,
 
