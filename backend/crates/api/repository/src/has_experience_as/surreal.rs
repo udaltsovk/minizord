@@ -1,11 +1,13 @@
 use std::sync::Arc;
 
 use entity::{
-    has_experience_as::{HasExperienceAs, UpsertHasExperienceAs},
+    has_experience_as::{
+        HasExperienceAs, HasExperienceAsId, UpsertHasExperienceAs,
+    },
     specialization::SpecializationId,
     user::UserId,
 };
-use macros::implementation;
+use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
 use super::{HasExperienceAsRepository, HasExperienceAsRepositoryResult};
@@ -17,14 +19,9 @@ implementation! {
     } as Surreal {
         upsert_by_in_and_out(&self, r#in: UserId, out: SpecializationId, object: UpsertHasExperienceAs) -> HasExperienceAs {
             let result: Option<HasExperienceAs> = self.db.0
-                .query(
-                    r#"
-                        RELATE ONLY (type::record($in))->(type::record($id))->(type::record($out))
-                            CONTENT <object>$object
-                    "#
-                )
+                .query(include_str!("../../db/surreal/queries/relation/upsert_by_in_and_out.surql"))
                 .bind(("in", r#in))
-                .bind(("id", object.get_id(self.table())))
+                .bind(("id", object.get_id().record_id()))
                 .bind(("out", out))
                 .bind(("object", object))
                 .await?
@@ -34,15 +31,8 @@ implementation! {
 
         find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE in = type::record($in)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("table", self.table()))
+                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .bind(("table", HasExperienceAsId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
@@ -56,15 +46,8 @@ implementation! {
 
         find_all_by_out(&self, out: SpecializationId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE out = type::record($out)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("table", self.table()))
+                .query(include_str!("../../db/surreal/queries/relation/find_all_by_out.surql"))
+                .bind(("table", HasExperienceAsId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))
                 .bind(("offset", offset))

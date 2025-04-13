@@ -32,13 +32,7 @@ implementation! {
 
         find_by_email(&self, email: &str) -> Option<User> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE email = type::string($email)
-                            LIMIT 1
-                    "#
-                )
+                .query(include_str!("../../db/surreal/queries/table/user/find_by_email.surql"))
                 .bind(("table", UserId::TABLE))
                 .bind(("email", email.to_string()))
                 .await?
@@ -51,13 +45,7 @@ implementation! {
 
         find_by_username(&self, username: &str) -> Option<User> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE username = type::string($username)
-                            LIMIT 1
-                    "#
-                )
+                .query(include_str!("../../db/surreal/queries/table/user/find_by_username.surql"))
                 .bind(("table", UserId::TABLE))
                 .bind(("username", username.to_string()))
                 .await?

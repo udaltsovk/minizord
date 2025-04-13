@@ -36,16 +36,8 @@ implementation! {
 
         find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($team_table)
-                            WHERE 
-                                tour = type::record($tour_id)
-                                name = type::string($name)
-                            LIMIT 1
-                    "#
-                )
-                .bind(("team_table", TeamId::TABLE))
+                .query(include_str!("../../db/surreal/queries/table/team/find_by_tour_and_name.surql"))
+                .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
                 .bind(("name", name.to_string()))
                 .await?
@@ -58,16 +50,8 @@ implementation! {
 
         find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($team_table)
-                            WHERE 
-                                tour = type::record($tour_id)
-                                lead = type::record($lead_id)
-                            LIMIT 1
-                    "#
-                )
-                .bind(("team_table", TeamId::TABLE))
+                .query(include_str!("../../db/surreal/queries/table/team/find_by_tour_and_lead.surql"))
+                .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
                 .bind(("lead_id", lead))
                 .await?
@@ -80,16 +64,8 @@ implementation! {
 
         find_all_by_tour(&self, tour: TourId, limit: u64, offset: u64) -> Vec<Team> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($team_table)
-                            WHERE 
-                                tour = type::record($tour_id)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("team_table", TeamId::TABLE))
+                .query(include_str!("../../db/surreal/queries/table/team/find_all_by_tour.surql"))
+                .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
                 .bind(("limit", limit))
                 .bind(("offset", offset))

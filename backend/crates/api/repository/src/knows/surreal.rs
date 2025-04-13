@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use entity::{
-    knows::{Knows, UpsertKnows},
+    knows::{Knows, KnowsId, UpsertKnows},
     technology::TechnologyId,
     user::UserId,
 };
-use macros::implementation;
+use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
 use super::{KnowsRepository, KnowsRepositoryResult};
@@ -17,14 +17,9 @@ implementation! {
     } as Surreal {
         upsert_by_in_and_out(&self, r#in: UserId, out: TechnologyId, object: UpsertKnows) -> Knows {
             let result: Option<Knows> = self.db.0
-                .query(
-                    r#"
-                        RELATE ONLY (type::record($in))->(type::record($id))->(type::record($out))
-                            CONTENT <object>$object
-                    "#
-                )
+                .query(include_str!("../../db/surreal/queries/relation/upsert_by_in_and_out.surql"))
                 .bind(("in", r#in))
-                .bind(("id", object.get_id(self.table())))
+                .bind(("id", object.get_id().record_id()))
                 .bind(("out", out))
                 .bind(("object", object))
                 .await?
@@ -34,15 +29,8 @@ implementation! {
 
         find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Knows> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE in = type::record($in)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("table", self.table()))
+                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .bind(("table", KnowsId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
@@ -56,15 +44,8 @@ implementation! {
 
         find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Knows> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE out = type::record($out)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("table", self.table()))
+                .query("../../db/surreal/queries/relation/find_all_by_out.surql")
+                .bind(("table", KnowsId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))
                 .bind(("offset", offset))

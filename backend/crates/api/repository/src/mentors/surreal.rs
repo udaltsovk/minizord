@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use entity::{
-    mentors::{CreateMentors, Mentors, MentorsUpdate},
+    mentors::{CreateMentors, Mentors, MentorsId, MentorsUpdate},
     team::TeamId,
     user::UserId,
 };
-use macros::implementation;
+use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
 use super::{MentorsRepository, MentorsRepositoryResult};
@@ -17,7 +17,7 @@ implementation! {
     } as Surreal {
         save(&self, new: CreateMentors) -> Mentors {
             self.db.0
-                .create(new.get_id(self.table()))
+                .create(new.get_id().record_id())
                 .content(new.into_entity())
                 .await?
                 .ok_or(RepositoryError::FailedToSaveObject)?
@@ -25,15 +25,8 @@ implementation! {
 
         find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Mentors> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE in = type::record($in)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("table", self.table()))
+                .query(include_str!("../../db/surreal/queries/relation/find_all_by_in.surql"))
+                .bind(("table", MentorsId::TABLE))
                 .bind(("in", r#in))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
@@ -47,15 +40,8 @@ implementation! {
 
         find_all_by_out(&self, out: TeamId, limit: u16, offset: u64) -> Vec<Mentors> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE out = type::record($out)
-                            LIMIT $limit
-                            START AT $offset
-                    "#
-                )
-                .bind(("table", self.table()))
+                .query(include_str!("../../db/surreal/queries/relation/find_all_by_out.surql"))
+                .bind(("table", MentorsId::TABLE))
                 .bind(("out", out))
                 .bind(("limit", limit))
                 .bind(("offset", offset))
@@ -69,19 +55,8 @@ implementation! {
 
         find_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<Mentors> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($table)
-                            WHERE in = type::record($in) 
-                                && out = type::record($out)
-                            LIMIT 1
-                    "#
-                )
-                .bind(("table", self.table()))
-                .bind(("in", r#in))
-                .bind(("out", out))
+                .select(self.get_id(&r#in, &out))
                 .await?
-                .take(0)?
         }
 
         exists_by_in_and_out(&self, r#in: UserId, out: TeamId) -> bool {

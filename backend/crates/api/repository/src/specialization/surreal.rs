@@ -35,14 +35,8 @@ implementation! {
 
         find_by_name(&self, name: &str) -> Option<Specialization> {
             self.db.0
-                .query(
-                    r#"
-                        SELECT * FROM type::table($specialization_table)
-                            WHERE name = type::string($name)
-                            LIMIT 1
-                    "#
-                )
-                .bind(("specialization_table", SpecializationId::TABLE))
+                .query(include_str!("../../db/surreal/queries/table/find_by_name.surql"))
+                .bind(("table", SpecializationId::TABLE))
                 .bind(("name", name.to_string()))
                 .await?
                 .take(0)?
