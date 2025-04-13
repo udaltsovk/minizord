@@ -22,7 +22,7 @@ impl CreateMemberOf {
     #[tracing::instrument(skip_all, level = "trace")]
     pub fn into_entity(self) -> MemberOf {
         MemberOf {
-            id: self.get_id_string(),
+            id: self.get_id(),
             r#in: self.r#in,
             out: self.out,
             accepted: false,

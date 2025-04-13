@@ -228,6 +228,63 @@ macro_rules! entity {
         }
     ) => {
         $crate::pastey::paste! {
+            #[cfg(feature = "surrealdb")]
+            $crate::derive_entity! {
+                #[serde(transparent)]
+                pub struct [<$name Id>](surrealdb::RecordId);
+            }
+            #[cfg(not(feature = "surrealdb"))]
+            $crate::derive_entity! {
+                #[serde(transparent)]
+                pub struct [<$name Id>](String);
+            }
+            impl macros::EntityId for [<$name Id>] {
+                const TABLE: &str = stringify!([<$name:snake>]);
+
+                #[cfg(feature = "surrealdb")]
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn record_id(&self) -> surrealdb::RecordId {
+                    self.0.clone()
+                }
+            }
+            #[cfg(feature = "surrealdb")]
+            impl From<surrealdb::RecordId> for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn from(id: surrealdb::RecordId) -> Self {
+                    Self(id)
+
+                }
+            }
+            #[cfg(feature = "surrealdb")]
+            impl std::fmt::Display for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+                    let record_id: surrealdb::RecordId = self.clone().into();
+                    record_id.key().fmt(formatter)
+                }
+            }
+            #[cfg(feature = "surrealdb")]
+            impl From<[<$name Id>]> for surrealdb::RecordId {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn from(id: [<$name Id>]) -> Self {
+                    <[<$name Id>] as macros::EntityId>::record_id(&id)
+                }
+            }
+            #[cfg(not(feature = "surrealdb"))]
+            impl std::fmt::Display for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+                    self.0.fmt(formatter)
+                }
+            }
+            #[cfg(not(feature = "surrealdb"))]
+            impl From<String> for [<$name Id>] {
+                #[tracing::instrument(skip_all, level = "trace")]
+                fn from(id: String) -> Self {
+                    Self(id)
+                }
+            }
+
             $crate::derive_entity! {
                 $($(#[$create_meta])*)?
                 pub struct [<Create $name>] {
@@ -246,8 +303,12 @@ macro_rules! entity {
                 }
 
                 #[cfg(feature = "surrealdb")]
-                pub fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
-                    surrealdb::RecordId::from_table_key(table, self.get_id_string())
+                pub fn get_id(&self) -> [<$name Id>] {
+                    surrealdb::RecordId::from_table_key(<[<$name Id>] as macros::EntityId>::TABLE, self.get_id_string()).into()
+                }
+                #[cfg(not(feature = "surrealdb"))]
+                pub fn get_id(&self) -> [<$name Id>] {
+                    self.get_id_string().into()
                 }
             }
 
@@ -269,15 +330,19 @@ macro_rules! entity {
                 }
 
                 #[cfg(feature = "surrealdb")]
-                pub fn get_id(&self, table: &'static str) -> surrealdb::RecordId {
-                    surrealdb::RecordId::from_table_key(table, self.get_id_string())
+                pub fn get_id(&self) -> [<$name Id>] {
+                    surrealdb::RecordId::from_table_key(<[<$name Id>] as macros::EntityId>::TABLE, self.get_id_string()).into()
+                }
+                #[cfg(not(feature = "surrealdb"))]
+                pub fn get_id(&self) -> [<$name Id>] {
+                    self.get_id_string().into()
                 }
             }
 
             $crate::derive_entity! {
                 $(#[$meta])*
                 pub struct $name {
-                    pub id: String,
+                    id: [<$name Id>],
                     pub r#in: $in,
                     pub out: $out,
                     $($(

@@ -29,7 +29,7 @@ impl CreateParticipatedIn {
     #[tracing::instrument(skip_all, level = "trace")]
     pub fn into_entity(self) -> ParticipatedIn {
         ParticipatedIn {
-            id: self.get_id_string(),
+            id: self.get_id(),
             r#in: self.r#in,
             out: self.out,
             score: self.score,

@@ -17,7 +17,7 @@ impl UpsertKnows {
     #[tracing::instrument(skip_all, level = "trace")]
     fn into_entity(self) -> Knows {
         Knows {
-            id: self.get_id_string(),
+            id: self.get_id(),
             r#in: self.r#in,
             out: self.out,
             level: self.level,

@@ -70,10 +70,6 @@ macro_rules! crud_repository {
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
-                fn table(&self) -> &'static str {
-                    stringify!([<$name:snake>])
-                }
-
                 fn get_id_string(&self, in_id: &$in, out_id: &$out) -> String {
                     format!("{in_id}_{out_id}")
                 }
@@ -217,10 +213,6 @@ macro_rules! urd_repository {
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
-                fn table(&self) -> &'static str {
-                    stringify!([<$name:snake>])
-                }
-
                 fn get_id_string(&self, in_id: &$in, out_id: &$out) -> String {
                     format!("{in_id}_{out_id}")
                 }
