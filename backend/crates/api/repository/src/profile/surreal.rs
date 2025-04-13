@@ -4,6 +4,7 @@ use entity::profile::{Profile, ProfileId, UpsertProfile};
 use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
+use super::{ProfileRepository, ProfileRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {

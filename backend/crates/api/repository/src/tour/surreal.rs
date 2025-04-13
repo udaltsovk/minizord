@@ -4,6 +4,7 @@ use entity::tour::{CreateTour, Tour, TourId, TourUpdate};
 use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
+use super::{TourRepository, TourRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {

@@ -6,6 +6,7 @@ use entity::technology::{
 use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
+use super::{TechnologyRepository, TechnologyRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {

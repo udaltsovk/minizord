@@ -9,6 +9,7 @@ use macros::implementation;
 use tracing::instrument;
 use utils::adapters::S3;
 
+use super::{ImageRepository, ImageRepositoryResult};
 use crate::common::RepositoryError;
 
 #[instrument(level = "trace")]

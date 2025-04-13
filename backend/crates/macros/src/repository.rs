@@ -70,15 +70,17 @@ macro_rules! crud_repository {
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
-                const TABLE: &str = stringify!([<$name:snake>]);
+                fn table(&self) -> &'static str {
+                    stringify!([<$name:snake>])
+                }
 
-                fn get_id_string(in_id: &$in, out_id: &$out) -> String {
+                fn get_id_string(&self, in_id: &$in, out_id: &$out) -> String {
                     format!("{in_id}_{out_id}")
                 }
 
                 #[cfg(feature = "surrealdb")]
-                fn get_id(in_id: &$in, out_id: &$out) -> surrealdb::RecordId {
-                    surrealdb::RecordId::from_table_key(Self::TABLE, Self::get_id_string(in_id, out_id))
+                fn get_id(&self, in_id: &$in, out_id: &$out) -> surrealdb::RecordId {
+                    surrealdb::RecordId::from_table_key(stringify!([<$name:snake>]), self.get_id_string(in_id, out_id))
                 }
 
                 async fn save(
@@ -89,7 +91,7 @@ macro_rules! crud_repository {
                 async fn find_all_by_in(
                     &self,
                     r#in: $in,
-                    limit: u64,
+                    limit: u16,
                     offset: u64
                 ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
 
@@ -101,7 +103,7 @@ macro_rules! crud_repository {
                 async fn find_all_by_out(
                     &self,
                     out: $out,
-                    limit: u64,
+                    limit: u16,
                     offset: u64
                 ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
 
@@ -215,15 +217,17 @@ macro_rules! urd_repository {
 
             #[$crate::async_trait::async_trait]
             pub trait [<$name:camel Repository>] {
-                const TABLE: &str = stringify!([<$name:snake>]);
+                fn table(&self) -> &'static str {
+                    stringify!([<$name:snake>])
+                }
 
-                fn get_id_string(in_id: &$in, out_id: &$out) -> String {
+                fn get_id_string(&self, in_id: &$in, out_id: &$out) -> String {
                     format!("{in_id}_{out_id}")
                 }
 
                 #[cfg(feature = "surrealdb")]
-                fn get_id(in_id: &$in, out_id: &$out) -> surrealdb::RecordId {
-                    surrealdb::RecordId::from_table_key(Self::TABLE, Self::get_id_string(in_id, out_id))
+                fn get_id(&self, in_id: &$in, out_id: &$out) -> surrealdb::RecordId {
+                    surrealdb::RecordId::from_table_key(stringify!([<$name:snake>]), self.get_id_string(in_id, out_id))
                 }
 
                 async fn upsert_by_in_and_out(
@@ -236,7 +240,7 @@ macro_rules! urd_repository {
                 async fn find_all_by_in(
                     &self,
                     r#in: $in,
-                    limit: u64,
+                    limit: u16,
                     offset: u64
                 ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
 
@@ -248,7 +252,7 @@ macro_rules! urd_repository {
                 async fn find_all_by_out(
                     &self,
                     out: $out,
-                    limit: u64,
+                    limit: u16,
                     offset: u64
                 ) -> [<$name:camel RepositoryResult>]<Vec<[<$name:snake>]::[<$name:camel>]>>;
 

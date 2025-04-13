@@ -4,6 +4,7 @@ use entity::user::{CreateUser, User, UserId, UserUpdate};
 use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
+use super::{UserRepository, UserRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {

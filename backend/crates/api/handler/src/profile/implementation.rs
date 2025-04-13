@@ -14,8 +14,9 @@ use service::profile::ProfileServiceDependency;
 use ulid::Ulid;
 use utoipa::path as openapi;
 
+use super::{ProfileHandler, ProfileHandlerHelper, ProfileHandlerResult};
 use crate::{
-    common::{HandlerError, ValidationError},
+    common::{ApiError, ValidationError},
     profile::UploadForm,
 };
 
@@ -26,6 +27,11 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "upsert_current_profile",
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizator" = []),
+            ),
             request_body(
                 description = "",
                 content = UpsertProfile
@@ -33,7 +39,7 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = Profile),
                 (status = 400, description = "", body = ValidationError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[put("/me")]
@@ -60,8 +66,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = Profile),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
 
         )]
@@ -88,8 +94,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[delete("/me")]
@@ -108,6 +114,9 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "upsert_profile_by_id",
+            security(
+                ("organizator" = []),
+            ),
             params(
                 ("profile_id" = Ulid, description = "")
             ),
@@ -115,15 +124,12 @@ handler_implementation! {
                 description = "",
                 content = UpsertProfile
             ),
-            security(
-                ("organizator" = []),
-            ),
             responses(
                 (status = 200, description = "", body = Profile),
-                (status = 404, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[put("/{profile_id}")]
@@ -144,19 +150,19 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "get_profile_by_id",
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizator" = []),
             ),
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
             responses(
                 (status = 200, description = "", body = Profile),
-                (status = 404, description = "", body = HandlerError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[get("/{profile_id}")]
@@ -175,17 +181,17 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "delete_profile_by_id",
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("organizator" = []),
             ),
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[delete("/{profile_id}")]
@@ -204,6 +210,11 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "upsert_current_profile_image",
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizator" = []),
+            ),
             request_body(
                 description = "",
                 content = UploadForm,
@@ -211,10 +222,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = ""),
-                (status = 415, description = "", body = HandlerError),
-                (status = 413, description = "", body = HandlerError),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 415, description = "", body = ApiError),
+                (status = 413, description = "", body = ApiError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[put("/me/image")]
@@ -242,8 +253,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
 
         )]
@@ -272,8 +283,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[delete("/me/image")]
@@ -292,6 +303,9 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "upsert_profile_image_by_id",
+            security(
+                ("organizator" = []),
+            ),
             params(
                 ("profile_id" = Ulid, description = "")
             ),
@@ -300,16 +314,13 @@ handler_implementation! {
                 content = UploadForm,
                 content_type = "multipart/form-data",
             ),
-            security(
-                ("organizator" = []),
-            ),
             responses(
                 (status = 200, description = ""),
-                (status = 415, description = "", body = HandlerError),
-                (status = 413, description = "", body = HandlerError),
-                (status = 404, description = "", body = HandlerError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 415, description = "", body = ApiError),
+                (status = 413, description = "", body = ApiError),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[put("/{profile_id}/image")]
@@ -331,18 +342,18 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "get_profile_image_by_id",
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizator" = []),
             ),
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
             responses(
                 (status = 200, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[get("/{profile_id}/image")]
@@ -363,17 +374,17 @@ handler_implementation! {
         ///
         #[openapi(
             operation_id = "delete_profile_image_by_id",
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("organizator" = []),
             ),
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[delete("/{profile_id}/image")]

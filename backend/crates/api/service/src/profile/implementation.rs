@@ -15,6 +15,7 @@ use repository::{
 };
 use ulid::Ulid;
 
+use super::{ProfileService, ProfileServiceResult};
 use crate::common::ServiceError;
 
 const MAX_IMAGE_SIZE: usize = 5_976_883;
@@ -40,6 +41,7 @@ implementation! {
                     UpsertProfileEntity {
                         name: object.name,
                         surname: object.surname,
+                        telegram: object.telegram,
                         city: object.city,
                         bio: object.bio,
                         portfolio_urls: object.portfolio_urls.clone(),

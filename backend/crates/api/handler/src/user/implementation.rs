@@ -13,8 +13,10 @@ use service::user::UserServiceDependency;
 use ulid::Ulid;
 use utoipa::path as openapi;
 
-use super::UserAuthResponse;
-use crate::common::{HandlerError, ValidationError};
+use super::{
+    UserAuthResponse, UserHandler, UserHandlerHelper, UserHandlerResult,
+};
+use crate::common::{ApiError, ValidationError};
 
 handler_implementation! {
     UserHandler as Implemented {
@@ -29,7 +31,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 201, description = "", body = UserAuthResponse),
-                (status = 409, description = "", body = HandlerError),
+                (status = 409, description = "", body = ApiError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
@@ -56,7 +58,7 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
-                (status = 401, description = "", body = HandlerError),
+                (status = 401, description = "", body = ApiError),
                 (status = 400, description = "", body = ValidationError),
             ),
         )]
@@ -83,8 +85,8 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = User),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
 
         )]
@@ -112,10 +114,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = User),
-                (status = 409, description = "", body = HandlerError),
+                (status = 409, description = "", body = ApiError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[patch("/me")]
@@ -153,8 +155,8 @@ handler_implementation! {
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[put("/me/password")]
@@ -183,8 +185,8 @@ handler_implementation! {
             responses(
                 (status = 204, description = ""),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[delete("/me")]
@@ -214,9 +216,9 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = User),
-                (status = 404, description = "", body = HandlerError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[get("/{user_id}")]
@@ -247,11 +249,11 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = User),
-                (status = 409, description = "", body = HandlerError),
-                (status = 404, description = "", body = HandlerError),
+                (status = 409, description = "", body = ApiError),
+                (status = 404, description = "", body = ApiError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[patch("/{user_id}")]
@@ -283,10 +285,10 @@ handler_implementation! {
             ),
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
-                (status = 404, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
                 (status = 400, description = "", body = ValidationError),
-                (status = 403, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
             ),
         )]
         #[put("/{user_id}/password")]
@@ -314,9 +316,9 @@ handler_implementation! {
             ),
             responses(
                 (status = 204, description = ""),
-                (status = 404, description = "", body = HandlerError),
-                (status = 401, description = "", body = HandlerError),
-                (status = 403, description = "", body = HandlerError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
             ),
         )]
         #[delete("/{user_id}")]

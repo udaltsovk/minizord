@@ -35,11 +35,11 @@ macro_rules! implementation {
             }
 
             #[$crate::async_trait::async_trait]
-            impl super::$trait_name for [<$impl_name $trait_name>] {
+            impl $trait_name for [<$impl_name $trait_name>] {
                 $(
                     #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
-                    async fn $method $sig -> super::[<$trait_name Result>]<$res> {
+                    async fn $method $sig -> [<$trait_name Result>]<$res> {
                         let res: $res = $body;
                         #[allow(unreachable_code)]
                         Ok(res)
@@ -74,7 +74,7 @@ macro_rules! handler_implementation {
                 $(
                     #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
-                    pub async fn $method $sig -> super::super::[<$trait_name Result>]<$res> {
+                    pub async fn $method $sig -> [<$trait_name Result>]<$res> {
                         let res = $body;
                         #[allow(unreachable_code)]
                         Ok(res)
@@ -85,7 +85,7 @@ macro_rules! handler_implementation {
             #[derive(Clone)]
             $(#[$impl_meta])*
             pub struct [<$impl_name $trait_name>];
-            impl super::$trait_name for [<$impl_name $trait_name>] {
+            impl $trait_name for [<$impl_name $trait_name>] {
                 $(
                     #[tracing::instrument(skip_all, level = "trace")]
                     fn $method () -> impl actix_web::dev::HttpServiceFactory + utoipa_actix_web::OpenApiFactory {
@@ -99,9 +99,9 @@ macro_rules! handler_implementation {
             #[allow(unused_variables)]
             #[doc(hidden)]
             #[$crate::async_trait::async_trait]
-            impl super::[<$trait_name Helper>] for [<$impl_name $trait_name Helper>] {
+            impl [<$trait_name Helper>] for [<$impl_name $trait_name Helper>] {
                 $(
-                    async fn $method $sig -> super::[<$trait_name Result>]<$res> {
+                    async fn $method $sig -> [<$trait_name Result>]<$res> {
                         let res = $body;
                         #[allow(unreachable_code)]
                         Ok(res)

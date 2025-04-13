@@ -23,6 +23,10 @@ use utoipa_swagger_ui::SwaggerUi;
     ),
     servers(
         (
+            url = "https://minizord-api.udaltsovk.ru/",
+            description = "Hosted instance"
+        ),
+        (
             url = "http://localhost:8080/",
             description = "Local server"
         )
@@ -42,9 +46,9 @@ use utoipa_swagger_ui::SwaggerUi;
         ),
     ),
     nest(
-        (path = "/health", api = handler::health::OpenApi, tags = ["Health"]),
-        (path = "/users", api = handler::user::OpenApi, tags = ["Users"]),
-        (path = "/profiles", api = handler::profile::OpenApi, tags = ["Profiles"]),
+        (path = "/health", api = handler::health::implementation::OpenApi, tags = ["Health"]),
+        (path = "/users", api = handler::user::implementation::OpenApi, tags = ["Users"]),
+        (path = "/profiles", api = handler::profile::implementation::OpenApi, tags = ["Profiles"]),
     ),
     modifiers(&Security),
 )]

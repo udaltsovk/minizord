@@ -2,6 +2,8 @@ use actix_web::{HttpResponse, get};
 use macros::handler_implementation;
 use utoipa::path as openapi;
 
+use super::{HealthHandler, HealthHandlerHelper, HealthHandlerResult};
+
 handler_implementation! {
     HealthHandler as Implemented {
         /// API status check

@@ -19,8 +19,6 @@ macro_rules! handler {
         }
     ) => {
         $crate::pastey::paste! {
-            pub use implementation::OpenApi;
-
             type [<$name HandlerResult>]<T> = Result<T, $err_ty>;
 
             pub trait [<$name Handler>] {

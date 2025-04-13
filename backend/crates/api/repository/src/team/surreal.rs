@@ -8,6 +8,7 @@ use entity::{
 use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
+use super::{TeamRepository, TeamRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {

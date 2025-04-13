@@ -7,6 +7,7 @@ use entity::specialization::{
 use macros::{EntityId, implementation};
 use utils::adapters::SurrealDB;
 
+use super::{SpecializationRepository, SpecializationRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {
