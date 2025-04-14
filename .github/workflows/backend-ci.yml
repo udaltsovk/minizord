@@ -108,7 +108,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         env:
-          GIT_HASH=${{ steps.push-changes.outputs.commit-hash }}
+          GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
         with:
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
