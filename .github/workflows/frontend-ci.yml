@@ -48,8 +48,8 @@ jobs:
   docker:
     name: Build and publish docker image
     runs-on: ubuntu-latest
-    # needs: [test, check-code, check-deps]
-    needs: [check-code, check-deps]
+    # needs: [test, check-code]
+    needs: [check-code]
     steps:
       - uses: actions/checkout@master
       - name: Set up QEMU
