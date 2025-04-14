@@ -23,8 +23,7 @@
         - OpenTelematry
     - Kubernetes
 - Frontend:
-    - Vite
+    - SvelteKit
     - TypeScript
-    - Svelte
     - Tailwind CSS
 - HAProxy
