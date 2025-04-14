@@ -1,0 +1,8 @@
+[advisories]
+# TODOs:
+# - for RUSTSEC-2024-0436, track https://github.com/surrealdb/surrealdb/issues/5634
+ignore = ["RUSTSEC-2024-0436"]
+
+[output]
+deny = ["warnings"]
+quiet = false
