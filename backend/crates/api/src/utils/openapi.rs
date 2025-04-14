@@ -33,7 +33,7 @@ use utoipa_swagger_ui::SwaggerUi;
     ),
     tags(
         (
-            name = "Health",
+            name = "Info",
             description = "Endpoints for monitoring"
         ),
         (
@@ -51,9 +51,9 @@ use utoipa_swagger_ui::SwaggerUi;
     ),
     nest(
         (
-            path = "/health",
-            api = handler::health::implementation::OpenApi,
-            tags = ["Health"]
+            path = "/",
+            api = handler::info::implementation::OpenApi,
+            tags = ["Info"]
         ),
         (
             path = "/users",

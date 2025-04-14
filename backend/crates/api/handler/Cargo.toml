@@ -49,3 +49,7 @@ actix-web = { workspace = true, optional = true }
 actix-web-lab = { workspace = true, optional = true }
 actix-web-validation = { workspace = true, optional = true }
 actix-multipart = { workspace = true, optional = true }
+
+[build-dependencies]
+chrono.workspace = true
+iana-time-zone = "0.1"

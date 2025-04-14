@@ -55,6 +55,7 @@ utoipa = { version = "5.3", features = [
     "preserve_order",
     "preserve_path_order",
     "non_strict_integers",
+    "url",
 ] }
 
 actix-web = "4.10"

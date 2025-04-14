@@ -24,17 +24,24 @@
     }
   ],
   "paths": {
-    "/health": {
+    "/": {
       "get": {
         "tags": [
-          "Health"
+          "Info"
         ],
-        "summary": "API status check",
-        "description": "Verify that API is running and ready to accept incoming requests.",
-        "operationId": "health",
+        "summary": "Fetch API info",
+        "description": "Returns API info such as version, build date, commit, etc.",
+        "operationId": "info",
         "responses": {
           "200": {
-            "description": "API is running"
+            "description": "Returned API info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInfoResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1985,6 +1992,77 @@
           }
         }
       },
+      "ApiInfoResponse": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "name",
+          "version",
+          "documentation",
+          "about",
+          "build_info"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "minizord-api"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "0.1.0"
+            ]
+          },
+          "documentation": {
+            "type": "string",
+            "format": "uri",
+            "description": ""
+          },
+          "about": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "Welcome, traveler!"
+            ]
+          },
+          "build_info": {
+            "$ref": "#/components/schemas/BuildInfoResponse"
+          }
+        }
+      },
+      "BuildInfoResponse": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "comp_date",
+          "git_hash",
+          "profile"
+        ],
+        "properties": {
+          "comp_date": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "1970-01-01 @ 03:00 (Europe/Moscow)"
+            ]
+          },
+          "git_hash": {
+            "type": "string",
+            "description": ""
+          },
+          "profile": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "release"
+            ]
+          }
+        }
+      },
       "CreateUser": {
         "type": "object",
         "description": "",
@@ -2432,7 +2510,7 @@
   },
   "tags": [
     {
-      "name": "Health",
+      "name": "Info",
       "description": "Endpoints for monitoring"
     },
     {

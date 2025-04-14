@@ -55,7 +55,7 @@ use actix_web_validation::garde::GardeErrorHandlerExt;
 use env_vars_config::env_vars_config;
 use handler::{
     common::{ApiError, ValidationError},
-    health::{HealthHandler, implementation::ImplementedHealthHandler},
+    info::{InfoHandler, implementation::ImplementedInfoHandler},
     profile::{ProfileHandler, implementation::ImplementedProfileHandler},
     review::{ReviewHandler, implementation::ImplementedReviewHandler},
     user::{UserHandler, implementation::ImplementedUserHandler},
@@ -78,7 +78,7 @@ use service::{
     },
     user::{UserServiceDependency, implementation::ImplementedUserService},
 };
-use utils::{OpenApi, validation};
+use utils::{OpenApi, cors::default_cors, validation};
 use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
 use utoipa_actix_web::{AppExt, service_config::ServiceConfig};
 
@@ -98,6 +98,7 @@ env_vars_config! {
     S3_ACCESS_KEY: String = "minioadmin",
     S3_SECRET_KEY: String = "minioadmin",
     S3_REGION: String = "custom",
+    DEPLOY_DOMAIN: String = "localhost",
 }
 
 #[derive(Clone)]
@@ -118,13 +119,13 @@ impl AppConfig {
             .app_data(QueryConfig::default().error_handler(input_err_handler))
             .app_data(JsonConfig::default().error_handler(input_err_handler))
             .app_data(Data::new(config::JWT_SECRET.to_string()))
-            .configure(ImplementedHealthHandler::routes())
             .configure(ImplementedUserHandler::routes(self.user_service))
             .configure(ImplementedProfileHandler::routes(
                 self.profile_service,
                 self.profile_image_service,
             ))
             .configure(ImplementedReviewHandler::routes(self.reviewed_service))
+            .configure(ImplementedInfoHandler::routes())
             .default_service(get().to(Api::not_found));
         }
     }
@@ -202,12 +203,13 @@ impl Api {
                 } else {
                     TrailingSlash::Trim
                 }))
+                .wrap(default_cors())
                 .wrap(LGTM::tracing_middleware())
                 .wrap(CustomActixLogger::new())
                 .into_utoipa_app()
                 .openapi(self.openapi.clone())
-                .configure(self.config.clone().build())
                 .openapi_service(OpenApi::ui_service)
+                .configure(self.config.clone().build())
                 .into_app()
         })
         .bind(config::SERVER_ADDRESS.clone())?

@@ -583,8 +583,10 @@ dependencies = [
  "actix-web-validation",
  "api-dto",
  "api-service",
+ "chrono",
  "futures-util",
  "garde",
+ "iana-time-zone",
  "log",
  "macros",
  "serde",
@@ -6640,6 +6642,7 @@ dependencies = [
  "regex",
  "syn 2.0.100",
  "ulid",
+ "url",
 ]
 
 [[package]]
