@@ -15,11 +15,7 @@
   },
   "servers": [
     {
-      "url": "https://minizord-api.udaltsovk.ru/",
-      "description": "Hosted instance"
-    },
-    {
-      "url": "http://localhost:8080/",
+      "url": "http://localhost:8080",
       "description": "Local server"
     }
   ],
