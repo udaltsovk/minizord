@@ -52,6 +52,7 @@ response! {
         comp_date: &'static str,
 
         ///
+        #[schema(examples("c94e0b0a2ed3c3fc6fbcd2a93d682bc4adeb9924"))]
         git_hash: &'static str,
 
         ///
