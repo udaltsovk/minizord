@@ -47,7 +47,6 @@ use ::utils::{
 };
 use actix_web::{
     App, HttpRequest, HttpResponse, HttpServer,
-    middleware::{Compress, NormalizePath, TrailingSlash},
     web::{Data, FormConfig, JsonConfig, PathConfig, QueryConfig, get},
 };
 use actix_web_lab::middleware::CatchPanic;
@@ -102,7 +101,7 @@ env_vars_config! {
     S3_SECRET_KEY: String = "minioadmin",
     S3_REGION: String = "custom",
     DEPLOY_DOMAIN: String = "localhost",
-    BASE_API_URL: String = "http://localhost:8080"
+    BASE_API_URL: String = "http://localhost:8080",
 }
 
 #[derive(Clone)]
@@ -202,12 +201,6 @@ impl Api {
                 .garde_error_handler(Arc::new(validation::error_handler))
                 .wrap(self.lgtm.metrics_middleware())
                 .wrap(CatchPanic::default())
-                .wrap(Compress::default())
-                .wrap(NormalizePath::new(if cfg!(feature = "swagger") {
-                    TrailingSlash::MergeOnly
-                } else {
-                    TrailingSlash::Trim
-                }))
                 .wrap(default_cors())
                 .wrap(LGTM::tracing_middleware())
                 .wrap(CustomActixLogger::new())
