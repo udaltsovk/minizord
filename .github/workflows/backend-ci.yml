@@ -98,7 +98,7 @@ jobs:
         rustup default nightly
     - name: Build openapi.json
       run: |
-        cargo run --bin openapi-gen
+        cargo run --bin gen-openapi
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "chore: update openapi.json"
@@ -106,9 +106,6 @@ jobs:
     name: Build and publish docker image for the API
     runs-on: ubuntu-latest
     needs: [test, check-code, check-deps]
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
       - uses: actions/checkout@master
       - name: Set up QEMU
@@ -132,7 +129,8 @@ jobs:
         env:
           GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
         with:
-          file: ./Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
