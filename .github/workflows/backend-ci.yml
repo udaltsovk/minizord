@@ -47,7 +47,6 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Run tests
       run: |
-        cd ./backend 
         cargo test --all
   check-code:
     name: Check code style
@@ -65,11 +64,9 @@ jobs:
         rustup component add rustfmt clippy
     - name: Format code using Rustfmt
       run: |
-        cd ./backend 
         cargo fmt --all -- --check
     - name: Lint code using Clippy
       run: |
-        cd ./backend
         cargo clippy --all -- -D warnings
   check-deps:
     name: Check for unused or insecure dependencies
@@ -90,15 +87,14 @@ jobs:
       run: cargo binstall cargo-udeps
     - name: Check for unused dependencies with cargo-udeps
       run: |
-        cd ./backend
         cargo udeps --all
     - name: Install cargo-audit
       run: cargo binstall cargo-audit
     - name: Check for insecure dependencies using cargo-audit
       run: |
-        cd ./backend
         cargo audit
   docker-api:
+    name: Build and publish docker image for the API
     runs-on: ubuntu-latest
     needs: [check-code, check-deps]
     defaults:
