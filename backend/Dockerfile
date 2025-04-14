@@ -9,7 +9,8 @@ ENV PKG_CONFIG_ALLOW_CROSS=1 \
 RUN apk add --no-cache \
     musl-dev \
     openssl-dev \
-    openssl-libs-static
+    openssl-libs-static \
+    git
 
 # Здесь можно было и без этого обойтись, но при разработке кэши очень помогают
 WORKDIR /usr/src/minizord
