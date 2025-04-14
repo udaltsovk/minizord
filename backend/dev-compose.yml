@@ -14,6 +14,7 @@ services:
       SURREAL_USER: root
       SURREAL_PASS: root
       SURREAL_PATH: rocksdb:/var/lib/surrealdb
+
   s3:
     image: minio/minio:latest
     ports:
@@ -25,6 +26,7 @@ services:
     volumes:
       - s3:/data
     command: server /data --console-address ":9001"
+
   init-buckets:
     image: minio/mc
     depends_on:
@@ -42,52 +44,57 @@ services:
       - "3001:3000"
     volumes:
       - grafana:/var/lib/grafana
+
   prometheus:
     image: prom/prometheus:main
     volumes:
       - prometheus:/prometheus
-      - ../assets/telemetry-configs/prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - ../assets/configs/dev/prometheus-dev.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
       - "--web.listen-address=:9091"
     network_mode: "host"
+
   loki:
     image: grafana/loki:3.4.1
     restart: always
     ports:
       - "3100:3100"
     volumes:
-      - ../assets/telemetry-configs/loki.yml:/etc/loki/local-config.yaml
+      - ../assets/configs/dev/loki.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     depends_on:
       - s3
+
   tempo:
     image: grafana/tempo:latest
     restart: always
     ports:
       - "3200:3200"
     volumes:
-      - ../assets/telemetry-configs/tempo.yml:/etc/tempo/tempo-config.yaml
+      - ../assets/configs/dev/tempo.yml:/etc/tempo/tempo-config.yaml
       - tempo:/var/tempo
     command: -config.file=/etc/tempo/tempo-config.yaml
     depends_on:
       - s3
       - prometheus
+
   mimir:
     image: grafana/mimir:latest
     restart: always
     ports:
       - "9009:9009"
     volumes:
-      - ../assets/telemetry-configs/mimir.yml:/etc/mimir/mimir.yaml
+      - ../assets/configs/dev/mimir.yml:/etc/mimir/mimir.yaml
     command: --config.file=/etc/mimir/mimir.yaml
     depends_on:
       - s3
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
-      - ../assets/telemetry-configs/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+      - ../assets/configs/dev/otel-collector.yml:/etc/otelcol-contrib/config.yaml
     ports:
       - "4317:4317"
 volumes:

@@ -2,7 +2,7 @@ use handler;
 use utoipa::{
     Modify, OpenApi as OpenApiTrait,
     openapi::{
-        OpenApi as OpenApiStruct,
+        OpenApi as OpenApiStruct, Server,
         security::{Http, HttpAuthScheme, SecurityScheme},
     },
 };
@@ -10,6 +10,8 @@ use utoipa::{
 use utoipa_scalar::{Scalar, Servable};
 #[cfg(feature = "swagger")]
 use utoipa_swagger_ui::SwaggerUi;
+
+use crate::config;
 
 #[derive(OpenApiTrait, Debug)]
 #[openapi(
@@ -19,16 +21,6 @@ use utoipa_swagger_ui::SwaggerUi;
         contact(
             name = "GitHub repo",
             url = "https://github.com/udaltsovk/minizord"
-        )
-    ),
-    servers(
-        (
-            url = "https://minizord-api.udaltsovk.ru/",
-            description = "Hosted instance"
-        ),
-        (
-            url = "http://localhost:8080/",
-            description = "Local server"
         )
     ),
     tags(
@@ -71,7 +63,10 @@ use utoipa_swagger_ui::SwaggerUi;
             tags = ["Reviews"]
         ),
     ),
-    modifiers(&Security),
+    modifiers(
+        &ServerModifier,
+        &SecurityModifier,
+    ),
 )]
 pub struct OpenApi;
 impl OpenApi {
@@ -92,8 +87,26 @@ impl OpenApi {
     }
 }
 
-struct Security;
-impl Modify for Security {
+struct ServerModifier;
+impl Modify for ServerModifier {
+    fn modify(&self, openapi: &mut OpenApiStruct) {
+        openapi.servers = Some(vec![
+            Server::builder()
+                .url(config::BASE_API_URL.to_string())
+                .description(Some(
+                    if config::DEPLOY_DOMAIN.as_str() == "localhost" {
+                        "Local server"
+                    } else {
+                        "Hosted instance"
+                    },
+                ))
+                .build(),
+        ]);
+    }
+}
+
+struct SecurityModifier;
+impl Modify for SecurityModifier {
     fn modify(&self, openapi: &mut OpenApiStruct) {
         let components = openapi
             .components

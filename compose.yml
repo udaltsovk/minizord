@@ -12,6 +12,9 @@ services:
       SURREAL_USER: ${DB_USER}
       SURREAL_PASS: ${DB_PASSWORD}
       SURREAL_PATH: rocksdb:/var/lib/surrealdb
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   s3:
     image: minio/minio:latest
     environment:
@@ -20,6 +23,8 @@ services:
     volumes:
       - s3:/data
     command: server /data --console-address ":9001"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
   init-buckets:
     image: minio/mc
     depends_on:
@@ -34,63 +39,77 @@ services:
              mc mb myminio/mimir &&
              mc mb myminio/images &&
              mc policy set public myminio/loki"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   grafana:
     image: grafana/grafana:main
-    ports:
-      - "3001:3000"
     volumes:
       - grafana:/var/lib/grafana
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   prometheus:
     image: prom/prometheus:main
     volumes:
       - prometheus:/prometheus
-      - ../assets/telemetry-configs/prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - ./assets/configs/prod/prometheus-dev.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
       - "--web.listen-address=:9091"
-    network_mode: "host"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   loki:
     image: grafana/loki:3.4.1
     restart: always
     volumes:
-      - ../assets/telemetry-configs/loki.yml:/etc/loki/local-config.yaml
+      - ./assets/configs/prod/loki.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     depends_on:
       - s3
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   tempo:
     image: grafana/tempo:latest
     restart: always
     volumes:
-      - ../assets/telemetry-configs/tempo.yml:/etc/tempo/tempo-config.yaml
+      - ./assets/configs/prod/tempo.yml:/etc/tempo/tempo-config.yaml
       - tempo:/var/tempo
     command: -config.file=/etc/tempo/tempo-config.yaml
     depends_on:
       - s3
       - prometheus
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   mimir:
     image: grafana/mimir:latest
     restart: always
     volumes:
-      - ../assets/telemetry-configs/mimir.yml:/etc/mimir/mimir.yaml
+      - ./assets/configs/prod/mimir.yml:/etc/mimir/mimir.yaml
     command: --config.file=/etc/mimir/mimir.yaml
     depends_on:
       - s3
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
-      - ../assets/telemetry-configs/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+      - ./assets/configs/prod/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
   api:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      args:
-        CRATE: api
+    image: ghcr.io/udaltsovk/minizord-api:master
     restart: on-failure
-    ports:
-      - "8080:8080"
     depends_on:
       - db
+      - s3
+      - otel-collector
     environment:
       RUST_LOG: ${LOG_LEVEL}
       SERVER_ADDRESS: 0.0.0.0:8080
@@ -99,13 +118,26 @@ services:
       DB_NAME: api
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: P9mzO6aO64hgkVCBN96CfpUXB1x58XA3zmGuoT4HjSdhHgyRBnqv/EsPDCfs9CRT/oEJYSu6YDcvmdrf/utDNQ==
+      JWT_SECRET: ${JWT_SECRET}
       OTEL_ENDPOINT: http://otel-collector:4317
       OTEL_SERVICE_NAME: minizord_api
       S3_BASE_URL: http://s3:9000
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_REGION: ${S3_REGION}
+      DEPLOY_DOMAIN: ${DEPLOY_DOMAIN}
+      BASE_API_URL: ${BASE_API_URL}
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  proxy:
+    image: haproxy:latest
+    restart: unless-stopped
+    volumes:
+      - ./assets/configs/prod/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
   tunnel:
     image: cloudflare/cloudflared:latest
     restart: always
@@ -114,6 +146,17 @@ services:
       TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN}
     depends_on:
       - api
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+  watchtower:
+    image: containrrr/watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    command: -i 60
+    volumes:
+      - /run/user/1000/containers/auth.json:/config.json
+      - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   db:
   s3:
