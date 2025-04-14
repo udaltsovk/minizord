@@ -1,7 +1,7 @@
 name: minizord-prod
 services:
   db:
-    image: surrealdb/surrealdb:v2.2
+    image: surrealdb/surrealdb:latest
     restart: on-failure
     user: root
     volumes:
@@ -42,15 +42,8 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
-  grafana:
-    image: grafana/grafana:main
-    volumes:
-      - grafana:/var/lib/grafana
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-
   prometheus:
-    image: prom/prometheus:main
+    image: prom/prometheus:latest
     volumes:
       - prometheus:/prometheus
       - ./assets/configs/prod/prometheus-dev.yml:/etc/prometheus/prometheus.yml
@@ -62,7 +55,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=false"
 
   loki:
-    image: grafana/loki:3.4.1
+    image: grafana/loki:latest
     restart: always
     volumes:
       - ./assets/configs/prod/loki.yml:/etc/loki/local-config.yaml
@@ -81,7 +74,6 @@ services:
     command: -config.file=/etc/tempo/tempo-config.yaml
     depends_on:
       - s3
-      - prometheus
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
@@ -93,6 +85,7 @@ services:
     command: --config.file=/etc/mimir/mimir.yaml
     depends_on:
       - s3
+      - prometheus
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
@@ -100,6 +93,15 @@ services:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
       - ./assets/configs/prod/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+
+  grafana:
+    image: grafana/grafana:main
+    environment:
+      - GF_SERVER_ROOT_URL=https://${DEPLOY_DOMAIN}/grafana
+    volumes:
+      - grafana:/var/lib/grafana
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
@@ -130,6 +132,16 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
+  frontend:
+    image: ghcr.io/udaltsovk/minizord-frontend:master
+    restart: on-failure
+    depends_on:
+      - api
+    environment:
+      PORT: 3000
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
   proxy:
     image: haproxy:latest
     restart: unless-stopped
@@ -150,7 +162,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=false"
 
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
     command: -i 60
