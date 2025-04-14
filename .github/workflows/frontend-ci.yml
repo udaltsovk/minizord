@@ -28,6 +28,7 @@ jobs:
   #     uses: oven-sh/setup-bun@v2
   #   - name: Run tests
   #     run: |
+  #       bun i
   #       bun run test
   check-code:
     name: Check code style
@@ -41,9 +42,11 @@ jobs:
       uses: oven-sh/setup-bun@v2
     - name: Format code using prettier
       run: |
+        bun i
         bun run format
     - name: Lint code using eslint
       run: |
+        bun i
         bun run lint
   docker:
     name: Build and publish docker image
