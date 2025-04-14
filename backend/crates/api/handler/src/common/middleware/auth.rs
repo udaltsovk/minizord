@@ -4,7 +4,7 @@ use actix_web::{
     HttpMessage,
     body::MessageBody,
     dev::{ServiceRequest, ServiceResponse},
-    http::header::AUTHORIZATION,
+    http::header,
     middleware::Next,
     web::Data,
 };
@@ -68,7 +68,7 @@ pub fn extract_token_from_authorization_header(
 ) -> Result<String, AuthenticationError> {
     let token = req
         .headers()
-        .get(AUTHORIZATION)
+        .get(header::AUTHORIZATION)
         .ok_or(AuthenticationError::NoAuthorizationHeader)?
         .to_str()
         .map_err(|_| AuthenticationError::InvalidCredentials)?
