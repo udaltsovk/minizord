@@ -111,6 +111,9 @@ jobs:
           GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
         with:
           file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64/v8
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
