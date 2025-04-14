@@ -2052,7 +2052,10 @@
           },
           "git_hash": {
             "type": "string",
-            "description": ""
+            "description": "",
+            "examples": [
+              "c94e0b0a2ed3c3fc6fbcd2a93d682bc4adeb9924"
+            ]
           },
           "profile": {
             "type": "string",

@@ -64,7 +64,6 @@ response! {
 impl ApiInfoResponse {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
-        let profile = env!("COMPILATION_PROFILE");
         Self {
             name: "minizord-api",
             version: env!("CARGO_PKG_VERSION"),
@@ -73,7 +72,7 @@ impl ApiInfoResponse {
             build_info: BuildInfoResponse {
                 comp_date: env!("COMPILATION_DATE"),
                 git_hash: env!("GIT_HASH", "unknown"),
-                profile,
+                profile: env!("COMPILATION_PROFILE"),
             },
         }
     }
