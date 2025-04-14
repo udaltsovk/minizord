@@ -1,4 +1,4 @@
-name: minizord-dev-backend
+name: minizord-dev-frontend
 services:
   db:
     image: surrealdb/surrealdb:v2.2
@@ -8,8 +8,6 @@ services:
       - db:/var/lib/surrealdb
     command:
       - start
-    ports:
-      - "8001:8000"
     environment:
       SURREAL_USER: root
       SURREAL_PASS: root
@@ -17,9 +15,6 @@ services:
 
   s3:
     image: minio/minio:latest
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -40,8 +35,6 @@ services:
              mc policy set public myminio/loki"
   grafana:
     image: grafana/grafana:main
-    ports:
-      - "3001:3000"
     volumes:
       - grafana:/var/lib/grafana
 
@@ -54,13 +47,10 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
       - "--web.listen-address=:9091"
-    network_mode: "host"
 
   loki:
     image: grafana/loki:3.4.1
     restart: always
-    ports:
-      - "3100:3100"
     volumes:
       - ../assets/configs/dev/loki.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
@@ -70,8 +60,6 @@ services:
   tempo:
     image: grafana/tempo:latest
     restart: always
-    ports:
-      - "3200:3200"
     volumes:
       - ../assets/configs/dev/tempo.yml:/etc/tempo/tempo-config.yaml
       - tempo:/var/tempo
@@ -83,8 +71,6 @@ services:
   mimir:
     image: grafana/mimir:latest
     restart: always
-    ports:
-      - "9009:9009"
     volumes:
       - ../assets/configs/dev/mimir.yml:/etc/mimir/mimir.yaml
     command: --config.file=/etc/mimir/mimir.yaml
@@ -95,8 +81,30 @@ services:
     image: otel/opentelemetry-collector-contrib:latest
     volumes:
       - ../assets/configs/dev/otel-collector.yml:/etc/otelcol-contrib/config.yaml
+
+  api:
+    image: ghcr.io/udaltsovk/minizord-api:master
+    restart: on-failure
+    depends_on:
+      - db
+      - s3
+      - otel-collector
+    environment:
+      RUST_LOG: debug
+      SERVER_ADDRESS: 0.0.0.0:8080
+      DB_ADDRESS: db:8000
+      DB_NAMESPACE: minizord
+      DB_NAME: api
+      DB_USER: root
+      DB_PASSWORD: root
+      OTEL_ENDPOINT: http://otel-collector:4317
+      OTEL_SERVICE_NAME: minizord_api
+      S3_BASE_URL: http://s3:9000
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      S3_REGION: custom
     ports:
-      - "4317:4317"
+      - "8080:8080"
 volumes:
   db:
   s3:

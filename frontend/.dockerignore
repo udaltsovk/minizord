@@ -1,0 +1,10 @@
+.svelte-kit
+!.svelte-kit/tsconfig.json
+node_modules
+Dockerfile
+dev-compose.yml
+.dockerignore
+.gitignore
+README.md
+.vscode
+.env

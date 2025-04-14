@@ -9,6 +9,7 @@ on:
       - master
   pull_request:
     paths:
+      - .github/workflows/backend-ci.yml
       - backend/**
     branches:
       - master

@@ -15,8 +15,7 @@
     cargo-udeps
     cargo-audit
 
-    (nodejs_22.override {enableNpm = false;})
-    pnpm
+    bun
   ];
 
   libraries = with pkgs; [
