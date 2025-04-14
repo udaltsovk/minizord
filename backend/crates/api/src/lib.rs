@@ -54,7 +54,10 @@ use actix_web_lab::middleware::CatchPanic;
 use actix_web_validation::garde::GardeErrorHandlerExt;
 use env_vars_config::env_vars_config;
 use handler::{
-    common::{ApiError, ValidationError},
+    common::{
+        ApiError, ValidationError,
+        wrapper::{BaseApiUrl, JwtSecret},
+    },
     info::{InfoHandler, implementation::ImplementedInfoHandler},
     profile::{ProfileHandler, implementation::ImplementedProfileHandler},
     review::{ReviewHandler, implementation::ImplementedReviewHandler},
@@ -99,6 +102,7 @@ env_vars_config! {
     S3_SECRET_KEY: String = "minioadmin",
     S3_REGION: String = "custom",
     DEPLOY_DOMAIN: String = "localhost",
+    BASE_API_URL: String = "http://localhost:8080"
 }
 
 #[derive(Clone)]
@@ -118,7 +122,8 @@ impl AppConfig {
             .app_data(PathConfig::default().error_handler(input_err_handler))
             .app_data(QueryConfig::default().error_handler(input_err_handler))
             .app_data(JsonConfig::default().error_handler(input_err_handler))
-            .app_data(Data::new(config::JWT_SECRET.to_string()))
+            .app_data(Data::new(JwtSecret(config::JWT_SECRET.to_owned())))
+            .app_data(Data::new(BaseApiUrl(config::BASE_API_URL.to_owned())))
             .configure(ImplementedUserHandler::routes(self.user_service))
             .configure(ImplementedProfileHandler::routes(
                 self.profile_service,

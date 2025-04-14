@@ -1,8 +1,8 @@
-use actix_web::web::Json;
+use actix_web::web::{Data, Json};
 use macros::{handler, response};
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
 
-use crate::common::HandlerError;
+use crate::common::{HandlerError, wrapper::BaseApiUrl};
 
 pub mod implementation;
 
@@ -18,7 +18,9 @@ handler! {
             }
         }
 
-        info() -> Json<ApiInfoResponse>;
+        info(
+            base_api_url: Data<BaseApiUrl>,
+        ) ->Json<ApiInfoResponse>;
     }
 }
 
@@ -35,7 +37,7 @@ response! {
 
         ///
         #[schema(format = Uri)]
-        documentation: &'static str,
+        documentation: String,
 
         ///
         #[schema(examples("Welcome, traveler!"))]
@@ -63,11 +65,11 @@ response! {
 
 impl ApiInfoResponse {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
+    pub fn new(base_api_url: &str) -> Self {
         Self {
             name: "minizord-api",
             version: env!("CARGO_PKG_VERSION"),
-            documentation: env!("DOCUMENTATION_URL"),
+            documentation: format!("{base_api_url}/openapi"),
             about: "Welcome, traveler!",
             build_info: BuildInfoResponse {
                 comp_date: env!("COMPILATION_DATE"),

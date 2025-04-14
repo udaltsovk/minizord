@@ -1,10 +1,13 @@
-use actix_web::{get, web::Json};
+use actix_web::{
+    get,
+    web::{Data, Json},
+};
 use macros::handler_implementation;
 
 use super::{
     ApiInfoResponse, InfoHandler, InfoHandlerHelper, InfoHandlerResult,
 };
-use crate::common::openapi;
+use crate::{common::openapi, info::BaseApiUrl};
 
 handler_implementation! {
     InfoHandler as Implemented {
@@ -18,8 +21,10 @@ handler_implementation! {
             ),
         )]
         #[get("")]
-        info() -> Json<ApiInfoResponse> {
-            Json(ApiInfoResponse::new())
+        info(
+            base_api_url: Data<BaseApiUrl>,
+        ) ->Json<ApiInfoResponse> {
+            Json(ApiInfoResponse::new(&base_api_url.0))
         }
     }
 }

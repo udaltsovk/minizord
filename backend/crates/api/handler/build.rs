@@ -31,13 +31,4 @@ fn main() {
         .to_string();
 
     println!("cargo::rustc-env=COMPILATION_PROFILE={profile}");
-
-    let base_api_url = if profile != "release" {
-        "http://localhost:8080".to_string()
-    } else {
-        env::var("BASE_API_URL").expect("BASE_API_URL to be set")
-    };
-
-    println!("cargo::rustc-env=BASE_API_URL={base_api_url}");
-    println!("cargo::rustc-env=DOCUMENTATION_URL={base_api_url}/openapi");
 }

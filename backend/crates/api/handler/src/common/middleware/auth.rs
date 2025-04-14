@@ -16,18 +16,18 @@ use utils::{
     chrono::Utc,
 };
 
-use crate::common::{AuthenticationError, HandlerError};
+use crate::common::{AuthenticationError, HandlerError, wrapper::JwtSecret};
 
 #[tracing::instrument(skip_all, level = "info")]
 pub async fn user_extractor_middleware(
-    jwt_secret: Data<String>,
+    jwt_secret: Data<JwtSecret>,
     user_service: Data<UserServiceDependency>,
     req: ServiceRequest,
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, actix_web::Error> {
     let token = extract_token_from_authorization_header(&req)?;
 
-    let claims = jwt::parse(&token, &jwt_secret)
+    let claims = jwt::parse(&token, &jwt_secret.0)
         .ok_or(AuthenticationError::InvalidCredentials)?;
 
     if claims.iat
