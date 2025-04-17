@@ -16,7 +16,7 @@ edition = "2024"
 macros = { path = "./crates/macros" }
 utils = { path = "./crates/utils" }
 
-env-vars-config = "0.3"
+env-vars-config = "0.4"
 
 log = "0.4"
 tracing = "0.1"

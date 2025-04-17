@@ -6,12 +6,14 @@ use utils::{
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    config::init();
+    config::set_env();
 
     let lgtm = LGTM::init(
         config::OTEL_ENDPOINT.clone(),
         config::OTEL_SERVICE_NAME.clone(),
     );
+
+    config::test_values();
 
     let db = SurrealDB::init(
         &config::DB_ADDRESS,
