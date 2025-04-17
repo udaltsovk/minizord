@@ -67,7 +67,7 @@ aws-sdk-s3 = { workspace = true, optional = true }
 actix-web = { workspace = true, optional = true }
 actix-contrib-logger = { version = "0.1", optional = true }
 tracing-actix-web = { version = "0.7", default-features = false, features = [
-    "opentelemetry_0_28",
+    "opentelemetry_0_29",
     "uuid_v7",
 ], optional = true }
 actix-web-prom = { version = "0.9", features = ["process"], optional = true }
