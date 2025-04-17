@@ -73,7 +73,7 @@ jobs:
         rustup update nightly --no-self-update
         rustup default nightly
     - name: Install cargo-binstall
-      run: cargo install cargo-binstall
+      uses: cargo-bins/cargo-binstall@main
     - name: Install cargo-udeps
       run: cargo binstall cargo-udeps
     - name: Check for unused dependencies with cargo-udeps
