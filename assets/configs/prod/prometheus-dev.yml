@@ -6,10 +6,14 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ['api:8080']
+  - job_name: 'loki'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['loki:3100']
   - job_name: 'tempo'
     metrics_path: /metrics
     static_configs:
-      - targets: ['localhost:3200']
+      - targets: ['tempo:3200']
 
 remote_write:
   - url: "http://mimir:9009/api/v1/push"
