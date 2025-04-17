@@ -48,3 +48,41 @@ impl PasswordHasher<'_> {
         SaltString::generate(&mut ChaCha20Rng::from_entropy())
     }
 }
+
+#[cfg(test)]
+mod test {
+    #![allow(clippy::unwrap_used)]
+    use passwords::PasswordGenerator;
+    use rstest::{fixture, rstest};
+
+    use super::PasswordHasher;
+
+    #[fixture]
+    fn password() -> String {
+        PasswordGenerator::new().generate_one().unwrap()
+    }
+
+    #[fixture]
+    fn hasher<'a>() -> PasswordHasher<'a> {
+        PasswordHasher::new()
+    }
+
+    #[rstest]
+    fn basic(password: String, hasher: PasswordHasher<'_>) {
+        let hashed = hasher.hash(&password).unwrap();
+
+        assert!(hasher.verify(&password, &hashed).is_ok())
+    }
+
+    #[rstest]
+    #[case::invalid((password(), "sdfsfdsfsfssafasfasdfsdfsfsfsdfsaf".to_string()))]
+    #[should_panic]
+    #[case::valid({
+        let password = password();
+        (password.clone(), hasher().hash(&password).unwrap())
+    })]
+    fn invalid(#[case] (password, password_hash): (String, String)) {
+        let res = hasher().verify(&password, &password_hash);
+        assert!(res.is_err());
+    }
+}

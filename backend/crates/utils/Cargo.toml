@@ -71,3 +71,6 @@ tracing-actix-web = { version = "0.7", default-features = false, features = [
     "uuid_v7",
 ], optional = true }
 actix-web-prom = { version = "0.9", features = ["process"], optional = true }
+
+[dev-dependencies]
+rstest.workspace = true
