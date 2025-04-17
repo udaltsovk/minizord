@@ -11,6 +11,7 @@ async fn main() -> std::io::Result<()> {
         use config::OTEL_SERVICE_NAME;
         set_env_only!(OTEL_SERVICE_NAME);
     }
+    config::init();
 
     let lgtm = LGTM::init(
         config::OTEL_ENDPOINT.clone(),
