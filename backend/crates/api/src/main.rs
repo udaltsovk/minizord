@@ -1,4 +1,5 @@
 use api::{Api, config};
+use env_vars_config::set_env_only;
 use utils::{
     adapters::{S3, SurrealDB},
     lgtm::LGTM,
@@ -6,7 +7,10 @@ use utils::{
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    config::set_env();
+    unsafe {
+        use config::OTEL_SERVICE_NAME;
+        set_env_only!(OTEL_SERVICE_NAME);
+    }
 
     let lgtm = LGTM::init(
         config::OTEL_ENDPOINT.clone(),
