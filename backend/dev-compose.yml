@@ -1,7 +1,7 @@
 name: minizord-dev-backend
 services:
   db:
-    image: surrealdb/surrealdb:v2.2
+    image: surrealdb/surrealdb:latest
     restart: on-failure
     user: root
     volumes:
@@ -28,7 +28,7 @@ services:
     command: server /data --console-address ":9001"
 
   init-buckets:
-    image: minio/mc
+    image: minio/mc:latest
     depends_on:
       - s3
     entrypoint: >
@@ -39,14 +39,14 @@ services:
              mc mb myminio/images &&
              mc policy set public myminio/loki"
   grafana:
-    image: grafana/grafana:main
+    image: grafana/grafana:latest
     ports:
       - "3001:3000"
     volumes:
       - grafana:/var/lib/grafana
 
   prometheus:
-    image: prom/prometheus:main
+    image: prom/prometheus:latest
     volumes:
       - prometheus:/prometheus
       - ../assets/configs/dev/prometheus-dev.yml:/etc/prometheus/prometheus.yml
@@ -57,7 +57,7 @@ services:
     network_mode: "host"
 
   loki:
-    image: grafana/loki:3.4.1
+    image: grafana/loki:latest
     restart: always
     ports:
       - "3100:3100"

@@ -26,7 +26,7 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
   init-buckets:
-    image: minio/mc
+    image: minio/mc:latest
     depends_on:
       - s3
     environment:
@@ -97,7 +97,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=false"
 
   grafana:
-    image: grafana/grafana:main
+    image: grafana/grafana:latest
     environment:
       - GF_SERVER_ROOT_URL=https://${DEPLOY_DOMAIN}/grafana
     volumes:
