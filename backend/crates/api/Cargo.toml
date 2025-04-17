@@ -33,7 +33,7 @@ api-repository = { path = "./repository" }
 api-service = { path = "./service", features = ["surrealdb", "s3"] }
 api-handler = { path = "./handler", features = ["actix-web"] }
 
-log.workspace = true
+# log.workspace = true
 
 garde.workspace = true
 

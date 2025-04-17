@@ -1,5 +1,5 @@
 #[cfg(feature = "actix-web")]
-use {actix_contrib_logger::middleware::Logger, log::Level};
+use {actix_contrib_logger::middleware::Logger, tracing::log::Level};
 
 #[cfg(feature = "actix-web")]
 pub struct CustomActixLogger;

@@ -16,7 +16,7 @@ actix-web = [
 ]
 
 [dependencies]
-log.workspace = true
+# log.workspace = true
 
 lazy_static = "1.4"
 

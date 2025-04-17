@@ -194,7 +194,7 @@ impl Api {
     }
 
     pub async fn run(self) -> std::io::Result<()> {
-        log::info!("Starting the web server");
+        tracing::info!("Starting the web server");
 
         HttpServer::new(move || {
             App::new()
@@ -214,7 +214,7 @@ impl Api {
         .run()
         .await?;
 
-        log::info!("Shutting down the web server");
+        tracing::info!("Shutting down the web server");
         Ok(())
     }
 
