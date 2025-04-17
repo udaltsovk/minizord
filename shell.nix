@@ -7,13 +7,16 @@
     },
 }: let
   packages = with pkgs; [
-    rust-bin.nightly.latest.default
+    (rust-bin.nightly.latest.default.override {
+      extensions = [ "rust-src" "llvm-tools-preview" ];
+    })
 
     watchexec
     surrealdb-migrations
     protobuf
     cargo-udeps
     cargo-audit
+    grcov
 
     bun
   ];

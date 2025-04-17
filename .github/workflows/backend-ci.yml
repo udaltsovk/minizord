@@ -41,6 +41,31 @@ jobs:
     - name: Run tests
       run: |
         cargo test --all
+
+  coverage:
+    name: Get test coverage
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Rust
+      run: |
+        rustup update nightly --no-self-update
+        rustup default nightly
+        rustup component add llvm-tools-preview
+    - name: Install cargo-binstall
+      uses: cargo-bins/cargo-binstall@main
+    - name: Install grcov
+      run: cargo binstall grcov
+    - name: Generate profraw files
+      run: CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='target/cargo-test-%p-%m.profraw' cargo test
+    - name: Run grcov
+      run: mkdir -p target/coverage/ && grcov target/ --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o target/coverage/lcov
+    - name: Upload to coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: target/coverage/lcov
+
   check-code:
     name: Check code style
     runs-on: ubuntu-latest
