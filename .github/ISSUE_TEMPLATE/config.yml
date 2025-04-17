@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Фичи, Баг-репорты, Вопросы
+    url: https://github.com/udaltsovk/minizord/discussions/new/choose
+    about: Предпочтительное место для вопросов или предложений.
