@@ -36,7 +36,7 @@ implementation! {
                         telegram: object.telegram,
                         city: object.city,
                         bio: object.bio,
-                        portfolio_urls: object.portfolio_urls.clone(),
+                        portfolio_urls: object.portfolio_urls,
                         has_avatar: has_avatar.unwrap_or(
                             profile.map(|p| p.has_avatar).unwrap_or(false)
                         ),

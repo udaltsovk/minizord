@@ -35,7 +35,7 @@ implementation! {
                     CreateUserEntity {
                         email: new.email,
                         password_hash: self.password_hasher.hash(&new.password)?,
-                        username: new.username.clone(),
+                        username: new.username,
                         role: new.role.into(),
                     }
                 ).await?;

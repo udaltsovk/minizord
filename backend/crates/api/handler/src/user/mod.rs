@@ -39,7 +39,7 @@ handler! {
                             .service(Self::delete_current())
                             .service(Self::get_by_id())
                             .service(scope("")
-                                .wrap(UserRoleFilterMiddleware::new(vec![UserRole::Organizator]))
+                                .wrap(UserRoleFilterMiddleware::new(&[UserRole::Organizator]))
                                 .service(Self::register())
                                 .service(Self::update_by_id())
                                 .service(Self::change_password_by_id())

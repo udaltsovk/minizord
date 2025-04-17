@@ -27,7 +27,7 @@ impl CreateTeam {
     pub fn into_entity(self) -> Team {
         Team {
             id: TeamId::from(Ulid::new()),
-            name: self.name.clone(),
+            name: self.name,
             lead: self.lead,
             tour: self.tour,
         }

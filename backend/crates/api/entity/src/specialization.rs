@@ -21,7 +21,7 @@ impl CreateSpecialization {
     pub fn into_entity(self) -> Specialization {
         Specialization {
             id: SpecializationId::from(Ulid::new()),
-            name: self.name.clone(),
+            name: self.name,
         }
     }
 }

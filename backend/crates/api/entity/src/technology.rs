@@ -21,7 +21,7 @@ impl CreateTechnology {
     pub fn into_entity(self) -> Technology {
         Technology {
             id: TechnologyId::from(Ulid::new()),
-            name: self.name.clone(),
+            name: self.name,
         }
     }
 }

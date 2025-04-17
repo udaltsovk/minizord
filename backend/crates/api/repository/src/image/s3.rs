@@ -41,7 +41,6 @@ implementation! {
                 .key(id.to_string())
                 .content_type(content_type.clone())
                 .metadata("filename", format!("{}.{}", id, mime_extension(&content_type)))
-                .metadata("content_type", content_type.clone())
                 .body(ByteStream::from(object.data.clone()))
                 .send()
                 .await

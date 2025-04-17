@@ -68,12 +68,12 @@ macro_rules! entity {
             #[cfg(feature = "surrealdb")]
             $crate::derive_entity! {
                 #[serde(transparent)]
-                pub struct [<$name Id>](surrealdb::RecordId);
+                pub struct [<$name Id>](std::sync::Arc<surrealdb::RecordId>);
             }
             #[cfg(not(feature = "surrealdb"))]
             $crate::derive_entity! {
                 #[serde(transparent)]
-                pub struct [<$name Id>]($id_ty);
+                pub struct [<$name Id>](std::sync::Arc<$id_ty>);
             }
             impl macros::EntityId for [<$name Id>] {
                 const TABLE: &str = stringify!([<$name:snake>]);
@@ -81,15 +81,19 @@ macro_rules! entity {
                 #[cfg(feature = "surrealdb")]
                 #[tracing::instrument(skip_all, level = "trace")]
                 fn record_id(&self) -> surrealdb::RecordId {
-                    self.0.clone()
+                    self.0.as_ref().clone()
                 }
             }
             #[cfg(feature = "surrealdb")]
             impl From<$id_ty> for [<$name Id>] {
                 #[tracing::instrument(skip_all, level = "trace")]
                 fn from(id: $id_ty) -> Self {
-                    Self(surrealdb::RecordId::from_table_key(<Self as macros::EntityId>::TABLE, id.to_string()))
-
+                    Self(std::sync::Arc::new(
+                        surrealdb::RecordId::from_table_key(
+                            <Self as macros::EntityId>::TABLE,
+                            id.to_string()
+                        )
+                    ))
                 }
             }
             #[cfg(feature = "surrealdb")]
@@ -231,12 +235,12 @@ macro_rules! entity {
             #[cfg(feature = "surrealdb")]
             $crate::derive_entity! {
                 #[serde(transparent)]
-                pub struct [<$name Id>](surrealdb::RecordId);
+                pub struct [<$name Id>](std::sync::Arc<surrealdb::RecordId>);
             }
             #[cfg(not(feature = "surrealdb"))]
             $crate::derive_entity! {
                 #[serde(transparent)]
-                pub struct [<$name Id>](String);
+                pub struct [<$name Id>](std::sync::Arc<str>);
             }
             impl macros::EntityId for [<$name Id>] {
                 const TABLE: &str = stringify!([<$name:snake>]);
@@ -244,14 +248,14 @@ macro_rules! entity {
                 #[cfg(feature = "surrealdb")]
                 #[tracing::instrument(skip_all, level = "trace")]
                 fn record_id(&self) -> surrealdb::RecordId {
-                    self.0.clone()
+                    self.0.as_ref().clone()
                 }
             }
             #[cfg(feature = "surrealdb")]
             impl From<surrealdb::RecordId> for [<$name Id>] {
                 #[tracing::instrument(skip_all, level = "trace")]
                 fn from(id: surrealdb::RecordId) -> Self {
-                    Self(id)
+                    Self(std::sync::Arc::new(id))
 
                 }
             }

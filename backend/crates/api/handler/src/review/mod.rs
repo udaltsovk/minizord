@@ -40,7 +40,7 @@ handler! {
                         .service(Self::get_by_reviewee_id_paginated())
                         .service(Self::get_by_reviewee_id_and_reviewer_id())
                         .service(scope("")
-                            .wrap(UserRoleFilterMiddleware::new(vec![UserRole::Organizator]))
+                            .wrap(UserRoleFilterMiddleware::new(&[UserRole::Organizator]))
                             .service(Self::delete_by_reviewee_id_and_reviewer_id())
                         )
                     );

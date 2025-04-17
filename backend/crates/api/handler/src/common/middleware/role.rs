@@ -10,11 +10,11 @@ use futures_util::future::{LocalBoxFuture, Ready, ready};
 use crate::common::AuthenticationError;
 
 pub struct UserRoleFilterMiddleware {
-    allowed_roles: Vec<UserRole>,
+    allowed_roles: &'static [UserRole],
 }
 
 impl UserRoleFilterMiddleware {
-    pub fn new(allowed_roles: Vec<UserRole>) -> Self {
+    pub fn new(allowed_roles: &'static [UserRole]) -> Self {
         Self {
             allowed_roles,
         }
@@ -37,14 +37,14 @@ where
     fn new_transform(&self, service: S) -> Self::Future {
         ready(Ok(UserRoleFilterMiddlewareService {
             service,
-            allowed_roles: self.allowed_roles.clone(),
+            allowed_roles: self.allowed_roles,
         }))
     }
 }
 
 pub struct UserRoleFilterMiddlewareService<S> {
     service: S,
-    allowed_roles: Vec<UserRole>,
+    allowed_roles: &'static [UserRole],
 }
 
 impl<S, B> Service<ServiceRequest> for UserRoleFilterMiddlewareService<S>

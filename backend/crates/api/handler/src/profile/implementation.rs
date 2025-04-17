@@ -232,7 +232,7 @@ handler_implementation! {
                 .get_by_id(user.id)
                 .await?;
             HttpResponse::Ok()
-               .content_type(res.content_type.clone())
+               .content_type(res.content_type)
                .body(res.data)
         }
 
@@ -291,7 +291,7 @@ handler_implementation! {
                 .get_by_id(profile_id)
                 .await?;
             HttpResponse::Ok()
-              .content_type(res.content_type.clone())
+              .content_type(res.content_type)
               .body(res.data)
         }
 
