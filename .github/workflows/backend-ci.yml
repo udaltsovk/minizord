@@ -42,33 +42,6 @@ jobs:
       run: |
         cargo test --all
 
-  coverage:
-    name: Get and publish test coverage
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install Rust
-      run: |
-        rustup update nightly --no-self-update
-        rustup default nightly
-        rustup component add llvm-tools-preview
-    - name: Install cargo-binstall
-      uses: cargo-bins/cargo-binstall@main
-    - name: Install grcov
-      run: cargo binstall grcov
-    - name: Generate profraw files
-      run: CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='target/cargo-test-%p-%m.profraw' cargo test
-    - name: Run grcov
-      run: mkdir -p target/coverage/ && grcov target/ --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o ./target/coverage/lcov
-    - name: Upload to coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./backend/target/coverage/lcov
-
   check-code:
     name: Check code style
     runs-on: ubuntu-latest
@@ -147,14 +120,14 @@ jobs:
         with:
           images: ghcr.io/udaltsovk/minizord-api
       - name: Login to GitHub Images
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         env:
           GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
         with:
