@@ -43,8 +43,11 @@ jobs:
         cargo test --all
 
   coverage:
-    name: Get test coverage
+    name: Get and publish test coverage
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
     - uses: actions/checkout@v4
     - name: Install Rust
@@ -59,12 +62,12 @@ jobs:
     - name: Generate profraw files
       run: CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='target/cargo-test-%p-%m.profraw' cargo test
     - name: Run grcov
-      run: mkdir -p target/coverage/ && grcov target/ --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o target/coverage/lcov
+      run: mkdir -p target/coverage/ && grcov target/ --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o ./target/coverage/lcov
     - name: Upload to coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: target/coverage/lcov
+        path-to-lcov: ./backend/target/coverage/lcov
 
   check-code:
     name: Check code style
@@ -157,7 +160,7 @@ jobs:
         with:
           context: ./backend
           file: ./backend/Dockerfile
-          # platforms: linux/amd64,linux/arm64/v8
+          platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: ${{ github.event_name != 'pull_request' }}
