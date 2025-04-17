@@ -1,10 +1,20 @@
 ARG CRATE
 
-FROM rust:1.85-alpine3.21 AS builder
+FROM lukemathwalker/cargo-chef:0.1.71-rust-1.86-alpine3.20 AS chef
+WORKDIR /usr/src/minizord
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder 
 
 ARG CRATE
 ENV PKG_CONFIG_ALLOW_CROSS=1 \
     OPENSSL_STATIC=1
+
+COPY --from=planner /usr/src/minizord/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json --bin $CRATE
 
 RUN apk add --no-cache \
     musl-dev \
@@ -12,17 +22,8 @@ RUN apk add --no-cache \
     openssl-libs-static \
     git
 
-# Здесь можно было и без этого обойтись, но при разработке кэши очень помогают
-WORKDIR /usr/src/minizord
-COPY ./Cargo.* ./
-
-COPY ./crates crates/
-
-RUN cargo fetch --target "$(uname -m)-unknown-linux-musl"
-
-COPY ./crates/$CRATE crates/$CRATE/
-RUN cargo build --release -p $CRATE --target "$(uname -m)-unknown-linux-musl"
-RUN cp "target/$(uname -m)-unknown-linux-musl/release/$CRATE" target/release/$CRATE
+COPY . .
+RUN cargo build --release --bin $CRATE
 
 
 FROM alpine:3.21
