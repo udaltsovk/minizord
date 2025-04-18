@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       crate:
+        description: "Crate to build"
         required: true
         type: "string"
 
@@ -13,12 +14,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [amd64, arm64]
+        platform: [linux/amd64, linux/arm64/v8]
         include:
-          - os: ubuntu-24.04
-            platform: linux/amd64
-          - os: ubuntu-24.04-arm
-            platform: linux/arm64/v8
+          - platform: linux/amd64
+            os: ubuntu-24.04
+          - platform: linux/arm64/v8
+            os: ubuntu-24.04-arm
     steps:
       - name: Prepare
         run: |
@@ -26,7 +27,7 @@ jobs:
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
       - name: Fetch docker metadata
-        id: docker_meta
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/udaltsovk/${{ inputs.crate }}
@@ -47,7 +48,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Build and push
-        id: docker_build
+        id: build
         uses: docker/build-push-action@v6
         env:
           GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
@@ -58,7 +59,7 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
+          tags: ghcr.io/udaltsovk/${{ inputs.crate }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           build-args: |
             CRATE=${{ inputs.crate }}

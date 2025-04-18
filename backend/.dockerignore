@@ -4,3 +4,6 @@ Dockerfile
 dev-compose.yml
 watch-rust.sh
 README.md
+.gitignore
+crates/api/.surrealdb
+crates/api/watch-surreal.sh

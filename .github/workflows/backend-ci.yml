@@ -4,12 +4,12 @@ on:
   push:
     paths:
       - .github/workflows/backend-ci.yml
+      - .github/workflows/backend-docker.yml
       - backend/**
     branches: 
       - master
   pull_request:
     paths:
-      - .github/workflows/backend-ci.yml
       - backend/**
     branches:
       - master
@@ -110,7 +110,7 @@ jobs:
     needs: [test, check-code, check-deps]
     strategy:
       matrix:
-        crate: [api, mail, telegram]
+        crate: [api]
     secrets: inherit
     uses: ./.github/workflows/backend-docker.yml
     with:
