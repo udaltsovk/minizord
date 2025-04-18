@@ -5,4 +5,12 @@ authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true
 edition.workspace = true
 
+[lib]
+name = "mail"
+path = "./src/lib.rs"
+
+[[bin]]
+name = "minizord-mail"
+path = "./src/main.rs"
+
 [dependencies]

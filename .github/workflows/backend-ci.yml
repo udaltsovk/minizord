@@ -105,11 +105,14 @@ jobs:
       with:
         commit_message: "chore: update openapi.json"
   
-  docker-api:
-    name: API
+  docker:
+    name: ${{ matrix.crate }}
     needs: [test, check-code, check-deps]
+    strategy:
+      matrix:
+        crate: [api, mail, telegram]
     secrets: inherit
     uses: ./.github/workflows/backend-docker.yml
     with:
-      crate: minizord-api
+      crate: minizord-${{ matrix.crate }}
 
