@@ -44,9 +44,9 @@ services:
       - prometheus:/prometheus
       - ../assets/configs/dev/prometheus-dev.yml:/etc/prometheus/prometheus.yml
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--enable-feature=native-histograms"
-      - "--web.listen-address=:9091"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--enable-feature=native-histograms'
+      - '--web.listen-address=:9091'
 
   loki:
     image: grafana/loki:latest
@@ -104,7 +104,7 @@ services:
       S3_SECRET_KEY: minioadmin
       S3_REGION: custom
     ports:
-      - "8080:8080"
+      - '8080:8080'
 volumes:
   db:
   s3:

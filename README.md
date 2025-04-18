@@ -26,4 +26,5 @@
     - SvelteKit
     - TypeScript
     - Tailwind CSS
+    - shadcn-svelte
 - HAProxy

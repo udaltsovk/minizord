@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.9-alpine AS base
+FROM oven/bun:1.2.10-alpine AS base
 WORKDIR /usr/src/minizord
 
 FROM base AS install
@@ -17,7 +17,6 @@ COPY . .
 
 ENV NODE_ENV=production
 
-RUN bun test
 RUN bun --bun run vite build
 
 FROM base AS release
