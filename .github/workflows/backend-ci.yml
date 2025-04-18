@@ -104,40 +104,12 @@ jobs:
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "chore: update openapi.json"
+  
   docker-api:
-    name: Build and publish docker image for the API
-    runs-on: ubuntu-latest
+    name: API
     needs: [test, check-code, check-deps]
-    steps:
-      - uses: actions/checkout@master
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Fetch docker metadata
-        id: docker_meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/udaltsovk/minizord-api
-      - name: Login to GitHub Images
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v6
-        env:
-          GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          platforms: linux/amd64,linux/arm64/v8
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
-          build-args: |
-            CRATE=minizord-api
+    secrets: inherit
+    uses: ./.github/workflows/backend-docker.yml
+    with:
+      crate: minizord-api
+

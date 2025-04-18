@@ -8,7 +8,7 @@
 }: let
   packages = with pkgs; [
     (rust-bin.nightly.latest.default.override {
-      extensions = [ "rust-src" "llvm-tools-preview" ];
+      extensions = [ "rust-src" ];
     })
 
     watchexec
@@ -16,7 +16,6 @@
     protobuf
     cargo-udeps
     cargo-audit
-    grcov
 
     bun
   ];

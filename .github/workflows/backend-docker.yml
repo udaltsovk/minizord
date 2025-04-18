@@ -1,0 +1,122 @@
+name: (BACKEND) Build and publish docker image
+
+on:
+  workflow_call:
+    inputs:
+      crate:
+        required: true
+        type: "string"
+
+jobs:
+  build:
+    name: Build docker digests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        build: [amd64, arm64]
+        include:
+          - os: ubuntu-24.04
+            platform: linux/amd64
+          - os: ubuntu-24.04-arm
+            platform: linux/arm64/v8
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+
+      - name: Fetch docker metadata
+        id: docker_meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/udaltsovk/${{ inputs.crate }}
+
+      - name: Login to GitHub Images
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - uses: actions/checkout@master
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v6
+        env:
+          GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+          build-args: |
+            CRATE=${{ inputs.crate }}
+
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge-api:
+    name: Merge digests and publish docker image
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Login to GitHub Images
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/udaltsovk/${{ inputs.crate }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Create manifest list and push
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf 'ghcr.io/udaltsovk/${{ inputs.crate }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ghcr.io/udaltsovk/${{ inputs.crate }}:${{ steps.meta.outputs.version }}
