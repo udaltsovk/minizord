@@ -3,16 +3,16 @@ WORKDIR /usr/src/minizord
 
 FROM base AS install
 
-RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+RUN mkdir -p /tmp/dev
+COPY package.json bun.lock /tmp/dev/
+RUN cd /tmp/dev && bun install --frozen-lockfile
 
-RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+RUN mkdir -p /tmp/prod
+COPY package.json bun.lock /tmp/prod/
+RUN cd /tmp/prod && bun install --frozen-lockfile --production
 
 FROM install AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
+COPY --from=install /tmp/dev/node_modules node_modules
 COPY . .
 
 ENV NODE_ENV=production
@@ -20,14 +20,18 @@ ENV NODE_ENV=production
 RUN bun --bun run vite build
 
 FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/minizord/build .
 
 ARG PORT=3000
-
 ENV PORT=$PORT
 
-USER bun
+WORKDIR /minizord
+
+RUN adduser -DH minizord
+USER minizord
+
+COPY --from=install /tmp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/minizord/build .
+
 EXPOSE $PORT/tcp
 
-ENTRYPOINT [ "bun", "--bun", "run", "index.js" ]
+ENTRYPOINT [ "bun", "--bun", "run", "/minizord/index.js" ]

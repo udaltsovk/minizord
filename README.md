@@ -10,15 +10,16 @@
     - Email:
         - Rust
         - Actix-web
-        - Lettre
         - gRPC
+        - Lettre
         - SurrealDB
         - OpenTelematry
     - Telegram Bot:
         - Rust
         - Actix-web
-        - Teloxide
+        - gRPC
         - Tonic (client only)
+        - Teloxide
         - SurrealDB
         - OpenTelematry
     - Kubernetes
