@@ -7,11 +7,9 @@ dto! {
     Image {
         fields {
             ///
-            #[garde(skip)]
             content_type: String,
             ///
             #[schema(value_type = String, format = Binary)]
-            #[garde(skip)]
             data: Bytes,
         },
     }

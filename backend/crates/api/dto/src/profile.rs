@@ -13,7 +13,6 @@ dto! {
         fields {
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             id: Ulid,
 
             ///
@@ -22,7 +21,6 @@ dto! {
                 max_length = 24,
                 pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
             )]
-            #[garde(skip)]
             name: String,
 
             ///
@@ -31,12 +29,10 @@ dto! {
                 max_length = 24,
                 pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
             )]
-            #[garde(skip)]
             surname: String,
 
             ///
             #[schema(min_length = 5, max_length = 32, pattern = r#"^[A-Za-z\d_]{5,32}$"#)]
-            #[garde(skip)]
             telegram: String,
 
             //
@@ -45,21 +41,17 @@ dto! {
                 max_length = 24,
                 pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
             )]
-            #[garde(skip)]
             city: String,
 
             ///
             #[schema(min_length = 0, max_length = 4096)]
-            #[garde(skip)]
             bio: String,
 
             ///
             #[schema(min_length = 0)]
-            #[garde(skip)]
             portfolio_urls: Vec<String>,
 
             ///
-            #[garde(skip)]
             has_avatar: bool,
         },
         upsert

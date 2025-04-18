@@ -59,21 +59,17 @@ dto! {
         fields {
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             id: Ulid,
 
             ///
             #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
-            #[garde(skip)]
             email: String,
 
             ///
             #[schema(min_length = 3, max_length = 20, pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#)]
-            #[garde(skip)]
             username: String,
 
             ///
-            #[garde(skip)]
             role: UserRole,
         },
         create

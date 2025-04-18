@@ -8,22 +8,18 @@ dto! {
         fields {
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             reviewer_id: Ulid,
 
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             reviewee_id: Ulid,
 
             ///
             #[schema(minimum = 0, maximum = 10, examples(7))]
-            #[garde(skip)]
             score: u16,
 
             ///
             #[schema(max_length = 4096)]
-            #[garde(skip)]
             review: String,
         },
         upsert

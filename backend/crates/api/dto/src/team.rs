@@ -9,22 +9,18 @@ dto! {
         fields {
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             id: Ulid,
 
             ///
             #[schema(min_length = 1, max_length = 30)]
-            #[garde(skip)]
             name: String,
 
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             lead: Ulid,
 
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             tour: Ulid,
         },
         create

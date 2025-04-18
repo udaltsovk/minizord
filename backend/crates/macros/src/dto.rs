@@ -12,6 +12,7 @@ macro_rules! derive_dto {
             PartialEq,
             Debug,
         )]
+        #[garde(allow_unvalidated)]
         $item
     };
 }

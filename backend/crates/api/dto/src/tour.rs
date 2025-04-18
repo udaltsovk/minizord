@@ -10,31 +10,25 @@ dto! {
         fields {
             ///
             #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
             id: Ulid,
 
             ///
             #[schema(min_length = 1, max_length = 30)]
-            #[garde(skip)]
             name: String,
 
             ///
             #[schema(format = DateTime)]
-            #[garde(skip)]
             starts_at: DateTime<Utc>,
 
             ///
             #[schema(format = DateTime)]
-            #[garde(skip)]
             ends_at: DateTime<Utc>,
 
             ///
             #[schema(minimum = 1, maximum = 10, examples(5))]
-            #[garde(skip)]
             max_members: u16,
 
             ///
-            #[garde(skip)]
             required_specializations: Vec<Ulid>,
         },
         create
