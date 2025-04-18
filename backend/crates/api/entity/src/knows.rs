@@ -13,14 +13,14 @@ entity! {
     }
 }
 
-impl UpsertKnows {
+impl From<UpsertKnows> for Knows {
     #[tracing::instrument(skip_all, level = "trace")]
-    fn into_entity(self) -> Knows {
-        Knows {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
-            level: self.level,
+    fn from(upsert_relation: UpsertKnows) -> Self {
+        Self {
+            id: upsert_relation.get_id(),
+            r#in: upsert_relation.r#in,
+            out: upsert_relation.out,
+            level: upsert_relation.level,
         }
     }
 }

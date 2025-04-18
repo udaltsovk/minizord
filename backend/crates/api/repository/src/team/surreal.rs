@@ -16,7 +16,7 @@ implementation! {
         db: Arc<SurrealDB>
     } as Surreal {
         save(&self, new: CreateTeam) -> Team {
-            let entity = new.into_entity();
+            let entity: Team = new.into();
             self.db.0
                 .create(entity.id.record_id())
                 .content(entity)

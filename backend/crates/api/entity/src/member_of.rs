@@ -18,15 +18,15 @@ entity! {
     }
 }
 
-impl CreateMemberOf {
+impl From<CreateMemberOf> for MemberOf {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> MemberOf {
-        MemberOf {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
+    fn from(create_relation: CreateMemberOf) -> Self {
+        Self {
+            id: create_relation.get_id(),
+            r#in: create_relation.r#in,
+            out: create_relation.out,
             accepted: false,
-            specialization: self.specialization,
+            specialization: create_relation.specialization,
         }
     }
 }

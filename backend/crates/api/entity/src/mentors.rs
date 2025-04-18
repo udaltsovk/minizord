@@ -6,13 +6,13 @@ entity! {
     UserId -> Mentors -> TeamId { }
 }
 
-impl CreateMentors {
+impl From<CreateMentors> for Mentors {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Mentors {
-        Mentors {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
+    fn from(create_relation: CreateMentors) -> Self {
+        Self {
+            id: create_relation.get_id(),
+            r#in: create_relation.r#in,
+            out: create_relation.out,
         }
     }
 }

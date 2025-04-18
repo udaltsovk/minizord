@@ -18,7 +18,7 @@ implementation! {
         save(&self, new: CreateMentors) -> Mentors {
             self.db.0
                 .create(new.get_id().record_id())
-                .content(new.into_entity())
+                .content(Mentors::from(new))
                 .await?
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }

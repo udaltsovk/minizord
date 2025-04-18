@@ -21,7 +21,7 @@ implementation! {
         save(&self, new: CreateAppliedToJoin) -> AppliedToJoin {
             self.db.0
                 .create(new.get_id().record_id())
-                .content(new.into_entity())
+                .content(AppliedToJoin::from(new))
                 .await?
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }

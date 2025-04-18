@@ -30,16 +30,16 @@ entity! {
     }
 }
 
-impl CreateTour {
+impl From<CreateTour> for Tour {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Tour {
-        Tour {
+    fn from(create_entity: CreateTour) -> Self {
+        Self {
             id: TourId::from(Ulid::new()),
-            name: self.name,
-            starts_at: self.starts_at,
-            ends_at: self.ends_at,
-            max_members: self.max_members,
-            required_specializations: self.required_specializations,
+            name: create_entity.name,
+            starts_at: create_entity.starts_at,
+            ends_at: create_entity.ends_at,
+            max_members: create_entity.max_members,
+            required_specializations: create_entity.required_specializations,
         }
     }
 }

@@ -15,7 +15,7 @@ implementation! {
         db: Arc<SurrealDB>
     } as Surreal {
         save(&self, new: CreateSpecialization) -> Specialization {
-            let entity = new.into_entity();
+            let entity: Specialization = new.into();
             self.db.0
                 .create(entity.id.record_id())
                 .content(entity)

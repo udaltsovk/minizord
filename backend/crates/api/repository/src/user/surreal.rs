@@ -12,7 +12,7 @@ implementation! {
         db: Arc<SurrealDB>
     } as Surreal {
         save(&self, new: CreateUser) -> User {
-            let entity = new.into_entity();
+            let entity: User = new.into();
             self.db.0
                 .create(entity.id.record_id())
                 .content(entity)

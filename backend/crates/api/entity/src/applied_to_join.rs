@@ -16,14 +16,14 @@ entity! {
     }
 }
 
-impl CreateAppliedToJoin {
+impl From<CreateAppliedToJoin> for AppliedToJoin {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> AppliedToJoin {
+    fn from(create_relation: CreateAppliedToJoin) -> Self {
         AppliedToJoin {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
-            application: self.application,
+            id: create_relation.get_id(),
+            r#in: create_relation.r#in,
+            out: create_relation.out,
+            application: create_relation.application,
         }
     }
 }

@@ -25,18 +25,18 @@ entity! {
     }
 }
 
-impl UpsertProfile {
+impl From<(UpsertProfile, ProfileId)> for Profile {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self, id: ProfileId) -> Profile {
-        Profile {
+    fn from((upsert_entity, id): (UpsertProfile, ProfileId)) -> Self {
+        Self {
             id,
-            name: self.name,
-            surname: self.surname,
-            telegram: self.telegram,
-            city: self.city,
-            bio: self.bio,
-            portfolio_urls: self.portfolio_urls,
-            has_avatar: self.has_avatar,
+            name: upsert_entity.name,
+            surname: upsert_entity.surname,
+            telegram: upsert_entity.telegram,
+            city: upsert_entity.city,
+            bio: upsert_entity.bio,
+            portfolio_urls: upsert_entity.portfolio_urls,
+            has_avatar: upsert_entity.has_avatar,
         }
     }
 }

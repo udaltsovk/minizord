@@ -16,12 +16,12 @@ entity! {
     }
 }
 
-impl CreateSpecialization {
+impl From<CreateSpecialization> for Specialization {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Specialization {
-        Specialization {
+    fn from(create_entity: CreateSpecialization) -> Self {
+        Self {
             id: SpecializationId::from(Ulid::new()),
-            name: self.name,
+            name: create_entity.name,
         }
     }
 }

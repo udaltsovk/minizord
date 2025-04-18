@@ -6,13 +6,13 @@ entity! {
     TeamId -> Uses -> TechnologyId { }
 }
 
-impl CreateUses {
+impl From<CreateUses> for Uses {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Uses {
-        Uses {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
+    fn from(create_relation: CreateUses) -> Self {
+        Self {
+            id: create_relation.get_id(),
+            r#in: create_relation.r#in,
+            out: create_relation.out,
         }
     }
 }

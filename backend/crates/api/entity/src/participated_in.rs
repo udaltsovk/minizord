@@ -25,16 +25,16 @@ entity! {
     }
 }
 
-impl CreateParticipatedIn {
+impl From<CreateParticipatedIn> for ParticipatedIn {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> ParticipatedIn {
-        ParticipatedIn {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
-            score: self.score,
-            specialization: self.specialization,
-            technologies: self.technologies,
+    fn from(create_relation: CreateParticipatedIn) -> Self {
+        Self {
+            id: create_relation.get_id(),
+            r#in: create_relation.r#in,
+            out: create_relation.out,
+            score: create_relation.score,
+            specialization: create_relation.specialization,
+            technologies: create_relation.technologies,
         }
     }
 }

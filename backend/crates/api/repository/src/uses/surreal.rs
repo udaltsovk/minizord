@@ -18,7 +18,7 @@ implementation! {
         save(&self, new: CreateUses) -> Uses {
             self.db.0
                 .create(new.get_id().record_id())
-                .content(new.into_entity())
+                .content(Uses::from(new))
                 .await?
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }

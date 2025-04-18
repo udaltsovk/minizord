@@ -22,14 +22,14 @@ entity! {
     }
 }
 
-impl CreateTeam {
+impl From<CreateTeam> for Team {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Team {
-        Team {
+    fn from(create_entity: CreateTeam) -> Self {
+        Self {
             id: TeamId::from(Ulid::new()),
-            name: self.name,
-            lead: self.lead,
-            tour: self.tour,
+            name: create_entity.name,
+            lead: create_entity.lead,
+            tour: create_entity.tour,
         }
     }
 }

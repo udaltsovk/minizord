@@ -42,15 +42,15 @@ entity! {
     }
 }
 
-impl CreateUser {
+impl From<CreateUser> for User {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> User {
-        User {
+    fn from(create_entity: CreateUser) -> Self {
+        Self {
             id: UserId::from(Ulid::new()),
-            email: self.email,
-            password_hash: self.password_hash,
-            username: self.username,
-            role: self.role,
+            email: create_entity.email,
+            password_hash: create_entity.password_hash,
+            username: create_entity.username,
+            role: create_entity.role,
             profile: None,
         }
     }

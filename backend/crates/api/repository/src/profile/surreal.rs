@@ -12,7 +12,7 @@ implementation! {
         db: Arc<SurrealDB>
     } as Surreal {
         upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
-            let entity = object.into_entity(id);
+            let entity = Profile::from((object, id));
             let result: Option<Profile> = self.db.0
                 .query(surql_query!("table/upsert_by_id"))
                 .bind(("id", entity.id.clone()))

@@ -15,15 +15,15 @@ entity! {
     }
 }
 
-impl UpsertReviewed {
+impl From<UpsertReviewed> for Reviewed {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Reviewed {
-        Reviewed {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
-            score: self.score,
-            review: self.review,
+    fn from(upsert_relation: UpsertReviewed) -> Self {
+        Self {
+            id: upsert_relation.get_id(),
+            r#in: upsert_relation.r#in,
+            out: upsert_relation.out,
+            score: upsert_relation.score,
+            review: upsert_relation.review,
         }
     }
 }

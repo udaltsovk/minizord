@@ -12,7 +12,7 @@ implementation! {
         db: Arc<SurrealDB>
     } as Surreal {
         save(&self, new: CreateTour) -> Tour {
-            let entity = new.into_entity();
+            let entity: Tour = new.into();
             self.db.0
                 .create(entity.id.record_id())
                 .content(entity)

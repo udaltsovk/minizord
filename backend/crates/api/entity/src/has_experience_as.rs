@@ -13,14 +13,14 @@ entity! {
     }
 }
 
-impl UpsertHasExperienceAs {
+impl From<UpsertHasExperienceAs> for HasExperienceAs {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> HasExperienceAs {
-        HasExperienceAs {
-            id: self.get_id(),
-            r#in: self.r#in,
-            out: self.out,
-            level: self.level,
+    fn from(upsert_relation: UpsertHasExperienceAs) -> Self {
+        Self {
+            id: upsert_relation.get_id(),
+            r#in: upsert_relation.r#in,
+            out: upsert_relation.out,
+            level: upsert_relation.level,
         }
     }
 }

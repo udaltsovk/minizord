@@ -16,12 +16,12 @@ entity! {
     }
 }
 
-impl CreateTechnology {
+impl From<CreateTechnology> for Technology {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn into_entity(self) -> Technology {
-        Technology {
+    fn from(create_entity: CreateTechnology) -> Self {
+        Self {
             id: TechnologyId::from(Ulid::new()),
-            name: self.name,
+            name: create_entity.name,
         }
     }
 }
