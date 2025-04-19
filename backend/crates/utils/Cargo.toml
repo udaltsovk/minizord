@@ -16,8 +16,6 @@ actix-web = [
 ]
 
 [dependencies]
-# log.workspace = true
-
 lazy_static = "1.4"
 
 serde.workspace = true
@@ -74,3 +72,7 @@ actix-web-prom = { version = "0.9", features = ["process"], optional = true }
 
 [dev-dependencies]
 rstest.workspace = true
+
+[lints]
+workspace = true
+

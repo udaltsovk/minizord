@@ -53,3 +53,6 @@ actix-multipart = { workspace = true, optional = true }
 [build-dependencies]
 chrono.workspace = true
 iana-time-zone = "0.1"
+
+[lints]
+workspace = true

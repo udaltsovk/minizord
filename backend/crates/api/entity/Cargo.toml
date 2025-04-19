@@ -27,3 +27,6 @@ bytes.workspace = true
 tracing.workspace = true
 
 surrealdb = { workspace = true, optional = true }
+
+[lints]
+workspace = true

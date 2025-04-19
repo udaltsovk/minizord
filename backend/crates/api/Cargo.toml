@@ -55,3 +55,7 @@ actix-cors = "0.7"
 actix-web-lab.workspace = true
 actix-web-validation.workspace = true
 utoipa-actix-web.workspace = true
+
+[lints]
+workspace = true
+
