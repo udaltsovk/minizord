@@ -5,7 +5,7 @@ RUSTFLAGS="-Z macro-backtrace" watchexec \
     cargo udeps --all && \
     cargo audit && \
     cargo fmt --all && \
-    cargo clippy --all && \
+    cargo clippy --all -- -D warnings && \
     cargo test --all && \
     cargo run -p $1
     "

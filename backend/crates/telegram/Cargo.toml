@@ -14,3 +14,7 @@ name = "minizord-telegram"
 path = "./src/main.rs"
 
 [dependencies]
+
+[lints]
+workspace = true
+

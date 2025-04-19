@@ -14,3 +14,7 @@ async-trait = "0.1"
 pastey = "0.1"
 
 surrealdb = { workspace = true, optional = true }
+
+[lints]
+workspace = true
+
