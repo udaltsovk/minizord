@@ -1,0 +1,10 @@
+[core]
+path = "./crates/api/repository/db/surreal"
+schema = "full"
+
+[db]
+address = "ws://localhost:8001"
+username = "root"
+password = "root"
+ns = "minizord"
+db = "api"
