@@ -2366,7 +2366,8 @@
           "id",
           "email",
           "username",
-          "role"
+          "role",
+          "has_profile"
         ],
         "properties": {
           "id": {
@@ -2393,6 +2394,10 @@
           },
           "role": {
             "$ref": "#/components/schemas/UserRole"
+          },
+          "has_profile": {
+            "type": "boolean",
+            "description": ""
           }
         }
       },
