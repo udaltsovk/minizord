@@ -71,6 +71,9 @@ dto! {
 
             ///
             role: UserRole,
+
+            ///
+            has_profile: bool,
         },
         create
         ///
@@ -118,6 +121,7 @@ impl From<UserEntity> for User {
             email: entity.email,
             username: entity.username,
             role: entity.role.into(),
+            has_profile: entity.profile.is_some(),
         }
     }
 }
