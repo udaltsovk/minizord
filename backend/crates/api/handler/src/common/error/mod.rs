@@ -1,4 +1,4 @@
-#![allow(clippy::empty_docs)]
+#![allow(clippy::empty_docs)] // TODO: remove this
 use actix_web::{HttpResponse, ResponseError, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use service::common::ServiceError;

@@ -34,3 +34,6 @@ tracing.workspace = true
 
 surrealdb = { workspace = true, optional = true }
 aws-sdk-s3 = { workspace = true, optional = true }
+
+[lints]
+workspace = true
