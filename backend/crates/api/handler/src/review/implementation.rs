@@ -243,7 +243,7 @@ handler_implementation! {
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> Json<Review> {
             let resp = reviewed_service
-                .get_by_id(reviewee_id, reviewer_id)
+                .get_by_id(reviewer_id, reviewee_id)
                 .await?;
             Json(resp)
         }
@@ -273,7 +273,7 @@ handler_implementation! {
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> HttpResponse {
             reviewed_service
-                .delete_by_id(reviewee_id, reviewer_id)
+                .delete_by_id(reviewer_id, reviewee_id)
                 .await?;
             HttpResponse::NoContent().finish()
         }
