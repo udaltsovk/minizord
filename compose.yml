@@ -46,7 +46,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - prometheus:/prometheus
-      - ./assets/configs/prod/prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - ./assets/configs/prod/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"

@@ -49,12 +49,12 @@ services:
     image: prom/prometheus:latest
     volumes:
       - prometheus:/prometheus
-      - ../assets/configs/dev/prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - ../assets/configs/dev/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
-      - "--web.listen-address=:9091"
-    network_mode: "host"
+    ports:
+      - "9091:9090"
 
   loki:
     image: grafana/loki:latest
