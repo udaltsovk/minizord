@@ -52,8 +52,6 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
-    ports:
-      - "9090:9090"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
