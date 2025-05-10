@@ -120,7 +120,7 @@ impl Modify for SecurityModifier {
                 .build(),
         );
 
-        components.add_security_scheme("organizator", scheme.clone());
+        components.add_security_scheme("organizer", scheme.clone());
         components.add_security_scheme("mentor", scheme.clone());
         components.add_security_scheme("participant", scheme.clone());
     }
