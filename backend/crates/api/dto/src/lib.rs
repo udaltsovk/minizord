@@ -22,7 +22,7 @@ pub struct Pagination {
     limit: Option<i64>,
 
     ///
-    #[param(format = UInt64, minimum = 0, default = 0)]
+    #[param(format = UInt32, minimum = 0, default = 0)]
     #[garde(range(min = 0))]
     offset: Option<i64>,
 }

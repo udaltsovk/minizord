@@ -1,5 +1,5 @@
 pub trait EntityId: std::fmt::Display {
-    const TABLE: &str;
+    const TABLE: &'static str;
 
     #[cfg(feature = "surrealdb")]
     fn record_id(&self) -> surrealdb::RecordId;
@@ -76,7 +76,7 @@ macro_rules! entity {
                 pub struct [<$name Id>](std::sync::Arc<$id_ty>);
             }
             impl macros::EntityId for [<$name Id>] {
-                const TABLE: &str = stringify!([<$name:snake>]);
+                const TABLE: &'static str = stringify!([<$name:snake>]);
 
                 #[cfg(feature = "surrealdb")]
                 #[tracing::instrument(skip_all, level = "trace")]
@@ -243,7 +243,7 @@ macro_rules! entity {
                 pub struct [<$name Id>](std::sync::Arc<str>);
             }
             impl macros::EntityId for [<$name Id>] {
-                const TABLE: &str = stringify!([<$name:snake>]);
+                const TABLE: &'static str = stringify!([<$name:snake>]);
 
                 #[cfg(feature = "surrealdb")]
                 #[tracing::instrument(skip_all, level = "trace")]

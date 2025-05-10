@@ -1,4 +1,4 @@
-use std::{fmt::Display, sync::Arc};
+use std::sync::Arc;
 
 use ::utils::{
     adapters::{S3, SurrealDB},
@@ -7,17 +7,14 @@ use ::utils::{
     logger::CustomActixLogger,
 };
 use actix_web::{
-    App, HttpRequest, HttpResponse, HttpServer,
+    App, HttpServer,
     web::{Data, FormConfig, JsonConfig, PathConfig, QueryConfig, get},
 };
 use actix_web_lab::middleware::CatchPanic;
 use actix_web_validation::garde::GardeErrorHandlerExt;
 use env_vars_config::env_vars_config;
 use handler::{
-    common::{
-        ApiError, ValidationError,
-        wrapper::{BaseApiUrl, JwtSecret},
-    },
+    common::wrapper::{BaseApiUrl, JwtSecret},
     info::{InfoHandler, implementation::ImplementedInfoHandler},
     profile::{ProfileHandler, implementation::ImplementedProfileHandler},
     review::{ReviewHandler, implementation::ImplementedReviewHandler},
@@ -55,6 +52,7 @@ env_vars_config! {
     DB_USER: String = "root",
     DB_PASSWORD: String = "root",
     JWT_SECRET: String = "P9mzO6aO64hgkVCBN96CfpUXB1x58XA3zmGuoT4HjSdhHgyRBnqv/EsPDCfs9CRT/oEJYSu6YDcvmdrf/utDNQ==",
+    METRICS_ADDRESS: String = "0.0.0.0:8081",
     OTEL_ENDPOINT: String = "http://localhost:4317",
     OTEL_SERVICE_NAME: String = "minizord_api",
     S3_BASE_URL: String = "http://localhost:9000",
@@ -77,11 +75,13 @@ impl AppConfig {
     pub fn build(self) -> impl FnOnce(&mut ServiceConfig) {
         move |cfg: &mut ServiceConfig| {
             cfg.app_data(
-                FormConfig::default().error_handler(input_err_handler),
+                FormConfig::default().error_handler(handler::input_error),
             )
-            .app_data(PathConfig::default().error_handler(input_err_handler))
-            .app_data(QueryConfig::default().error_handler(input_err_handler))
-            .app_data(JsonConfig::default().error_handler(input_err_handler))
+            .app_data(PathConfig::default().error_handler(handler::input_error))
+            .app_data(
+                QueryConfig::default().error_handler(handler::input_error),
+            )
+            .app_data(JsonConfig::default().error_handler(handler::input_error))
             .app_data(Data::new(JwtSecret(config::JWT_SECRET.to_owned())))
             .app_data(Data::new(BaseApiUrl(config::BASE_API_URL.to_owned())))
             .configure(ImplementedUserHandler::routes(self.user_service))
@@ -91,16 +91,9 @@ impl AppConfig {
             ))
             .configure(ImplementedReviewHandler::routes(self.reviewed_service))
             .configure(ImplementedInfoHandler::routes())
-            .default_service(get().to(Api::not_found));
+            .default_service(get().to(handler::not_found));
         }
     }
-}
-#[tracing::instrument(skip_all, level = "trace")]
-fn input_err_handler<'a, T: Display>(
-    err: T,
-    _req: &'a HttpRequest,
-) -> actix_web::Error {
-    ValidationError::with_description(&err.to_string()).into()
 }
 
 pub struct Api {
@@ -177,13 +170,5 @@ impl Api {
 
         tracing::info!("Shutting down the web server");
         Ok(())
-    }
-
-    #[tracing::instrument(skip_all, level = "trace")]
-    pub async fn not_found() -> HttpResponse {
-        HttpResponse::NotFound().json(ApiError {
-            error: "not_found".into(),
-            description: "The requested route does not exist".into(),
-        })
     }
 }

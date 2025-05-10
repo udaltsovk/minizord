@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-RUSTFLAGS="-Z macro-backtrace" watchexec \
+RUSTFLAGS="-Z macro-backtrace --cfg tokio_unstable" watchexec \
     -rqc reset \
     -e rs,toml "
     cargo udeps --all && \

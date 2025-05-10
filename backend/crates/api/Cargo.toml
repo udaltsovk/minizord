@@ -39,6 +39,7 @@ garde.workspace = true
 
 # tonic.workspace = true
 
+opentelemetry.workspace = true
 tracing.workspace = true
 
 utoipa.workspace = true

@@ -20,8 +20,7 @@ use utoipa::ToSchema;
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
 
 use crate::common::{
-    HandlerError,
-    middleware::{UserRoleFilterMiddleware, user_extractor_middleware},
+    HandlerError, guard::UserRoleGuard, middleware::user_extractor_middleware,
 };
 
 pub mod implementation;
@@ -40,70 +39,71 @@ handler! {
                     .app_data(Data::new(profile_image_service))
                     .service(scope("/profiles")
                         .wrap(from_fn(user_extractor_middleware))
-                        .service(Self::upsert_current())
-                        .service(Self::get_current())
-                        .service(Self::delete_current())
-                        .service(Self::get_by_id())
-                        .service(Self::upsert_image_current())
-                        .service(Self::get_image_current())
-                        .service(Self::delete_image_current())
+                        .service(Self::get_current_profile())
+                        .service(Self::upsert_current_profile())
+                        .service(Self::delete_current_profile())
+                        .service(Self::get_current_profile_image())
+                        .service(Self::upsert_current_profile_image())
+                        .service(Self::delete_current_profile_image())
+                        .service(Self::get_profile_by_id())
+                        .service(Self::get_profile_image_by_id())
                         .service(scope("")
-                            .wrap(UserRoleFilterMiddleware::new(&[UserRole::Organizator]))
-                            .service(Self::delete_by_id())
-                            .service(Self::delete_image_by_id())
+                            .guard(UserRoleGuard::new(&[UserRole::Organizer]))
+                            .service(Self::delete_profile_by_id())
+                            .service(Self::delete_profile_image_by_id())
                         )
                     );
             }
         }
 
-        upsert_current(
+        get_current_profile(
+            profile_service: Data<ProfileServiceDependency>,
+            user: ReqData<User>,
+        ) -> Json<Profile>;
+
+        upsert_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
             body: Validated<Json<UpsertProfile>>,
         ) -> Json<Profile>;
 
-        get_current(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-        ) -> Json<Profile>;
-
-        delete_current(
+        delete_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse;
 
-        get_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
-        ) -> Json<Profile>;
-
-        delete_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
+        get_current_profile_image(
+            profile_image_service: Data<ProfileImageServiceDependency>,
+            user: ReqData<User>,
         ) -> HttpResponse;
 
-        upsert_image_current(
+        upsert_current_profile_image(
             profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
             form: MultipartForm<UploadForm>,
         ) -> HttpResponse;
 
-        get_image_current(
+        delete_current_profile_image(
             profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse;
 
-        delete_image_current(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
+        get_profile_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            profile_id: Path<Ulid>,
+        ) -> Json<Profile>;
 
-        get_image_by_id(
+        get_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             profile_id: Path<Ulid>,
         ) -> HttpResponse;
 
-        delete_image_by_id(
+        delete_profile_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            profile_id: Path<Ulid>,
+        ) -> HttpResponse;
+
+        delete_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             profile_id: Path<Ulid>,
         ) -> HttpResponse;

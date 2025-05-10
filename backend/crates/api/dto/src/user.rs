@@ -23,8 +23,8 @@ use utoipa::ToSchema;
 #[schema(default = "participant")]
 pub enum UserRole {
     ///
-    #[strum(serialize = "organizator")]
-    Organizator,
+    #[strum(serialize = "organizer")]
+    Organizer,
     ///
     #[strum(serialize = "mentor")]
     Mentor,
@@ -36,7 +36,7 @@ impl From<UserRole> for UserEntityRole {
     fn from(role: UserRole) -> Self {
         use UserRole as Role;
         match role {
-            Role::Organizator => Self::Organizator,
+            Role::Organizer => Self::Organizer,
             Role::Mentor => Self::Mentor,
             Role::Participant => Self::Participant,
         }
@@ -46,7 +46,7 @@ impl From<UserEntityRole> for UserRole {
     fn from(role: UserEntityRole) -> Self {
         use UserEntityRole as Role;
         match role {
-            Role::Organizator => Self::Organizator,
+            Role::Organizer => Self::Organizer,
             Role::Mentor => Self::Mentor,
             Role::Participant => Self::Participant,
         }

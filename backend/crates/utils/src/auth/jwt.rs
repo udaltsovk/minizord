@@ -14,7 +14,7 @@ pub struct Claims {
     pub sub: String,
 }
 
-#[tracing::instrument(skip_all, level = "debug")]
+#[tracing::instrument(name = "jwt::new", skip_all, level = "debug")]
 pub fn new(entity: &str, id: Ulid, secret: &str) -> String {
     let current_time =
         usize::try_from(Utc::now().timestamp()).unwrap_or(usize::MAX);
@@ -34,7 +34,7 @@ pub fn new(entity: &str, id: Ulid, secret: &str) -> String {
     }
 }
 
-#[tracing::instrument(skip_all, level = "debug")]
+#[tracing::instrument(name = "jwt::parse", skip_all, level = "debug")]
 pub fn parse(token: &str, secret: &str) -> Option<Claims> {
     match decode(
         token,
@@ -63,9 +63,9 @@ mod test {
     }
 
     #[rstest]
-    #[case::organizator("organizator")]
-    #[case::mentor("organizator")]
-    #[case::participant("organizator")]
+    #[case::organizer("organizer")]
+    #[case::mentor("mentor")]
+    #[case::participant("participant")]
     fn basic(#[case] entity: &str, secret: String) {
         let id = Ulid::new();
         let current_time =
@@ -107,7 +107,7 @@ mod test {
     #[should_panic]
     #[case::valid({
         let secret = secret();
-        (new_token("organizator", Ulid::new(), &secret), secret)
+        (new_token("organizer", Ulid::new(), &secret), secret)
     })]
     fn invalid(#[case] (token, secret): (String, String)) {
         let claims = super::parse(&token, &secret);

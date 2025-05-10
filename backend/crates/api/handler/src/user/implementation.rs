@@ -80,7 +80,7 @@ handler_implementation! {
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = User),
@@ -109,7 +109,7 @@ handler_implementation! {
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = User),
@@ -149,7 +149,7 @@ handler_implementation! {
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
@@ -179,7 +179,7 @@ handler_implementation! {
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 204, description = ""),
@@ -211,7 +211,7 @@ handler_implementation! {
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = User),
@@ -244,7 +244,7 @@ handler_implementation! {
                 content = UserUpdate
             ),
             security(
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = User),
@@ -280,7 +280,7 @@ handler_implementation! {
                 content = PasswordChangeRequest
             ),
             security(
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
@@ -311,7 +311,7 @@ handler_implementation! {
                 ("user_id" = Ulid, description = "")
             ),
             security(
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 204, description = ""),

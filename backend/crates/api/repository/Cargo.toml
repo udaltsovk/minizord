@@ -20,15 +20,6 @@ utils.workspace = true
 api-entity = { path = "../entity" }
 
 thiserror.workspace = true
-#log.workspace = true
-
-serde.workspace = true
-strum_macros.workspace = true
-
-chrono.workspace = true
-ulid.workspace = true
-
-bytes.workspace = true
 
 tracing.workspace = true
 

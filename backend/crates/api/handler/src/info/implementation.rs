@@ -15,7 +15,6 @@ handler_implementation! {
         ///
         /// Returns API info such as version, build date, commit, etc.
         #[openapi(
-            operation_id = "info",
             responses(
                 (status = 200, description = "Returned API info", body = ApiInfoResponse),
             ),

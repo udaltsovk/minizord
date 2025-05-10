@@ -11,7 +11,11 @@ pub struct PasswordHasher<'a> {
     hasher: Argon2<'a>,
 }
 impl PasswordHasher<'_> {
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(
+        name = "PasswordHasher::new",
+        skip_all,
+        level = "debug"
+    )]
     pub fn new() -> Self {
         Self {
             hasher: Argon2::new(
@@ -22,7 +26,11 @@ impl PasswordHasher<'_> {
         }
     }
 
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(
+        name = "PasswordHasher::hash",
+        skip_all,
+        level = "debug"
+    )]
     pub fn hash(&self, password: &str) -> Result<String, Error> {
         let password_hash = self
             .hasher
@@ -31,7 +39,11 @@ impl PasswordHasher<'_> {
         Ok(password_hash)
     }
 
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(
+        name = "PasswordHasher::verify",
+        skip_all,
+        level = "debug"
+    )]
     pub fn verify(
         &self,
         password: &str,

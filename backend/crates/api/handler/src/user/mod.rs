@@ -15,8 +15,7 @@ use ulid::Ulid;
 use utoipa_actix_web::{scope, service_config::ServiceConfig};
 
 use crate::common::{
-    HandlerError,
-    middleware::{UserRoleFilterMiddleware, user_extractor_middleware},
+    HandlerError, guard::UserRoleGuard, middleware::user_extractor_middleware,
 };
 
 pub mod implementation;
@@ -39,7 +38,7 @@ handler! {
                             .service(Self::delete_current())
                             .service(Self::get_by_id())
                             .service(scope("")
-                                .wrap(UserRoleFilterMiddleware::new(&[UserRole::Organizator]))
+                                .guard(UserRoleGuard::new(&[UserRole::Organizer]))
                                 .service(Self::register())
                                 .service(Self::update_by_id())
                                 .service(Self::change_password_by_id())

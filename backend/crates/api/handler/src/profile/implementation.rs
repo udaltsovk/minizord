@@ -27,11 +27,37 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "upsert_current_profile",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
+            ),
+            responses(
+                (status = 200, description = "", body = Profile),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
+            ),
+
+        )]
+        #[get("/me")]
+        get_current_profile(
+            profile_service: Data<ProfileServiceDependency>,
+            user: ReqData<User>,
+        ) -> Json<Profile> {
+            let res = profile_service
+                .get_by_id(user.id)
+                .await?;
+            Json(res)
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizer" = []),
             ),
             request_body(
                 description = "",
@@ -44,7 +70,7 @@ handler_implementation! {
             ),
         )]
         #[put("/me")]
-        upsert_current(
+        upsert_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
             Validated(Json(body)): Validated<Json<UpsertProfile>>
@@ -59,39 +85,10 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_current_profile",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
-            ),
-            responses(
-                (status = 200, description = "", body = Profile),
-                (status = 404, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-            ),
-
-        )]
-        #[get("/me")]
-        get_current(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-        ) -> Json<Profile> {
-            let res = profile_service
-                .get_by_id(user.id)
-                .await?;
-            Json(res)
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "delete_current_profile",
-            security(
-                ("participant" = []),
-                ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 204, description = ""),
@@ -100,7 +97,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/me")]
-        delete_current(
+        delete_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
@@ -114,107 +111,10 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_profile_by_id",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
-            ),
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
-            responses(
-                (status = 200, description = "", body = Profile),
-                (status = 404, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[get("/{profile_id}")]
-        get_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            Path(profile_id): Path<Ulid>,
-        ) -> Json<Profile> {
-            let res = profile_service
-                .get_by_id(profile_id)
-                .await?;
-            Json(res)
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "delete_profile_by_id",
-            security(
-                ("organizator" = []),
-            ),
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
-            responses(
-                (status = 204, description = ""),
-                (status = 404, description = "", body = ApiError),
-                (status = 403, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[delete("/{profile_id}")]
-        delete_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            Path(profile_id): Path<Ulid>,
-        ) -> HttpResponse {
-            profile_service
-                .delete_by_id(profile_id)
-                .await?;
-            HttpResponse::NoContent().finish()
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "upsert_current_profile_image",
-            security(
-                ("participant" = []),
-                ("mentor" = []),
-                ("organizator" = []),
-            ),
-            request_body(
-                description = "",
-                content = UploadForm,
-                content_type = "multipart/form-data",
-            ),
-            responses(
-                (status = 200, description = ""),
-                (status = 415, description = "", body = ApiError),
-                (status = 413, description = "", body = ApiError),
-                (status = 404, description = "", body = ApiError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[put("/me/image")]
-        upsert_image_current(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            user: ReqData<User>,
-            MultipartForm(form): MultipartForm<UploadForm>,
-        ) -> HttpResponse {
-            profile_image_service
-               .upsert_by_id(user.id, form.file)
-               .await?;
-
-            HttpResponse::Ok().finish()
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "get_current_profile_image",
-            security(
-                ("participant" = []),
-                ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = ""),
@@ -224,7 +124,7 @@ handler_implementation! {
 
         )]
         #[get("/me/image")]
-        get_image_current(
+        get_current_profile_image(
             profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
@@ -240,11 +140,45 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "delete_current_profile_image",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
+            ),
+            request_body(
+                description = "",
+                content = UploadForm,
+                content_type = "multipart/form-data",
+            ),
+            responses(
+                (status = 200, description = ""),
+                (status = 415, description = "", body = ApiError),
+                (status = 413, description = "", body = ApiError),
+                (status = 404, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
+            ),
+        )]
+        #[put("/me/image")]
+        upsert_current_profile_image(
+            profile_image_service: Data<ProfileImageServiceDependency>,
+            user: ReqData<User>,
+            MultipartForm(form): MultipartForm<UploadForm>,
+        ) -> HttpResponse {
+            profile_image_service
+               .upsert_by_id(user.id, form.file)
+               .await?;
+
+            HttpResponse::Ok().finish()
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizer" = []),
             ),
             responses(
                 (status = 204, description = ""),
@@ -253,7 +187,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/me/image")]
-        delete_image_current(
+        delete_current_profile_image(
             profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
@@ -263,15 +197,74 @@ handler_implementation! {
             HttpResponse::NoContent().finish()
         }
 
+
+
         ///
         ///
         ///
         #[openapi(
-            operation_id = "get_profile_image_by_id",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
+            ),
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
+            responses(
+                (status = 200, description = "", body = Profile),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
+            ),
+        )]
+        #[get("/{profile_id}")]
+        get_profile_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            Path(profile_id): Path<Ulid>,
+        ) -> Json<Profile> {
+            let res = profile_service
+                .get_by_id(profile_id)
+                .await?;
+            Json(res)
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            security(
+                ("organizer" = []),
+            ),
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
+            responses(
+                (status = 204, description = ""),
+                (status = 404, description = "", body = ApiError),
+                (status = 403, description = "", body = ApiError),
+                (status = 401, description = "", body = ApiError),
+            ),
+        )]
+        #[delete("/{profile_id}")]
+        delete_profile_by_id(
+            profile_service: Data<ProfileServiceDependency>,
+            Path(profile_id): Path<Ulid>,
+        ) -> HttpResponse {
+            profile_service
+                .delete_by_id(profile_id)
+                .await?;
+            HttpResponse::NoContent().finish()
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizer" = []),
             ),
             params(
                 ("profile_id" = Ulid, description = "")
@@ -283,7 +276,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{profile_id}/image")]
-        get_image_by_id(
+        get_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             Path(profile_id): Path<Ulid>,
         ) -> HttpResponse {
@@ -299,9 +292,8 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "delete_profile_image_by_id",
             security(
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             params(
                 ("profile_id" = Ulid, description = "")
@@ -314,7 +306,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/{profile_id}/image")]
-        delete_image_by_id(
+        delete_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             Path(profile_id): Path<Ulid>,
         ) -> HttpResponse {

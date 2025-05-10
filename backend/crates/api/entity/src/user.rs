@@ -8,8 +8,8 @@ use crate::profile::ProfileId;
 #[derive(Deserialize, Serialize, Display, Clone, Copy, PartialEq, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum UserRole {
-    #[strum(serialize = "organizator")]
-    Organizator,
+    #[strum(serialize = "organizer")]
+    Organizer,
     #[strum(serialize = "mentor")]
     Mentor,
     #[strum(serialize = "participant")]

@@ -9,7 +9,7 @@ use surrealdb_migrations::MigrationRunner;
 #[derive(Clone)]
 pub struct SurrealDB(pub Surreal<Client>);
 impl SurrealDB {
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(name = "SurrealDB::setup", skip_all, level = "debug")]
     async fn setup(
         self,
         address: &str,
@@ -34,7 +34,7 @@ impl SurrealDB {
         Ok(self)
     }
 
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(name = "SurrealDB::init", skip_all, level = "debug")]
     pub async fn init(
         address: &str,
         namespace: &str,
@@ -49,7 +49,11 @@ impl SurrealDB {
             .expect("Failed to init the database")
     }
 
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(
+        name = "SurrealDB::migrate",
+        skip_all,
+        level = "debug"
+    )]
     pub async fn migrate(self) -> Self {
         tracing::trace!("Running database migrations");
         MigrationRunner::new(&self.0)

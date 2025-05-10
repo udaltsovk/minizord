@@ -21,7 +21,7 @@ pub enum ServiceError {
     PayloadTooLarge(String),
 
     #[error(
-        "expected file of one of the folowing mime types: {supported}, but got `{got}`"
+        "expected file of one of the following mime types: {supported}, but got `{got}`"
     )]
     UnsupportedMediaType { supported: String, got: String },
 

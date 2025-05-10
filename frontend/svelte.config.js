@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import adapter from 'svelte-adapter-bun-next';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 

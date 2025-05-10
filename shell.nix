@@ -16,6 +16,7 @@
     protobuf
     cargo-udeps
     cargo-audit
+    cargo-expand
 
     bun
   ];

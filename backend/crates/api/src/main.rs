@@ -14,8 +14,9 @@ async fn main() -> std::io::Result<()> {
     config::init();
 
     let lgtm = LGTM::init(
-        config::OTEL_ENDPOINT.clone(),
-        config::OTEL_SERVICE_NAME.clone(),
+        &config::OTEL_ENDPOINT,
+        &config::OTEL_SERVICE_NAME,
+        &config::METRICS_ADDRESS,
     );
 
     config::test_values();

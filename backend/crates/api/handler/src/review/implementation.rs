@@ -22,11 +22,42 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "upsert_review_by_id",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
+            ),
+            params(
+                ("reviewee_id" = Ulid, description = ""),
+                Pagination,
+            ),
+            responses(
+                (status = 200, description = "", body = Review),
+                (status = 404, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
+                (status = 401, description = "", body = ApiError),
+            ),
+        )]
+        #[get("/{reviewee_id}")]
+        get_reviews_by_reviewee_id_paginated(
+            reviewed_service: Data<ReviewedServiceDependency>,
+            Path(reviewee_id): Path<Ulid>,
+            Validated(Query(pagination)): Validated<Query<Pagination>>,
+        ) -> Json<Vec<Review>> {
+            let resp = reviewed_service
+                .find_all_by_reviewee(reviewee_id, pagination.into())
+                .await?;
+            Json(resp)
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizer" = []),
             ),
             params(
                 ("reviewee_id" = Ulid, description = ""),
@@ -43,7 +74,7 @@ handler_implementation! {
             ),
         )]
         #[put("/{reviewee_id}")]
-        upsert_by_id(
+        upsert_review_by_id(
             reviewed_service: Data<ReviewedServiceDependency>,
             user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
@@ -59,11 +90,10 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "delete_review_by_id",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             params(
                 ("reviewee_id" = Ulid, description = ""),
@@ -75,7 +105,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/{reviewee_id}")]
-        delete_by_id(
+        delete_review_by_id(
             reviewed_service: Data<ReviewedServiceDependency>,
             user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
@@ -90,11 +120,10 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_current_reviews_sent_paginated",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             params(
                 Pagination,
@@ -107,39 +136,7 @@ handler_implementation! {
             ),
         )]
         #[get("/my")]
-        get_current_sent_paginated(
-            reviewed_service: Data<ReviewedServiceDependency>,
-            user: ReqData<User>,
-            Validated(Query(pagination)): Validated<Query<Pagination>>,
-        ) -> Json<Vec<Review>> {
-            let resp = reviewed_service
-                .find_all_by_reviewer(user.id, pagination.into())
-                .await?;
-            Json(resp)
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "get_current_reviews_received_paginated",
-            security(
-                ("participant" = []),
-                ("mentor" = []),
-                ("organizator" = []),
-            ),
-            params(
-                Pagination,
-            ),
-            responses(
-                (status = 200, description = "", body = Vec<Review>),
-                (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ValidationError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[get("/my/received")]
-        get_current_received_paginated(
+        get_current_reviews_received_paginated(
             reviewed_service: Data<ReviewedServiceDependency>,
             user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
@@ -154,11 +151,42 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_reviews_by_reviewer_id_paginated",
+            operation_id = "get_current_reviews_sent_paginated",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
+            ),
+            params(
+                Pagination,
+            ),
+            responses(
+                (status = 200, description = "", body = Vec<Review>),
+                (status = 404, description = "", body = ApiError),
+                (status = 400, description = "", body = ValidationError),
+                (status = 401, description = "", body = ApiError),
+            ),
+        )]
+        #[get("/my/sent")]
+        get_current_reviews_sent_paginated(
+            reviewed_service: Data<ReviewedServiceDependency>,
+            user: ReqData<User>,
+            Validated(Query(pagination)): Validated<Query<Pagination>>,
+        ) -> Json<Vec<Review>> {
+            let resp = reviewed_service
+                .find_all_by_reviewer(user.id, pagination.into())
+                .await?;
+            Json(resp)
+        }
+
+        ///
+        ///
+        ///
+        #[openapi(
+            security(
+                ("participant" = []),
+                ("mentor" = []),
+                ("organizer" = []),
             ),
             params(
                 ("reviewer_id" = Ulid, description = ""),
@@ -172,7 +200,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{reviewer_id}/sent")]
-        get_by_reviewer_id_paginated(
+        get_reviews_by_reviewer_id_paginated(
             reviewed_service: Data<ReviewedServiceDependency>,
             Path(reviewer_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
@@ -187,44 +215,10 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_reviews_by_reviewee_id_paginated",
             security(
                 ("participant" = []),
                 ("mentor" = []),
-                ("organizator" = []),
-            ),
-            params(
-                ("reviewee_id" = Ulid, description = ""),
-                Pagination,
-            ),
-            responses(
-                (status = 200, description = "", body = Review),
-                (status = 404, description = "", body = ApiError),
-                (status = 400, description = "", body = ValidationError),
-                (status = 401, description = "", body = ApiError),
-            ),
-        )]
-        #[get("/{reviewee_id}")]
-        get_by_reviewee_id_paginated(
-            reviewed_service: Data<ReviewedServiceDependency>,
-            Path(reviewee_id): Path<Ulid>,
-            Validated(Query(pagination)): Validated<Query<Pagination>>,
-        ) -> Json<Vec<Review>> {
-            let resp = reviewed_service
-                .find_all_by_reviewee(reviewee_id, pagination.into())
-                .await?;
-            Json(resp)
-        }
-
-        ///
-        ///
-        ///
-        #[openapi(
-            operation_id = "get_review_by_reviewee_id_and_reviewer_id",
-            security(
-                ("participant" = []),
-                ("mentor" = []),
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             params(
                 ("reviewee_id" = Ulid, description = ""),
@@ -238,7 +232,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{reviewee_id}/{reviewer_id}")]
-        get_by_reviewee_id_and_reviewer_id(
+        get_review_by_reviewee_id_and_reviewer_id(
             reviewed_service: Data<ReviewedServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> Json<Review> {
@@ -252,9 +246,8 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "delete_review_by_reviewee_id_and_reviewer_id",
             security(
-                ("organizator" = []),
+                ("organizer" = []),
             ),
             params(
                 ("reviewee_id" = Ulid, description = ""),
@@ -268,7 +261,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/{reviewee_id}/{reviewer_id}")]
-        delete_by_reviewee_id_and_reviewer_id(
+        delete_review_by_reviewee_id_and_reviewer_id(
             reviewed_service: Data<ReviewedServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> HttpResponse {

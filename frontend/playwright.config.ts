@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({

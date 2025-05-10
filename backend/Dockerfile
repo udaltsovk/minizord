@@ -13,14 +13,14 @@ ARG CRATE
 ENV PKG_CONFIG_ALLOW_CROSS=1 \
     OPENSSL_STATIC=1
 
-COPY --from=planner /usr/src/minizord/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json --bin $CRATE
-
 RUN apk add --no-cache \
     musl-dev \
     openssl-dev \
     openssl-libs-static \
     git
+
+COPY --from=planner /usr/src/minizord/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json --bin $CRATE
 
 COPY . .
 RUN cargo build --release --bin $CRATE

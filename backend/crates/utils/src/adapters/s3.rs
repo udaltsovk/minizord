@@ -7,7 +7,7 @@ use aws_sdk_s3::{
 pub struct S3(pub Client);
 
 impl S3 {
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(name = "S3::init", skip_all, level = "debug")]
     pub async fn init(
         endpoint: &str,
         access_key: &str,
@@ -26,7 +26,11 @@ impl S3 {
         Self(Client::from_conf(config))
     }
 
-    #[tracing::instrument(skip_all, level = "debug")]
+    #[tracing::instrument(
+        name = "S3::create_bucket_if_not_exists",
+        skip_all,
+        level = "debug"
+    )]
     async fn create_bucket_if_not_exists(&self, bucket: &str) {
         tracing::trace!("Checking if bucket named `{bucket}` exists");
         if self.0.head_bucket().bucket(bucket).send().await.is_err() {

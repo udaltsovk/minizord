@@ -8,10 +8,9 @@ use tracing_actix_web::{DefaultRootSpanBuilder, RootSpanBuilder};
 pub struct CustomLevelRootSpanBuilder;
 impl RootSpanBuilder for CustomLevelRootSpanBuilder {
     fn on_request_start(request: &ServiceRequest) -> Span {
-        let level = if request.path() == "/metrics" {
-            Level::TRACE
-        } else {
-            Level::INFO
+        let level = match request.path() {
+            "/metrics" => Level::TRACE,
+            _ => Level::INFO,
         };
         tracing_actix_web::root_span!(level = level, request)
     }
