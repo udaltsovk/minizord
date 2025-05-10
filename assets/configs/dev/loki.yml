@@ -1,5 +1,8 @@
 auth_enabled: false
 
+pattern_ingester:
+  enabled: true
+
 server:
   http_listen_port: 3100
 

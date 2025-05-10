@@ -20,11 +20,13 @@ services:
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
     volumes:
       - s3:/data
     command: server /data --console-address ":9001"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
+
   init-buckets:
     image: minio/mc:latest
     depends_on:
@@ -50,7 +52,8 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--enable-feature=native-histograms"
-      - "--web.listen-address=:9091"
+    ports:
+      - "9090:9090"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
@@ -59,7 +62,12 @@ services:
     restart: always
     volumes:
       - ./assets/configs/prod/loki.yml:/etc/loki/local-config.yaml
-    command: -config.file=/etc/loki/local-config.yaml
+    command: 
+      - "--config.file=/etc/loki/local-config.yaml"
+      - "--config.expand-env=true"
+    environment:
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
     depends_on:
       - s3
     labels:
@@ -71,7 +79,12 @@ services:
     volumes:
       - ./assets/configs/prod/tempo.yml:/etc/tempo/tempo-config.yaml
       - tempo:/var/tempo
-    command: -config.file=/etc/tempo/tempo-config.yaml
+    command: 
+      - "--config.file=/etc/tempo/tempo-config.yaml"
+      - "--config.expand-env=true"
+    environment:
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
     depends_on:
       - s3
     labels:
@@ -82,10 +95,14 @@ services:
     restart: always
     volumes:
       - ./assets/configs/prod/mimir.yml:/etc/mimir/mimir.yaml
-    command: --config.file=/etc/mimir/mimir.yaml
+    command: 
+      - "--config.file=/etc/mimir/mimir.yaml"
+      - "--config.expand-env=true"
+    environment:
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
     depends_on:
       - s3
-      - prometheus
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
@@ -101,6 +118,9 @@ services:
     environment:
       - GF_SERVER_ROOT_URL=https://${DEPLOY_DOMAIN}/grafana
     volumes:
+      - ./assets/configs/prod/grafana/datasources/:/etc/grafana/provisioning/datasources
+      - ./assets/configs/prod/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./assets/configs/prod/grafana/dashboards/:/etc/grafana/dashboards
       - grafana:/var/lib/grafana
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
@@ -115,6 +135,7 @@ services:
     environment:
       RUST_LOG: ${LOG_LEVEL}
       SERVER_ADDRESS: 0.0.0.0:8080
+      METRICS_ADDRESS: 0.0.0.0:8081
       DB_ADDRESS: db:8000
       DB_NAMESPACE: minizord
       DB_NAME: api
@@ -147,8 +168,14 @@ services:
     restart: unless-stopped
     volumes:
       - ./assets/configs/prod/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    depends_on:
+      - api
+      - frontend
+      - grafana
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.enable=false"
+    ports:
+      - "3000:3000"
 
   tunnel:
     image: cloudflare/cloudflared:latest
@@ -157,18 +184,21 @@ services:
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN}
     depends_on:
-      - api
+      - proxy
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 
   watchtower:
     image: containrrr/watchtower:latest
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-    command: -i 60
+    environment:
+      WATCHTOWER_POLL_INTERVAL: 60
+      WATCHTOWER_HTTP_API_METRICS: true
+      WATCHTOWER_HTTP_API_TOKEN: token
     volumes:
       - /run/user/1000/containers/auth.json:/config.json
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
 volumes:
   db:
   s3:
