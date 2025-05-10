@@ -2500,7 +2500,7 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       },
-      "organizator": {
+      "organizer": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
