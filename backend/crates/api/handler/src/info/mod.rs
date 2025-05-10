@@ -20,7 +20,7 @@ handler! {
 
         info(
             base_api_url: Data<BaseApiUrl>,
-        ) ->Json<ApiInfoResponse>;
+        ) -> Json<ApiInfoResponse>;
     }
 }
 
