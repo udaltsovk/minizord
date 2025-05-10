@@ -193,7 +193,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -246,7 +246,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -327,7 +327,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -400,7 +400,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -474,7 +474,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -533,7 +533,7 @@
         },
         "security": [
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -630,7 +630,7 @@
         },
         "security": [
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -719,7 +719,7 @@
         },
         "security": [
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -771,7 +771,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -832,7 +832,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -875,140 +875,7 @@
             "mentor": []
           },
           {
-            "organizator": []
-          }
-        ]
-      }
-    },
-    "/profiles/{profile_id}": {
-      "get": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "get_profile_by_id",
-        "parameters": [
-          {
-            "name": "profile_id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "ulid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Profile"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "participant": []
-          },
-          {
-            "mentor": []
-          },
-          {
-            "organizator": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Profiles"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "delete_profile_by_id",
-        "parameters": [
-          {
-            "name": "profile_id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "ulid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -1053,7 +920,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -1127,7 +994,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -1170,7 +1037,140 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
+          }
+        ]
+      }
+    },
+    "/profiles/{profile_id}": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_profile_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "delete_profile_by_id",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "organizer": []
           }
         ]
       }
@@ -1227,7 +1227,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -1286,7 +1286,7 @@
         },
         "security": [
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -1328,7 +1328,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "u-int64",
+              "format": "u-int32",
               "default": 0,
               "minimum": 0
             },
@@ -1385,7 +1385,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -1468,7 +1468,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -1523,104 +1523,12 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
     },
     "/reviews/my": {
-      "get": {
-        "tags": [
-          "Reviews"
-        ],
-        "description": "\n\n\n\n",
-        "operationId": "get_current_reviews_sent_paginated",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "u-int16",
-              "default": 7,
-              "maximum": 57,
-              "minimum": 0
-            },
-            "style": "form"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "u-int64",
-              "default": 0,
-              "minimum": 0
-            },
-            "style": "form"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Review"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "participant": []
-          },
-          {
-            "mentor": []
-          },
-          {
-            "organizator": []
-          }
-        ]
-      }
-    },
-    "/reviews/my/received": {
       "get": {
         "tags": [
           "Reviews"
@@ -1647,7 +1555,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "u-int64",
+              "format": "u-int32",
               "default": 0,
               "minimum": 0
             },
@@ -1707,7 +1615,99 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
+          }
+        ]
+      }
+    },
+    "/reviews/my/sent": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "\n\n\n\n",
+        "operationId": "get_current_reviews_sent_paginated",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int16",
+              "default": 7,
+              "maximum": 57,
+              "minimum": 0
+            },
+            "style": "form"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "u-int32",
+              "default": 0,
+              "minimum": 0
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Review"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "participant": []
+          },
+          {
+            "mentor": []
+          },
+          {
+            "organizer": []
           }
         ]
       }
@@ -1749,7 +1749,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "u-int64",
+              "format": "u-int32",
               "default": 0,
               "minimum": 0
             },
@@ -1809,7 +1809,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -1893,7 +1893,7 @@
             "mentor": []
           },
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       },
@@ -1962,7 +1962,7 @@
         },
         "security": [
           {
-            "organizator": []
+            "organizer": []
           }
         ]
       }
@@ -2423,7 +2423,7 @@
         "description": "",
         "default": "participant",
         "enum": [
-          "organizator",
+          "organizer",
           "mentor",
           "participant"
         ]
