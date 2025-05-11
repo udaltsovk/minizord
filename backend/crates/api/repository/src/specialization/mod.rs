@@ -10,7 +10,7 @@ crud_repository! {
     Specialization
         Err: RepositoryError
     {
-        find_by_name(&self, name: &str) -> Option<Specialization>;
-        exists_by_name(&self, name: &str) -> bool;
+        async fn find_by_name(&self, name: &str) -> Option<Specialization>;
+        async fn exists_by_name(&self, name: &str) -> bool;
     }
 }

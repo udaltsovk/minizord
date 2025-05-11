@@ -10,7 +10,7 @@ macro_rules! implementation {
         })? as $impl_name:ident {
             $(
                 $(#[$method_meta:meta])*
-                $method:ident $sig:tt -> $res:ty
+                async fn $method:ident $sig:tt -> $res:ty
                     $body:block
             )*
         }
@@ -57,7 +57,7 @@ macro_rules! handler_implementation {
         $trait_name:ident as $impl_name:ident {
             $(
                 $(#[$method_meta:meta])*
-                $method:ident $sig:tt -> $res:ty
+                async fn $method:ident $sig:tt -> $res:ty
                     $body:block
             )*
         }

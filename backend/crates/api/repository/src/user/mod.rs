@@ -10,9 +10,9 @@ crud_repository! {
     User
         Err: RepositoryError
     {
-        find_by_email(&self, email: &str) -> Option<User>;
-        exists_by_email(&self, email: &str) -> bool;
-        find_by_username(&self, username: &str) -> Option<User>;
-        exists_by_username(&self, username: &str) -> bool;
+        async fn find_by_email(&self, email: &str) -> Option<User>;
+        async fn exists_by_email(&self, email: &str) -> bool;
+        async fn find_by_username(&self, username: &str) -> Option<User>;
+        async fn exists_by_username(&self, username: &str) -> bool;
     }
 }

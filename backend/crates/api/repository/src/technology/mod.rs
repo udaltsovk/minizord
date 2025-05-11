@@ -10,7 +10,7 @@ crud_repository! {
     Technology
         Err: RepositoryError
     {
-        find_by_name(&self, name: &str) -> Option<Technology>;
-        exists_by_name(&self, name: &str) -> bool;
+        async fn find_by_name(&self, name: &str) -> Option<Technology>;
+        async fn exists_by_name(&self, name: &str) -> bool;
     }
 }

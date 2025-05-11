@@ -11,7 +11,7 @@ implementation! {
     UserRepository {
         db: Arc<SurrealDB>
     } as SurrealUserRepository {
-        save(&self, new: CreateUser) -> User {
+        async fn save(&self, new: CreateUser) -> User {
             let entity: User = new.into();
             self.db.0
                 .create(entity.id.record_id())
@@ -20,17 +20,17 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        find_by_id(&self, id: UserId) -> Option<User> {
+        async fn find_by_id(&self, id: UserId) -> Option<User> {
             self.db.0
                 .select(id.record_id())
                 .await?
         }
 
-        exists_by_id(&self, id: UserId) -> bool {
+        async fn exists_by_id(&self, id: UserId) -> bool {
             self.find_by_id(id).await?.is_some()
         }
 
-        find_by_email(&self, email: &str) -> Option<User> {
+        async fn find_by_email(&self, email: &str) -> Option<User> {
             self.db.0
                 .query(surql_query!("table/user/find_by_email"))
                 .bind(("table", UserId::TABLE))
@@ -39,11 +39,11 @@ implementation! {
                 .take(0)?
         }
 
-        exists_by_email(&self, email: &str) -> bool {
+        async fn exists_by_email(&self, email: &str) -> bool {
             self.find_by_email(email).await?.is_some()
         }
 
-        find_by_username(&self, username: &str) -> Option<User> {
+        async fn find_by_username(&self, username: &str) -> Option<User> {
             self.db.0
                 .query(surql_query!("table/user/find_by_username"))
                 .bind(("table", UserId::TABLE))
@@ -52,18 +52,18 @@ implementation! {
                 .take(0)?
         }
 
-        exists_by_username(&self, username: &str) -> bool {
+        async fn exists_by_username(&self, username: &str) -> bool {
             self.find_by_username(username).await?.is_some()
         }
 
-        update_by_id(&self, id: UserId, update: UserUpdate) -> Option<User> {
+        async fn update_by_id(&self, id: UserId, update: UserUpdate) -> Option<User> {
             self.db.0
                 .update(id.record_id())
                 .merge(update)
                 .await?
         }
 
-        delete_by_id(&self, id: UserId) -> Option<User> {
+        async fn delete_by_id(&self, id: UserId) -> Option<User> {
             self.db.0
                 .delete(id.record_id())
                 .await?

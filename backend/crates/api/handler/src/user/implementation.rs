@@ -35,7 +35,7 @@ handler_implementation! {
             ),
         )]
         #[post("/register")]
-        register(
+        async fn register(
             user_service: Data<UserServiceDependency>,
             Validated(Json(body)): Validated<Json<CreateUser>>
         ) -> HttpResponse {
@@ -62,7 +62,7 @@ handler_implementation! {
             ),
         )]
         #[post("/login")]
-        login(
+        async fn login(
             user_service: Data<UserServiceDependency>,
             Validated(Json(body)): Validated<Json<LoginRequest>>,
         ) -> Json<UserAuthResponse> {
@@ -90,7 +90,7 @@ handler_implementation! {
 
         )]
         #[get("/me")]
-        get_current(
+        async fn get_current(
             user: ReqData<User>,
         ) -> Json<User> {
             let user: User = user.into_inner();
@@ -120,7 +120,7 @@ handler_implementation! {
             ),
         )]
         #[patch("/me")]
-        update_current(
+        async fn update_current(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
             Validated(Json(body)): Validated<Json<UserUpdate>>,
@@ -159,7 +159,7 @@ handler_implementation! {
             ),
         )]
         #[put("/me/password")]
-        change_password_current(
+        async fn change_password_current(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
             Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
@@ -189,7 +189,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/me")]
-        delete_current(
+        async fn delete_current(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
@@ -221,7 +221,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{user_id}")]
-        get_by_id(
+        async fn get_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
         ) -> Json<User> {
@@ -256,7 +256,7 @@ handler_implementation! {
             ),
         )]
         #[patch("/{user_id}")]
-        update_by_id(
+        async fn update_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<UserUpdate>>,
@@ -291,7 +291,7 @@ handler_implementation! {
             ),
         )]
         #[put("/{user_id}/password")]
-        change_password_by_id(
+        async fn change_password_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
@@ -321,7 +321,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/{user_id}")]
-        delete_by_id(
+        async fn delete_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
         ) -> HttpResponse {

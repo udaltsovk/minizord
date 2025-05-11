@@ -10,9 +10,9 @@ service! {
     Profile
         Err: ServiceError
     {
-        upsert_by_id(&self, id: Ulid, object: UpsertProfile, has_avatar: Option<bool>) -> Profile;
-        find_by_id(&self, id: Ulid) -> Option<Profile>;
-        get_by_id(&self, id: Ulid) -> Profile;
-        delete_by_id(&self, id: Ulid) -> ();
+        async fn upsert_by_id(&self, id: Ulid, object: UpsertProfile, has_avatar: Option<bool>) -> Profile;
+        async fn find_by_id(&self, id: Ulid) -> Option<Profile>;
+        async fn get_by_id(&self, id: Ulid) -> Profile;
+        async fn delete_by_id(&self, id: Ulid) -> ();
     }
 }

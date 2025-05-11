@@ -10,7 +10,7 @@ crud_repository! {
     Tour
         Err: RepositoryError
     {
-        find_by_name(&self, name: &str) -> Option<Tour>;
-        exists_by_name(&self, name: &str) -> bool;
+        async fn find_by_name(&self, name: &str) -> Option<Tour>;
+        async fn exists_by_name(&self, name: &str) -> bool;
     }
 }

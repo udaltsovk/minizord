@@ -15,7 +15,7 @@ implementation! {
     KnowsRepository {
         db: Arc<SurrealDB>
     } as SurrealKnowsRepository {
-        upsert_by_in_and_out(&self, r#in: UserId, out: TechnologyId, object: UpsertKnows) -> Knows {
+        async fn upsert_by_in_and_out(&self, r#in: UserId, out: TechnologyId, object: UpsertKnows) -> Knows {
             let result: Option<Knows> = self.db.0
                 .query(surql_query!("relation/upsert_by_in_and_out"))
                 .bind(("in", r#in))
@@ -27,7 +27,7 @@ implementation! {
             result.ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Knows> {
+        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Knows> {
             self.db.0
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", KnowsId::TABLE))
@@ -38,11 +38,11 @@ implementation! {
                 .take(0)?
         }
 
-        exists_by_in(&self, r#in: UserId) -> bool {
+        async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Knows> {
+        async fn find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Knows> {
             self.db.0
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", KnowsId::TABLE))
@@ -53,21 +53,21 @@ implementation! {
                 .take(0)?
         }
 
-        exists_by_out(&self, out: TechnologyId) -> bool {
+        async fn exists_by_out(&self, out: TechnologyId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        find_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
+        async fn find_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
             self.db.0
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
 
-        exists_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> bool {
+        async fn exists_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        delete_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
+        async fn delete_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
             self.db.0
                 .delete(self.get_id(&r#in, &out))
                 .await?

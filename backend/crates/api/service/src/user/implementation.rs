@@ -22,7 +22,7 @@ implementation! {
         secret: String,
         password_hasher: PasswordHasher<'static>
     } as UserServiceImpl {
-        register(
+        async fn register(
             &self,
             new: CreateUser,
         ) -> (User, String) {
@@ -45,7 +45,7 @@ implementation! {
             (user.into(), token)
         }
 
-        login(
+        async fn login(
             &self,
             LoginRequest {
                 email,
@@ -68,7 +68,7 @@ implementation! {
             (user.into(), token)
         }
 
-        find_by_id(
+        async fn find_by_id(
             &self,
             id: Ulid,
         ) -> Option<User> {
@@ -78,7 +78,7 @@ implementation! {
                 .map(User::from)
         }
 
-        get_by_id(
+        async fn get_by_id(
             &self,
             id: Ulid,
         ) -> User {
@@ -90,7 +90,7 @@ implementation! {
                 )?
         }
 
-        update_by_id(
+        async fn update_by_id(
             &self,
             id: Ulid,
             update: UserUpdate,
@@ -127,7 +127,7 @@ implementation! {
                 .into()
         }
 
-        change_password_by_id(
+        async fn change_password_by_id(
             &self,
             id: Ulid,
             PasswordChangeRequest {
@@ -170,7 +170,7 @@ implementation! {
             (user.into(), token)
         }
 
-        delete_by_id(
+        async fn delete_by_id(
             &self,
             id: Ulid,
         ) -> () {

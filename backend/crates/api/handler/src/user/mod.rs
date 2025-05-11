@@ -25,7 +25,7 @@ handler! {
         Err: HandlerError,
         Impl: ImplementedUserHandler
     {
-        #routes(user_service: UserServiceDependency) {
+        fn routes(user_service: UserServiceDependency) {
             move |cfg: &mut ServiceConfig| {
                 cfg.app_data(Data::new(user_service))
                     .service(scope("/users")
@@ -49,55 +49,55 @@ handler! {
             }
         }
 
-        register(
+        async fn register(
             user_service: Data<UserServiceDependency>,
             body: Validated<Json<CreateUser>>
         ) -> HttpResponse;
 
-        login(
+        async fn login(
             user_service: Data<UserServiceDependency>,
             body: Validated<Json<LoginRequest>>
         ) -> Json<UserAuthResponse>;
 
-        get_current(
+        async fn get_current(
             user: ReqData<User>,
         ) -> Json<User>;
 
-        update_current(
+        async fn update_current(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
             body: Validated<Json<UserUpdate>>
         ) -> Json<User>;
 
-        change_password_current(
+        async fn change_password_current(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
             body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<UserAuthResponse>;
 
-        delete_current(
+        async fn delete_current(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse;
 
-        get_by_id(
+        async fn get_by_id(
             user_service: Data<UserServiceDependency>,
             user_id: Path<Ulid>
         ) -> Json<User>;
 
-        update_by_id(
+        async fn update_by_id(
             user_service: Data<UserServiceDependency>,
             user_id: Path<Ulid>,
             body: Validated<Json<UserUpdate>>
         ) -> Json<User>;
 
-        change_password_by_id(
+        async fn change_password_by_id(
             user_service: Data<UserServiceDependency>,
             user_id: Path<Ulid>,
             body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<UserAuthResponse>;
 
-        delete_by_id(
+        async fn delete_by_id(
             user_service: Data<UserServiceDependency>,
             user_id: Path<Ulid>
         ) -> HttpResponse;

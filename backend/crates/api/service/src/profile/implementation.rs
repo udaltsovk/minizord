@@ -17,7 +17,7 @@ implementation! {
         user_repository: UserRepositoryDependency,
         profile_repository: ProfileRepositoryDependency,
     } as ProfileServiceImpl {
-        upsert_by_id(
+        async fn upsert_by_id(
             &self,
             id: Ulid,
             object: UpsertProfile,
@@ -55,7 +55,7 @@ implementation! {
             profile.into()
         }
 
-        find_by_id(
+        async fn find_by_id(
             &self,
             id: Ulid,
         ) -> Option<Profile> {
@@ -65,7 +65,7 @@ implementation! {
                 .map(Profile::from)
         }
 
-        get_by_id(
+        async fn get_by_id(
             &self,
             id: Ulid,
         ) -> Profile {
@@ -77,7 +77,7 @@ implementation! {
                 )?
         }
 
-        delete_by_id(
+        async fn delete_by_id(
             &self,
             id: Ulid,
         ) -> () {

@@ -39,7 +39,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{reviewee_id}")]
-        get_reviews_by_reviewee_id_paginated(
+        async fn get_reviews_by_reviewee_id_paginated(
             review_service: Data<ReviewServiceDependency>,
             Path(reviewee_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
@@ -74,7 +74,7 @@ handler_implementation! {
             ),
         )]
         #[put("/{reviewee_id}")]
-        upsert_review_by_id(
+        async fn upsert_review_by_id(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
@@ -105,7 +105,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/{reviewee_id}")]
-        delete_review_by_id(
+        async fn delete_review_by_id(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
@@ -136,7 +136,7 @@ handler_implementation! {
             ),
         )]
         #[get("/my")]
-        get_current_reviews_received_paginated(
+        async fn get_current_reviews_received_paginated(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
@@ -168,7 +168,7 @@ handler_implementation! {
             ),
         )]
         #[get("/my/sent")]
-        get_current_reviews_sent_paginated(
+        async fn get_current_reviews_sent_paginated(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
@@ -200,7 +200,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{reviewer_id}/sent")]
-        get_reviews_by_reviewer_id_paginated(
+        async fn get_reviews_by_reviewer_id_paginated(
             review_service: Data<ReviewServiceDependency>,
             Path(reviewer_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
@@ -232,7 +232,7 @@ handler_implementation! {
             ),
         )]
         #[get("/{reviewee_id}/{reviewer_id}")]
-        get_review_by_reviewee_id_and_reviewer_id(
+        async fn get_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> Json<Review> {
@@ -261,7 +261,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/{reviewee_id}/{reviewer_id}")]
-        delete_review_by_reviewee_id_and_reviewer_id(
+        async fn delete_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> HttpResponse {

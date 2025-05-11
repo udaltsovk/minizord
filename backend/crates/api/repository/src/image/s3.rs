@@ -33,7 +33,7 @@ implementation! {
         s3: Arc<S3>
     } as S3ImageRepository {
         #[instrument(skip(self, object), level = "debug")]
-        upsert_by_id(&self, id: ImageId, object: UpsertImage) -> Image {
+        async fn upsert_by_id(&self, id: ImageId, object: UpsertImage) -> Image {
             let content_type = object.content_type.clone();
             self.s3.0
                 .put_object()
@@ -54,7 +54,7 @@ implementation! {
         }
 
         #[instrument(skip(self), level = "debug")]
-        find_by_id(&self, id: ImageId) -> Option<Image> {
+        async fn find_by_id(&self, id: ImageId) -> Option<Image> {
             let response = match self.s3.0
                 .get_object()
                 .bucket(ImageId::BUCKET)
@@ -83,7 +83,7 @@ implementation! {
         }
 
         #[instrument(skip(self), level = "debug")]
-        exists_by_id(&self, id: ImageId) -> bool {
+        async fn exists_by_id(&self, id: ImageId) -> bool {
             match self.s3.0
                 .head_object()
                 .bucket(ImageId::BUCKET)
@@ -102,7 +102,7 @@ implementation! {
         }
 
         #[instrument(skip(self), level = "debug")]
-        delete_by_id(&self, id: ImageId) -> Option<Image> {
+        async fn delete_by_id(&self, id: ImageId) -> Option<Image> {
             let image = self.find_by_id(id.clone()).await?;
             if image.is_some() {
                 self.s3.0

@@ -11,7 +11,7 @@ implementation! {
     ProfileRepository {
         db: Arc<SurrealDB>
     } as SurrealProfileRepository {
-        upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
+        async fn upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
             let entity = Profile::from((object, id));
             let result: Option<Profile> = self.db.0
                 .query(surql_query!("table/upsert_by_id"))
@@ -22,17 +22,17 @@ implementation! {
             result.ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        find_by_id(&self, id: ProfileId) -> Option<Profile> {
+        async fn find_by_id(&self, id: ProfileId) -> Option<Profile> {
             self.db.0
                 .select(id.record_id())
                 .await?
         }
 
-        exists_by_id(&self, id: ProfileId) -> bool {
+        async fn exists_by_id(&self, id: ProfileId) -> bool {
             self.find_by_id(id).await?.is_some()
         }
 
-        delete_by_id(&self, id: ProfileId) -> Option<Profile> {
+        async fn delete_by_id(&self, id: ProfileId) -> Option<Profile> {
             self.db.0
                 .delete(id.record_id())
                 .await?

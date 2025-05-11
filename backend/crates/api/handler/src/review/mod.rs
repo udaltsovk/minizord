@@ -26,7 +26,7 @@ handler! {
         Err: HandlerError,
         Impl: ImplementedReviewHandler
     {
-        #routes(review_service: ReviewServiceDependency) {
+        fn routes(review_service: ReviewServiceDependency) {
             move |cfg: &mut ServiceConfig| {
                 cfg.app_data(Data::new(review_service))
                     .service(scope("/reviews")
@@ -46,49 +46,49 @@ handler! {
             }
         }
 
-        upsert_review_by_id(
+        async fn upsert_review_by_id(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             path: Path<Ulid>,
             body: Validated<Json<UpsertReview>>,
         ) -> Json<Review>;
 
-        delete_review_by_id(
+        async fn delete_review_by_id(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             path: Path<Ulid>,
         ) -> HttpResponse;
 
-        get_current_reviews_sent_paginated(
+        async fn get_current_reviews_sent_paginated(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             query: Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>>;
 
-        get_current_reviews_received_paginated(
+        async fn get_current_reviews_received_paginated(
             review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             query: Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>>;
 
-        get_reviews_by_reviewer_id_paginated(
+        async fn get_reviews_by_reviewer_id_paginated(
             review_service: Data<ReviewServiceDependency>,
             path: Path<Ulid>,
             query: Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>>;
 
-        get_reviews_by_reviewee_id_paginated(
+        async fn get_reviews_by_reviewee_id_paginated(
             review_service: Data<ReviewServiceDependency>,
             path: Path<Ulid>,
             query: Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>>;
 
-        get_review_by_reviewee_id_and_reviewer_id(
+        async fn get_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             path: Path<(Ulid, Ulid)>,
         ) -> Json<Review>;
 
-        delete_review_by_reviewee_id_and_reviewer_id(
+        async fn delete_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             path: Path<(Ulid, Ulid)>,
         ) -> HttpResponse;

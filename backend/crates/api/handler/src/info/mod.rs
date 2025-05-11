@@ -10,7 +10,7 @@ handler! {
     Info
         Err: HandlerError
     {
-        #routes() {
+        fn routes() {
             move |cfg: &mut ServiceConfig| {
                 cfg.service(scope("/")
                     .service(Self::info())
@@ -18,7 +18,7 @@ handler! {
             }
         }
 
-        info(
+        async fn info(
             base_api_url: Data<BaseApiUrl>,
         ) -> Json<ApiInfoResponse>;
     }

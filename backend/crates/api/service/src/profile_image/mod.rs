@@ -11,9 +11,9 @@ service! {
     ProfileImage
         Err: ServiceError
     {
-        upsert_by_id(&self, id: Ulid, file: TempFile) -> ();
-        find_by_id(&self, id: Ulid) -> Option<Image>;
-        get_by_id(&self, id: Ulid) -> Image;
-        delete_by_id(&self, id: Ulid) -> ();
+        async fn upsert_by_id(&self, id: Ulid, file: TempFile) -> ();
+        async fn find_by_id(&self, id: Ulid) -> Option<Image>;
+        async fn get_by_id(&self, id: Ulid) -> Image;
+        async fn delete_by_id(&self, id: Ulid) -> ();
     }
 }

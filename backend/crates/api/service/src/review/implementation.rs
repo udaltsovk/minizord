@@ -12,7 +12,7 @@ implementation! {
         reviewed_repository: ReviewedRepositoryDependency,
         user_service: UserServiceDependency,
     } as ReviewServiceImpl {
-        upsert_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid, object: UpsertReview) -> Review {
+        async fn upsert_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid, object: UpsertReview) -> Review {
             self.user_service
                 .get_by_id(reviewer_id)
                 .await?;
@@ -39,7 +39,7 @@ implementation! {
                 .into()
         }
 
-        find_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> Option<Review> {
+        async fn find_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> Option<Review> {
             self.user_service
                 .get_by_id(reviewer_id)
                 .await?;
@@ -52,7 +52,7 @@ implementation! {
                 .await?
                 .map(Review::from)
         }
-        get_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> Review {
+        async fn get_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> Review {
             self
                 .find_by_id(reviewer_id, reviewee_id)
                 .await?
@@ -61,7 +61,7 @@ implementation! {
                 )?
         }
 
-        find_all_by_reviewer(&self, reviewer_id: Ulid, (limit, offset): (u16, u64)) -> Vec<Review> {
+        async fn find_all_by_reviewer(&self, reviewer_id: Ulid, (limit, offset): (u16, u64)) -> Vec<Review> {
             self.user_service
                 .get_by_id(reviewer_id)
                 .await?;
@@ -74,7 +74,7 @@ implementation! {
                 .collect()
         }
 
-        find_all_by_reviewee(&self, reviewee_id: Ulid, (limit, offset): (u16, u64)) -> Vec<Review> {
+        async fn find_all_by_reviewee(&self, reviewee_id: Ulid, (limit, offset): (u16, u64)) -> Vec<Review> {
             self.user_service
                 .get_by_id(reviewee_id)
                 .await?;
@@ -87,7 +87,7 @@ implementation! {
                 .collect()
         }
 
-        delete_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> () {
+        async fn delete_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> () {
             self.get_by_id(reviewer_id, reviewee_id).await?;
             self.reviewed_repository
                 .delete_by_in_and_out(reviewer_id.into(), reviewee_id.into())

@@ -15,7 +15,7 @@ implementation! {
         image_repository: ImageRepositoryDependency,
         profile_service: ProfileServiceDependency,
     } as ProfileImageServiceImpl {
-        upsert_by_id(
+        async fn upsert_by_id(
             &self,
             id: Ulid,
             file: TempFile,
@@ -66,7 +66,7 @@ implementation! {
                 .await?;
         }
 
-        find_by_id(
+        async fn find_by_id(
             &self,
             id: Ulid,
         ) -> Option<Image> {
@@ -83,7 +83,7 @@ implementation! {
                 .map(Image::from)
         }
 
-        get_by_id(
+        async fn get_by_id(
             &self,
             id: Ulid,
         ) -> Image {
@@ -95,7 +95,7 @@ implementation! {
                 )?
         }
 
-        delete_by_id(
+        async fn delete_by_id(
             &self,
             id: Ulid,
         ) -> () {
