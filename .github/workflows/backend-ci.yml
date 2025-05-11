@@ -86,7 +86,7 @@ jobs:
       run: |
         cargo audit
   openapi:
-    name: Build and publish openapi.Json
+    name: Build and push openapi.Json
     runs-on: ubuntu-latest
     needs: [test, check-code, check-deps]
     defaults:
