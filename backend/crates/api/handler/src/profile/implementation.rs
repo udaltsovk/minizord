@@ -22,7 +22,7 @@ use super::{
 use crate::common::{ApiError, ValidationError, openapi};
 
 handler_implementation! {
-    ProfileHandler as Implemented {
+    ProfileHandler as ProfileHandlerImpl {
         ///
         ///
         ///

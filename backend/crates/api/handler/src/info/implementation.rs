@@ -10,7 +10,7 @@ use super::{
 use crate::{common::openapi, info::BaseApiUrl};
 
 handler_implementation! {
-    InfoHandler as Implemented {
+    InfoHandler as InfoHandlerImpl {
         /// Fetch API info
         ///
         /// Returns API info such as version, build date, commit, etc.

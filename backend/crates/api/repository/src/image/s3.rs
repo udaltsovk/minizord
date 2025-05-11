@@ -31,7 +31,7 @@ fn mime_extension(content_type: &str) -> String {
 implementation! {
     ImageRepository {
         s3: Arc<S3>
-    } as S3 {
+    } as S3ImageRepository {
         #[instrument(skip(self, object), level = "debug")]
         upsert_by_id(&self, id: ImageId, object: UpsertImage) -> Image {
             let content_type = object.content_type.clone();

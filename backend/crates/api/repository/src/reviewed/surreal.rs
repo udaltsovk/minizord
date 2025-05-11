@@ -13,7 +13,7 @@ use crate::common::RepositoryError;
 implementation! {
     ReviewedRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealReviewedRepository {
         upsert_by_in_and_out(&self, r#in: UserId, out: UserId, object: UpsertReviewed) -> Reviewed {
             let result: Option<Reviewed> = self.db.0
                 .query(surql_query!("relation/upsert_by_in_and_out"))

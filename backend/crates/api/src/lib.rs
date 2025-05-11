@@ -15,10 +15,10 @@ use actix_web_validation::garde::GardeErrorHandlerExt;
 use env_vars_config::env_vars_config;
 use handler::{
     common::wrapper::{BaseApiUrl, JwtSecret},
-    info::{InfoHandler, implementation::ImplementedInfoHandler},
-    profile::{ProfileHandler, implementation::ImplementedProfileHandler},
-    review::{ReviewHandler, implementation::ImplementedReviewHandler},
-    user::{UserHandler, implementation::ImplementedUserHandler},
+    info::{InfoHandler, implementation::InfoHandlerImpl},
+    profile::{ProfileHandler, implementation::ProfileHandlerImpl},
+    review::{ReviewHandler, implementation::ReviewHandlerImpl},
+    user::{UserHandler, implementation::UserHandlerImpl},
 };
 use repository::{
     image::s3::S3ImageRepository, profile::surreal::SurrealProfileRepository,
@@ -26,17 +26,12 @@ use repository::{
     user::surreal::SurrealUserRepository,
 };
 use service::{
-    profile::{
-        ProfileServiceDependency, implementation::ImplementedProfileService,
-    },
+    profile::{ProfileServiceDependency, implementation::ProfileServiceImpl},
     profile_image::{
-        ProfileImageServiceDependency,
-        implementation::ImplementedProfileImageService,
+        ProfileImageServiceDependency, implementation::ProfileImageServiceImpl,
     },
-    reviewed::{
-        ReviewedServiceDependency, implementation::ImplementedReviewedService,
-    },
-    user::{UserServiceDependency, implementation::ImplementedUserService},
+    review::{ReviewServiceDependency, implementation::ReviewServiceImpl},
+    user::{UserServiceDependency, implementation::UserServiceImpl},
 };
 use utils::{OpenApi, cors::default_cors, validation};
 use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
@@ -68,7 +63,7 @@ struct AppConfig {
     user_service: UserServiceDependency,
     profile_service: ProfileServiceDependency,
     profile_image_service: ProfileImageServiceDependency,
-    reviewed_service: ReviewedServiceDependency,
+    review_service: ReviewServiceDependency,
 }
 impl AppConfig {
     #[tracing::instrument(skip_all, level = "trace")]
@@ -84,13 +79,13 @@ impl AppConfig {
             .app_data(JsonConfig::default().error_handler(handler::input_error))
             .app_data(Data::new(JwtSecret(config::JWT_SECRET.to_owned())))
             .app_data(Data::new(BaseApiUrl(config::BASE_API_URL.to_owned())))
-            .configure(ImplementedUserHandler::routes(self.user_service))
-            .configure(ImplementedProfileHandler::routes(
+            .configure(UserHandlerImpl::routes(self.user_service))
+            .configure(ProfileHandlerImpl::routes(
                 self.profile_service,
                 self.profile_image_service,
             ))
-            .configure(ImplementedReviewHandler::routes(self.reviewed_service))
-            .configure(ImplementedInfoHandler::routes())
+            .configure(ReviewHandlerImpl::routes(self.review_service))
+            .configure(InfoHandlerImpl::routes())
             .default_service(get().to(handler::not_found));
         }
     }
@@ -117,20 +112,20 @@ impl Api {
 
         let password_hasher = PasswordHasher::new();
 
-        let user_service = ImplementedUserService::new(
+        let user_service = UserServiceImpl::new(
             user_repository.clone(),
             config::JWT_SECRET.clone(),
             password_hasher.clone(),
         );
-        let profile_service = ImplementedProfileService::new(
+        let profile_service = ProfileServiceImpl::new(
             user_repository.clone(),
             profile_repository.clone(),
         );
-        let profile_image_service = ImplementedProfileImageService::new(
+        let profile_image_service = ProfileImageServiceImpl::new(
             image_repository.clone(),
             profile_service.clone(),
         );
-        let reviewed_service = ImplementedReviewedService::new(
+        let review_service = ReviewServiceImpl::new(
             reviewed_repository.clone(),
             user_service.clone(),
         );
@@ -140,7 +135,7 @@ impl Api {
                 user_service,
                 profile_service,
                 profile_image_service,
-                reviewed_service,
+                review_service,
             },
             openapi: OpenApi::openapi(),
             lgtm,

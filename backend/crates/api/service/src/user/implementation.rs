@@ -21,7 +21,7 @@ implementation! {
         user_repository: UserRepositoryDependency,
         secret: String,
         password_hasher: PasswordHasher<'static>
-    } as Implemented {
+    } as UserServiceImpl {
         register(
             &self,
             new: CreateUser,

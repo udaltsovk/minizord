@@ -17,7 +17,7 @@ use crate::common::RepositoryError;
 implementation! {
     AppliedToJoinRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealAppliedToJoinRepository {
         save(&self, new: CreateAppliedToJoin) -> AppliedToJoin {
             self.db.0
                 .create(new.get_id().record_id())

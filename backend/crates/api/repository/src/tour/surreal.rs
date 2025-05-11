@@ -10,7 +10,7 @@ use crate::common::RepositoryError;
 implementation! {
     TourRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealTourRepository {
         save(&self, new: CreateTour) -> Tour {
             let entity: Tour = new.into();
             self.db.0

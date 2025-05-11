@@ -12,7 +12,7 @@ use crate::common::RepositoryError;
 implementation! {
     TechnologyRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealTechnologyRepository {
         save(&self, new: CreateTechnology) -> Technology {
             let entity: Technology = new.into();
             self.db.0

@@ -18,7 +18,7 @@ use super::{
 use crate::common::{ApiError, ValidationError, openapi};
 
 handler_implementation! {
-    UserHandler as Implemented {
+    UserHandler as UserHandlerImpl {
         ///
         ///
         ///

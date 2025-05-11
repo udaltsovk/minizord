@@ -10,7 +10,7 @@ use crate::common::RepositoryError;
 implementation! {
     ProfileRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealProfileRepository {
         upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
             let entity = Profile::from((object, id));
             let result: Option<Profile> = self.db.0

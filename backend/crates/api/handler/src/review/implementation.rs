@@ -10,14 +10,14 @@ use dto::{
     user::User,
 };
 use macros::handler_implementation;
-use service::reviewed::ReviewedServiceDependency;
+use service::review::ReviewServiceDependency;
 use ulid::Ulid;
 
 use super::{ReviewHandler, ReviewHandlerHelper, ReviewHandlerResult};
 use crate::common::{ApiError, ValidationError, openapi};
 
 handler_implementation! {
-    ReviewHandler as Implemented {
+    ReviewHandler as ReviewHandlerImpl {
         ///
         ///
         ///
@@ -40,11 +40,11 @@ handler_implementation! {
         )]
         #[get("/{reviewee_id}")]
         get_reviews_by_reviewee_id_paginated(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             Path(reviewee_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>> {
-            let resp = reviewed_service
+            let resp = review_service
                 .find_all_by_reviewee(reviewee_id, pagination.into())
                 .await?;
             Json(resp)
@@ -75,12 +75,12 @@ handler_implementation! {
         )]
         #[put("/{reviewee_id}")]
         upsert_review_by_id(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<UpsertReview>>,
         ) -> Json<Review> {
-            let resp = reviewed_service
+            let resp = review_service
                 .upsert_by_id(user.id, reviewee_id, body)
                 .await?;
             Json(resp)
@@ -106,11 +106,11 @@ handler_implementation! {
         )]
         #[delete("/{reviewee_id}")]
         delete_review_by_id(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
         ) -> HttpResponse {
-            reviewed_service
+            review_service
                 .delete_by_id(user.id, reviewee_id)
                 .await?;
             HttpResponse::NoContent().finish()
@@ -137,11 +137,11 @@ handler_implementation! {
         )]
         #[get("/my")]
         get_current_reviews_received_paginated(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>> {
-            let resp = reviewed_service
+            let resp = review_service
                 .find_all_by_reviewee(user.id, pagination.into())
                 .await?;
             Json(resp)
@@ -169,11 +169,11 @@ handler_implementation! {
         )]
         #[get("/my/sent")]
         get_current_reviews_sent_paginated(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>> {
-            let resp = reviewed_service
+            let resp = review_service
                 .find_all_by_reviewer(user.id, pagination.into())
                 .await?;
             Json(resp)
@@ -201,11 +201,11 @@ handler_implementation! {
         )]
         #[get("/{reviewer_id}/sent")]
         get_reviews_by_reviewer_id_paginated(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             Path(reviewer_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
         ) -> Json<Vec<Review>> {
-            let resp = reviewed_service
+            let resp = review_service
                 .find_all_by_reviewer(reviewer_id, pagination.into())
                 .await?;
             Json(resp)
@@ -233,10 +233,10 @@ handler_implementation! {
         )]
         #[get("/{reviewee_id}/{reviewer_id}")]
         get_review_by_reviewee_id_and_reviewer_id(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> Json<Review> {
-            let resp = reviewed_service
+            let resp = review_service
                 .get_by_id(reviewer_id, reviewee_id)
                 .await?;
             Json(resp)
@@ -262,10 +262,10 @@ handler_implementation! {
         )]
         #[delete("/{reviewee_id}/{reviewer_id}")]
         delete_review_by_reviewee_id_and_reviewer_id(
-            reviewed_service: Data<ReviewedServiceDependency>,
+            review_service: Data<ReviewServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
         ) -> HttpResponse {
-            reviewed_service
+            review_service
                 .delete_by_id(reviewer_id, reviewee_id)
                 .await?;
             HttpResponse::NoContent().finish()

@@ -7,7 +7,7 @@ use crate::common::ServiceError;
 pub mod implementation;
 
 service! {
-    Reviewed
+    Review
         Err: ServiceError
     {
         upsert_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid, object: UpsertReview) -> Review;

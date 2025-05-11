@@ -14,7 +14,7 @@ use crate::common::RepositoryError;
 implementation! {
     MemberOfRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealMemberOfRepository {
         save(&self, new: CreateMemberOf) -> MemberOf {
             self.db.0
                 .create(new.get_id().record_id())

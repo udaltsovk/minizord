@@ -14,7 +14,7 @@ use crate::common::RepositoryError;
 implementation! {
     UsesRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealUsesRepository {
         save(&self, new: CreateUses) -> Uses {
             self.db.0
                 .create(new.get_id().record_id())

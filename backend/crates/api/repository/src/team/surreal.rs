@@ -14,7 +14,7 @@ use crate::common::RepositoryError;
 implementation! {
     TeamRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealTeamRepository {
         save(&self, new: CreateTeam) -> Team {
             let entity: Team = new.into();
             self.db.0

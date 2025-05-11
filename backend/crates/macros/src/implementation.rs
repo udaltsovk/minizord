@@ -17,13 +17,13 @@ macro_rules! implementation {
     ) => {
         $crate::pastey::paste! {
             $(#[$impl_meta])*
-            pub struct [<$impl_name $trait_name>] {
+            pub struct $impl_name {
                 $($(
                     $(#[$field_meta])*
                     $field_vis $field: $ty,
                 )*)?
             }
-            impl [<$impl_name $trait_name>] {
+            impl $impl_name {
                 #[tracing::instrument(skip_all, level = "trace")]
                 pub fn new($($($field: $ty),*)?) -> std::sync::Arc<Self> {
                     std::sync::Arc::new(Self {
@@ -35,7 +35,7 @@ macro_rules! implementation {
             }
 
             #[$crate::async_trait::async_trait]
-            impl $trait_name for [<$impl_name $trait_name>] {
+            impl $trait_name for $impl_name {
                 $(
                     #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
@@ -84,8 +84,8 @@ macro_rules! handler_implementation {
 
             #[derive(Clone)]
             $(#[$impl_meta])*
-            pub struct [<$impl_name $trait_name>];
-            impl $trait_name for [<$impl_name $trait_name>] {
+            pub struct $impl_name;
+            impl $trait_name for $impl_name {
                 $(
                     #[tracing::instrument(skip_all, level = "trace")]
                     fn $method () -> impl actix_web::dev::HttpServiceFactory + utoipa_actix_web::OpenApiFactory {
@@ -95,11 +95,11 @@ macro_rules! handler_implementation {
             }
 
             #[doc(hidden)]
-            struct [<$impl_name $trait_name Helper>];
+            struct [<$impl_name Helper>];
             #[allow(unused_variables)]
             #[doc(hidden)]
             #[$crate::async_trait::async_trait]
-            impl [<$trait_name Helper>] for [<$impl_name $trait_name Helper>] {
+            impl [<$trait_name Helper>] for [<$impl_name Helper>] {
                 $(
                     async fn $method $sig -> [<$trait_name Result>]<$res> {
                         let res = $body;

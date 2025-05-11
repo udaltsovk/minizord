@@ -10,7 +10,7 @@ use crate::common::RepositoryError;
 implementation! {
     UserRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealUserRepository {
         save(&self, new: CreateUser) -> User {
             let entity: User = new.into();
             self.db.0

@@ -4,14 +4,14 @@ use macros::implementation;
 use repository::reviewed::ReviewedRepositoryDependency;
 use ulid::Ulid;
 
-use super::{ReviewedService, ReviewedServiceResult};
+use super::{ReviewService, ReviewServiceResult};
 use crate::{common::ServiceError, user::UserServiceDependency};
 
 implementation! {
-    ReviewedService {
+    ReviewService {
         reviewed_repository: ReviewedRepositoryDependency,
         user_service: UserServiceDependency,
-    } as Implemented {
+    } as ReviewServiceImpl {
         upsert_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid, object: UpsertReview) -> Review {
             self.user_service
                 .get_by_id(reviewer_id)

@@ -13,7 +13,7 @@ use crate::common::RepositoryError;
 implementation! {
     SpecializationRepository {
         db: Arc<SurrealDB>
-    } as Surreal {
+    } as SurrealSpecializationRepository {
         save(&self, new: CreateSpecialization) -> Specialization {
             let entity: Specialization = new.into();
             self.db.0

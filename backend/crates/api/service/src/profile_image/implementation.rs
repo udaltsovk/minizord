@@ -14,7 +14,7 @@ implementation! {
     ProfileImageService {
         image_repository: ImageRepositoryDependency,
         profile_service: ProfileServiceDependency,
-    } as Implemented {
+    } as ProfileImageServiceImpl {
         upsert_by_id(
             &self,
             id: Ulid,

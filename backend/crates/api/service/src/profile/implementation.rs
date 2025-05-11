@@ -16,7 +16,7 @@ implementation! {
     ProfileService {
         user_repository: UserRepositoryDependency,
         profile_repository: ProfileRepositoryDependency,
-    } as Implemented {
+    } as ProfileServiceImpl {
         upsert_by_id(
             &self,
             id: Ulid,
