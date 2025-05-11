@@ -2,6 +2,7 @@ use dto::review::{Review, UpsertReview};
 use entity::reviewed::UpsertReviewed;
 use macros::implementation;
 use repository::reviewed::ReviewedRepositoryDependency;
+use tracing::instrument;
 use ulid::Ulid;
 
 use super::{ReviewService, ReviewServiceResult};
@@ -12,6 +13,7 @@ implementation! {
         reviewed_repository: ReviewedRepositoryDependency,
         user_service: UserServiceDependency,
     } as ReviewServiceImpl {
+        #[instrument(skip_all, name = "ReviewService::upsert_by_id")]
         async fn upsert_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid, object: UpsertReview) -> Review {
             self.user_service
                 .get_by_id(reviewer_id)
@@ -39,6 +41,7 @@ implementation! {
                 .into()
         }
 
+        #[instrument(skip_all, name = "ReviewService::find_by_id")]
         async fn find_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> Option<Review> {
             self.user_service
                 .get_by_id(reviewer_id)
@@ -52,6 +55,8 @@ implementation! {
                 .await?
                 .map(Review::from)
         }
+
+        #[instrument(skip_all, name = "ReviewService::get_by_id")]
         async fn get_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> Review {
             self
                 .find_by_id(reviewer_id, reviewee_id)
@@ -61,6 +66,7 @@ implementation! {
                 )?
         }
 
+        #[instrument(skip_all, name = "ReviewService::find_all_by_reviewer")]
         async fn find_all_by_reviewer(&self, reviewer_id: Ulid, (limit, offset): (u16, u64)) -> Vec<Review> {
             self.user_service
                 .get_by_id(reviewer_id)
@@ -74,6 +80,7 @@ implementation! {
                 .collect()
         }
 
+        #[instrument(skip_all, name = "ReviewService::find_all_by_reviewee")]
         async fn find_all_by_reviewee(&self, reviewee_id: Ulid, (limit, offset): (u16, u64)) -> Vec<Review> {
             self.user_service
                 .get_by_id(reviewee_id)
@@ -87,6 +94,7 @@ implementation! {
                 .collect()
         }
 
+        #[instrument(skip_all, name = "ReviewService::delete_by_id")]
         async fn delete_by_id(&self, reviewer_id: Ulid, reviewee_id: Ulid) -> () {
             self.get_by_id(reviewer_id, reviewee_id).await?;
             self.reviewed_repository

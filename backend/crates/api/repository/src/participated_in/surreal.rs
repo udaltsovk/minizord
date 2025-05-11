@@ -9,6 +9,7 @@ use entity::{
     user::UserId,
 };
 use macros::{EntityId, implementation, surql_query};
+use tracing::instrument;
 use utils::adapters::SurrealDB;
 
 use super::{ParticipatedInRepository, ParticipatedInRepositoryResult};
@@ -18,6 +19,7 @@ implementation! {
     ParticipatedInRepository {
         db: Arc<SurrealDB>
     } as SurrealParticipatedInRepository {
+        #[instrument(skip_all, name = "ParticipatedInRepository::save")]
         async fn save(&self, new: CreateParticipatedIn) -> ParticipatedIn {
             self.db.0
                 .create(new.get_id().record_id())
@@ -26,6 +28,7 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
             self.db.0
                 .query(surql_query!("relation/find_all_by_in"))
@@ -37,10 +40,12 @@ implementation! {
                 .take(0)?
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: TourId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
             self.db.0
                 .query(surql_query!("relation/find_all_by_out"))
@@ -52,20 +57,24 @@ implementation! {
                 .take(0)?
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::exists_by_out")]
         async fn exists_by_out(&self, out: TourId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: TourId) -> Option<ParticipatedIn> {
             self.db.0
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::exists_by_in_and_out")]
         async fn exists_by_in_and_out(&self, r#in: UserId, out: TourId) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::update_by_in_and_out")]
         async fn update_by_in_and_out(&self, r#in: UserId, out: TourId, update: ParticipatedInUpdate) -> Option<ParticipatedIn> {
             self.db.0
                 .update(self.get_id(&r#in, &out))
@@ -73,6 +82,7 @@ implementation! {
                 .await?
         }
 
+        #[instrument(skip_all, name = "ParticipatedInRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: TourId) -> Option<ParticipatedIn> {
             self.db.0
                 .delete(self.get_id(&r#in, &out))

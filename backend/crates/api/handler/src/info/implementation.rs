@@ -3,6 +3,7 @@ use actix_web::{
     web::{Data, Json},
 };
 use macros::handler_implementation;
+use tracing::instrument;
 
 use super::{
     ApiInfoResponse, InfoHandler, InfoHandlerHelper, InfoHandlerResult,
@@ -20,6 +21,7 @@ handler_implementation! {
             ),
         )]
         #[get("")]
+        #[instrument(skip_all, name = "InfoHandler::info")]
         async fn info(
             base_api_url: Data<BaseApiUrl>,
         ) ->Json<ApiInfoResponse> {

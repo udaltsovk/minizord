@@ -10,6 +10,7 @@ use dto::{
 };
 use macros::handler_implementation;
 use service::user::UserServiceDependency;
+use tracing::instrument;
 use ulid::Ulid;
 
 use super::{
@@ -23,7 +24,9 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "register_user",
+            security(
+                ("organizer" = []),
+            ),
             request_body(
                 description = "",
                 content = CreateUser
@@ -35,7 +38,8 @@ handler_implementation! {
             ),
         )]
         #[post("/register")]
-        async fn register(
+        #[instrument(skip_all, name = "UserHandler::register_user")]
+        async fn register_user(
             user_service: Data<UserServiceDependency>,
             Validated(Json(body)): Validated<Json<CreateUser>>
         ) -> HttpResponse {
@@ -50,7 +54,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "user_login",
             request_body(
                 description = "",
                 content = LoginRequest
@@ -62,7 +65,8 @@ handler_implementation! {
             ),
         )]
         #[post("/login")]
-        async fn login(
+        #[instrument(skip_all, name = "ReviewHandler::user_login")]
+        async fn user_login(
             user_service: Data<UserServiceDependency>,
             Validated(Json(body)): Validated<Json<LoginRequest>>,
         ) -> Json<UserAuthResponse> {
@@ -76,7 +80,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_current_user",
             security(
                 ("participant" = []),
                 ("mentor" = []),
@@ -90,7 +93,8 @@ handler_implementation! {
 
         )]
         #[get("/me")]
-        async fn get_current(
+        #[instrument(skip_all, name = "ReviewHandler::get_current_user")]
+        async fn get_current_user(
             user: ReqData<User>,
         ) -> Json<User> {
             let user: User = user.into_inner();
@@ -101,15 +105,14 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "update_current_user",
-            request_body(
-                description = "",
-                content = UserUpdate
-            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizer" = []),
+            ),
+            request_body(
+                description = "",
+                content = UserUpdate
             ),
             responses(
                 (status = 200, description = "", body = User),
@@ -120,7 +123,8 @@ handler_implementation! {
             ),
         )]
         #[patch("/me")]
-        async fn update_current(
+        #[instrument(skip_all, name = "ReviewHandler::update_current_user")]
+        async fn update_current_user(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
             Validated(Json(body)): Validated<Json<UserUpdate>>,
@@ -141,15 +145,14 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "change_current_user_password",
-            request_body(
-                description = "",
-                content = PasswordChangeRequest
-            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizer" = []),
+            ),
+            request_body(
+                description = "",
+                content = PasswordChangeRequest
             ),
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
@@ -159,7 +162,8 @@ handler_implementation! {
             ),
         )]
         #[put("/me/password")]
-        async fn change_password_current(
+        #[instrument(skip_all, name = "ReviewHandler::change_current_user_password")]
+        async fn change_current_user_password(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
             Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
@@ -175,7 +179,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "delete_current_user",
             security(
                 ("participant" = []),
                 ("mentor" = []),
@@ -189,7 +192,8 @@ handler_implementation! {
             ),
         )]
         #[delete("/me")]
-        async fn delete_current(
+        #[instrument(skip_all, name = "ReviewHandler::delete_current_user")]
+        async fn delete_current_user(
             user_service: Data<UserServiceDependency>,
             user: ReqData<User>,
         ) -> HttpResponse {
@@ -204,7 +208,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "get_user_by_id",
             params(
                 ("user_id" = Ulid, description = "")
             ),
@@ -221,7 +224,8 @@ handler_implementation! {
             ),
         )]
         #[get("/{user_id}")]
-        async fn get_by_id(
+        #[instrument(skip_all, name = "ReviewHandler::get_user_by_id")]
+        async fn get_user_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
         ) -> Json<User> {
@@ -235,16 +239,15 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "update_user_by_id",
             params(
                 ("user_id" = Ulid, description = "")
+            ),
+            security(
+                ("organizer" = []),
             ),
             request_body(
                 description = "",
                 content = UserUpdate
-            ),
-            security(
-                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = User),
@@ -256,7 +259,8 @@ handler_implementation! {
             ),
         )]
         #[patch("/{user_id}")]
-        async fn update_by_id(
+        #[instrument(skip_all, name = "ReviewHandler::update_user_by_id")]
+        async fn update_user_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<UserUpdate>>,
@@ -271,16 +275,15 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "change_user_password_by_id",
             params(
                 ("user_id" = Ulid, description = "")
+            ),
+            security(
+                ("organizer" = []),
             ),
             request_body(
                 description = "",
                 content = PasswordChangeRequest
-            ),
-            security(
-                ("organizer" = []),
             ),
             responses(
                 (status = 200, description = "", body = UserAuthResponse),
@@ -291,7 +294,8 @@ handler_implementation! {
             ),
         )]
         #[put("/{user_id}/password")]
-        async fn change_password_by_id(
+        #[instrument(skip_all, name = "ReviewHandler::change_user_password_by_id")]
+        async fn change_user_password_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
@@ -306,7 +310,6 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            operation_id = "delete_user_by_id",
             params(
                 ("user_id" = Ulid, description = "")
             ),
@@ -321,7 +324,8 @@ handler_implementation! {
             ),
         )]
         #[delete("/{user_id}")]
-        async fn delete_by_id(
+        #[instrument(skip_all, name = "ReviewHandler::delete_user_by_id")]
+        async fn delete_user_by_id(
             user_service: Data<UserServiceDependency>,
             Path(user_id): Path<Ulid>,
         ) -> HttpResponse {

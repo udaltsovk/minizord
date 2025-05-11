@@ -6,6 +6,7 @@ use entity::{
     user::UserId,
 };
 use macros::{EntityId, implementation, surql_query};
+use tracing::instrument;
 use utils::adapters::SurrealDB;
 
 use super::{TeamRepository, TeamRepositoryResult};
@@ -15,6 +16,7 @@ implementation! {
     TeamRepository {
         db: Arc<SurrealDB>
     } as SurrealTeamRepository {
+        #[instrument(skip_all, name = "TeamRepository::save")]
         async fn save(&self, new: CreateTeam) -> Team {
             let entity: Team = new.into();
             self.db.0
@@ -24,16 +26,19 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
+        #[instrument(skip_all, name = "TeamRepository::find_by_id")]
         async fn find_by_id(&self, id: TeamId) -> Option<Team> {
             self.db.0
                 .select(id.record_id())
                 .await?
         }
 
+        #[instrument(skip_all, name = "TeamRepository::exists_by_id")]
         async fn exists_by_id(&self, id: TeamId) -> bool {
             self.find_by_id(id).await?.is_some()
         }
 
+        #[instrument(skip_all, name = "TeamRepository::find_by_tour_and_name")]
         async fn find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team> {
             self.db.0
                 .query(surql_query!("table/team/find_by_tour_and_name"))
@@ -44,10 +49,12 @@ implementation! {
                 .take(0)?
         }
 
+        #[instrument(skip_all, name = "TeamRepository::exists_by_tour_and_name")]
         async fn exists_by_tour_and_name(&self, tour: TourId, name: &str) -> bool {
             self.find_by_tour_and_name(tour, name).await?.is_some()
         }
 
+        #[instrument(skip_all, name = "TeamRepository::find_by_tour_and_lead")]
         async fn find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team> {
             self.db.0
                 .query(surql_query!("table/team/find_by_tour_and_lead"))
@@ -58,10 +65,12 @@ implementation! {
                 .take(0)?
         }
 
+        #[instrument(skip_all, name = "TeamRepository::exists_by_tour_and_lead")]
         async fn exists_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> bool {
             self.find_by_tour_and_lead(tour, lead).await?.is_some()
         }
 
+        #[instrument(skip_all, name = "TeamRepository::find_all_by_tour")]
         async fn find_all_by_tour(&self, tour: TourId, limit: u64, offset: u64) -> Vec<Team> {
             self.db.0
                 .query(surql_query!("table/team/find_all_by_tour"))
@@ -73,10 +82,12 @@ implementation! {
                 .take(0)?
         }
 
+        #[instrument(skip_all, name = "TeamRepository::exists_by_tour")]
         async fn exists_by_tour(&self, tour: TourId) -> bool {
             !self.find_all_by_tour(tour, 1, 0).await?.is_empty()
         }
 
+        #[instrument(skip_all, name = "TeamRepository::update_by_id")]
         async fn update_by_id(&self, id: TeamId, update: TeamUpdate) -> Option<Team> {
             self.db.0
                 .update(id.record_id())
@@ -84,6 +95,7 @@ implementation! {
                 .await?
         }
 
+        #[instrument(skip_all, name = "TeamRepository::delete_by_id")]
         async fn delete_by_id(&self, id: TeamId) -> Option<Team> {
             self.db.0
                 .delete(id.record_id())

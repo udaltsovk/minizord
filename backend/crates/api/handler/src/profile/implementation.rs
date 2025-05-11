@@ -14,6 +14,7 @@ use service::{
     profile::ProfileServiceDependency,
     profile_image::ProfileImageServiceDependency,
 };
+use tracing::instrument;
 use ulid::Ulid;
 
 use super::{
@@ -40,6 +41,7 @@ handler_implementation! {
 
         )]
         #[get("/me")]
+        #[instrument(skip_all, name = "ProfileHandler::get_current_profile")]
         async fn get_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
@@ -70,6 +72,7 @@ handler_implementation! {
             ),
         )]
         #[put("/me")]
+        #[instrument(skip_all, name = "ProfileHandler::upsert_current_profile")]
         async fn upsert_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
@@ -97,6 +100,7 @@ handler_implementation! {
             ),
         )]
         #[delete("/me")]
+        #[instrument(skip_all, name = "ProfileHandler::delete_current_profile")]
         async fn delete_current_profile(
             profile_service: Data<ProfileServiceDependency>,
             user: ReqData<User>,
@@ -124,6 +128,7 @@ handler_implementation! {
 
         )]
         #[get("/me/image")]
+        #[instrument(skip_all, name = "ProfileHandler::get")]
         async fn get_current_profile_image(
             profile_image_service: Data<ProfileImageServiceDependency>,
             user: ReqData<User>,
@@ -203,13 +208,13 @@ handler_implementation! {
         ///
         ///
         #[openapi(
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizer" = []),
-            ),
-            params(
-                ("profile_id" = Ulid, description = "")
             ),
             responses(
                 (status = 200, description = "", body = Profile),
@@ -233,11 +238,11 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            security(
-                ("organizer" = []),
-            ),
             params(
                 ("profile_id" = Ulid, description = "")
+            ),
+            security(
+                ("organizer" = []),
             ),
             responses(
                 (status = 204, description = ""),
@@ -261,13 +266,13 @@ handler_implementation! {
         ///
         ///
         #[openapi(
+            params(
+                ("profile_id" = Ulid, description = "")
+            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizer" = []),
-            ),
-            params(
-                ("profile_id" = Ulid, description = "")
             ),
             responses(
                 (status = 200, description = ""),
@@ -292,11 +297,11 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            security(
-                ("organizer" = []),
-            ),
             params(
                 ("profile_id" = Ulid, description = "")
+            ),
+            security(
+                ("organizer" = []),
             ),
             responses(
                 (status = 204, description = ""),

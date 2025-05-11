@@ -37,7 +37,6 @@ macro_rules! implementation {
             #[$crate::async_trait::async_trait]
             impl $trait_name for $impl_name {
                 $(
-                    #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
                     async fn $method $sig -> [<$trait_name Result>]<$res> {
                         let res: $res = $body;
@@ -72,7 +71,6 @@ macro_rules! handler_implementation {
                 pub struct OpenApi;
 
                 $(
-                    #[tracing::instrument(skip_all)]
                     $(#[$method_meta])*
                     pub async fn $method $sig -> [<$trait_name Result>]<$res> {
                         let res = $body;

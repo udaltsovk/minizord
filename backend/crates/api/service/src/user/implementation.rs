@@ -8,6 +8,7 @@ use entity::user::{
 };
 use macros::implementation;
 use repository::user::UserRepositoryDependency;
+use tracing::instrument;
 use ulid::Ulid;
 use utils::auth::{jwt, password_hashing::PasswordHasher};
 
@@ -22,6 +23,7 @@ implementation! {
         secret: String,
         password_hasher: PasswordHasher<'static>
     } as UserServiceImpl {
+        #[instrument(skip_all, name = "UserService::register")]
         async fn register(
             &self,
             new: CreateUser,
@@ -45,6 +47,7 @@ implementation! {
             (user.into(), token)
         }
 
+        #[instrument(skip_all, name = "UserService::login")]
         async fn login(
             &self,
             LoginRequest {
@@ -68,6 +71,7 @@ implementation! {
             (user.into(), token)
         }
 
+        #[instrument(skip_all, name = "UserService::find_by_id")]
         async fn find_by_id(
             &self,
             id: Ulid,
@@ -78,6 +82,7 @@ implementation! {
                 .map(User::from)
         }
 
+        #[instrument(skip_all, name = "UserService::get_by_id")]
         async fn get_by_id(
             &self,
             id: Ulid,
@@ -90,6 +95,7 @@ implementation! {
                 )?
         }
 
+        #[instrument(skip_all, name = "UserService::update_by_id")]
         async fn update_by_id(
             &self,
             id: Ulid,
@@ -127,6 +133,7 @@ implementation! {
                 .into()
         }
 
+        #[instrument(skip_all, name = "UserService::change_password_by_id")]
         async fn change_password_by_id(
             &self,
             id: Ulid,
@@ -170,6 +177,7 @@ implementation! {
             (user.into(), token)
         }
 
+        #[instrument(skip_all, name = "UserService::delete_by_id")]
         async fn delete_by_id(
             &self,
             id: Ulid,

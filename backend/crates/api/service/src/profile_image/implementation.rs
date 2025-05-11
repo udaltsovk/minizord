@@ -3,6 +3,7 @@ use bytes::Bytes;
 use dto::image::Image;
 use macros::implementation;
 use repository::image::ImageRepositoryDependency;
+use tracing::instrument;
 use ulid::Ulid;
 
 use super::{ProfileImageService, ProfileImageServiceResult};
@@ -15,6 +16,7 @@ implementation! {
         image_repository: ImageRepositoryDependency,
         profile_service: ProfileServiceDependency,
     } as ProfileImageServiceImpl {
+        #[instrument(skip_all, name = "ProfileImageService::upsert_by_id")]
         async fn upsert_by_id(
             &self,
             id: Ulid,
@@ -66,6 +68,7 @@ implementation! {
                 .await?;
         }
 
+        #[instrument(skip_all, name = "ProfileImageService::find_by_id")]
         async fn find_by_id(
             &self,
             id: Ulid,
@@ -83,6 +86,7 @@ implementation! {
                 .map(Image::from)
         }
 
+        #[instrument(skip_all, name = "ProfileImageService::get_by_id")]
         async fn get_by_id(
             &self,
             id: Ulid,
@@ -95,6 +99,7 @@ implementation! {
                 )?
         }
 
+        #[instrument(skip_all, name = "ProfileImageService::delete_by_id")]
         async fn delete_by_id(
             &self,
             id: Ulid,

@@ -7,6 +7,7 @@ use macros::implementation;
 use repository::{
     profile::ProfileRepositoryDependency, user::UserRepositoryDependency,
 };
+use tracing::instrument;
 use ulid::Ulid;
 
 use super::{ProfileService, ProfileServiceResult};
@@ -17,6 +18,7 @@ implementation! {
         user_repository: UserRepositoryDependency,
         profile_repository: ProfileRepositoryDependency,
     } as ProfileServiceImpl {
+        #[instrument(skip_all, name = "ProfileService::update_by_id")]
         async fn upsert_by_id(
             &self,
             id: Ulid,
@@ -55,6 +57,7 @@ implementation! {
             profile.into()
         }
 
+        #[instrument(skip_all, name = "ProfileService::find_by_id")]
         async fn find_by_id(
             &self,
             id: Ulid,
@@ -65,6 +68,7 @@ implementation! {
                 .map(Profile::from)
         }
 
+        #[instrument(skip_all, name = "ProfileService::get_by_id")]
         async fn get_by_id(
             &self,
             id: Ulid,
@@ -77,6 +81,7 @@ implementation! {
                 )?
         }
 
+        #[instrument(skip_all, name = "ProfileService::delete_by_id")]
         async fn delete_by_id(
             &self,
             id: Ulid,

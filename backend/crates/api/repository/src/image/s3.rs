@@ -12,7 +12,7 @@ use utils::adapters::S3;
 use super::{ImageRepository, ImageRepositoryResult};
 use crate::common::RepositoryError;
 
-#[instrument(level = "trace")]
+#[tracing::instrument(level = "trace")]
 fn mime_extension(content_type: &str) -> String {
     content_type
         .split('/')
@@ -32,7 +32,7 @@ implementation! {
     ImageRepository {
         s3: Arc<S3>
     } as S3ImageRepository {
-        #[instrument(skip(self, object), level = "debug")]
+        #[instrument(skip_all, name = "ImageRepository::upsert_by_id")]
         async fn upsert_by_id(&self, id: ImageId, object: UpsertImage) -> Image {
             let content_type = object.content_type.clone();
             self.s3.0
@@ -53,7 +53,7 @@ implementation! {
             }
         }
 
-        #[instrument(skip(self), level = "debug")]
+        #[instrument(skip_all, name = "ImageRepository::find_by_id")]
         async fn find_by_id(&self, id: ImageId) -> Option<Image> {
             let response = match self.s3.0
                 .get_object()
@@ -82,7 +82,7 @@ implementation! {
             })
         }
 
-        #[instrument(skip(self), level = "debug")]
+        #[instrument(skip_all, name = "ImageRepository::exists_by_id")]
         async fn exists_by_id(&self, id: ImageId) -> bool {
             match self.s3.0
                 .head_object()
@@ -101,7 +101,7 @@ implementation! {
             }
         }
 
-        #[instrument(skip(self), level = "debug")]
+        #[instrument(skip_all, name = "ImageRepository::delete_by_id")]
         async fn delete_by_id(&self, id: ImageId) -> Option<Image> {
             let image = self.find_by_id(id.clone()).await?;
             if image.is_some() {
