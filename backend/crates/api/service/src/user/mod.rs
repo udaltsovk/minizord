@@ -2,7 +2,7 @@ use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     user::{CreateUser, User, UserUpdate},
 };
-use macros::service;
+use macros::{metric_name, service};
 use ulid::Ulid;
 
 use crate::common::ServiceError;
@@ -36,5 +36,10 @@ service! {
         ) -> (User, String);
 
         async fn delete_by_id(&self, id: Ulid, check_user: bool) -> ();
+
+        async fn init_metrics(&self);
     }
 }
+
+metric_name!(USERS_REGISTERED, "users_registered");
+metric_name!(USERS_BY_ROLE, "users_by_role");

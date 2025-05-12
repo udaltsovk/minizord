@@ -1,5 +1,5 @@
 use dto::profile::{Profile, UpsertProfile};
-use macros::service;
+use macros::{metric_name, service};
 use ulid::Ulid;
 
 use crate::common::ServiceError;
@@ -23,5 +23,10 @@ service! {
         async fn get_by_id(&self, id: Ulid, check_user: bool) -> Profile;
 
         async fn delete_by_id(&self, id: Ulid, check_user: bool) -> ();
+
+        async fn init_metrics(&self);
     }
 }
+
+metric_name!(PROFILES_FILLED, "profiles_filled");
+metric_name!(PROFILES_BY_CITY, "profiles_by_city");

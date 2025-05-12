@@ -10,7 +10,7 @@ macro_rules! implementation {
         })? as $impl_name:ident {
             $(
                 $(#[$method_meta:meta])*
-                async fn $method:ident $sig:tt -> $res:ty
+                async fn $method:ident $sig:tt $(-> $res:ty)?
                     $body:block
             )*
         }
@@ -38,10 +38,13 @@ macro_rules! implementation {
             impl $trait_name for $impl_name {
                 $(
                     $(#[$method_meta])*
-                    async fn $method $sig -> [<$trait_name Result>]<$res> {
-                        let res: $res = $body;
-                        #[allow(unreachable_code)]
-                        Ok(res)
+                    async fn $method $sig $(-> [<$trait_name Result>]<$res>)? {
+                        $(let res: $res =)? $body;
+                        $(
+                            #[allow(unreachable_code)]
+                            let _ = stringify!($res);
+                            Ok(res)
+                        )?
                     }
                 )*
             }

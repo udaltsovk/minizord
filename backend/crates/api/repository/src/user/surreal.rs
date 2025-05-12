@@ -1,12 +1,13 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use entity::user::{CreateUser, User, UserId, UserUpdate};
 use macros::{EntityId, implementation, surql_query};
+use surrealdb::Value;
 use tracing::instrument;
 use utils::adapters::SurrealDB;
 
 use super::{UserRepository, UserRepositoryResult};
-use crate::common::RepositoryError;
+use crate::common::{ExtractValue as _, RepositoryError};
 
 implementation! {
     UserRepository {
@@ -77,6 +78,27 @@ implementation! {
             self.db.0
                 .delete(id.record_id())
                 .await?
+        }
+
+        #[instrument(skip_all, name = "UserRepository::count_registered")]
+        async fn count_registered(&self) -> u32 {
+            self.db.0
+                .query(surql_query!("table/count"))
+                .bind(("table", UserId::TABLE))
+                .await?
+                .take::<Value>(0)?
+                .extract()
+        }
+
+        #[instrument(skip_all, name = "UserRepository::count_by_role")]
+        async fn count_by_role(&self) -> HashMap<String, u32> {
+            self.db.0
+                .query(surql_query!("table/count_by_field"))
+                .bind(("table", UserId::TABLE))
+                .bind(("field", "role"))
+                .await?
+                .take::<Value>(0)?
+                .extract()
         }
     }
 }

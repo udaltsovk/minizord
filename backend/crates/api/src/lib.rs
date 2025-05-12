@@ -26,12 +26,17 @@ use repository::{
     user::surreal::SurrealUserRepository,
 };
 use service::{
-    profile::{ProfileServiceDependency, implementation::ProfileServiceImpl},
+    profile::{
+        ProfileService, ProfileServiceDependency,
+        implementation::ProfileServiceImpl,
+    },
     profile_image::{
         ProfileImageServiceDependency, implementation::ProfileImageServiceImpl,
     },
     review::{ReviewServiceDependency, implementation::ReviewServiceImpl},
-    user::{UserServiceDependency, implementation::UserServiceImpl},
+    user::{
+        UserService, UserServiceDependency, implementation::UserServiceImpl,
+    },
 };
 use utils::{OpenApi, cors::default_cors, validation};
 use utoipa::{OpenApi as _, openapi::OpenApi as OpenApiStruct};
@@ -98,7 +103,7 @@ pub struct Api {
 }
 impl Api {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub fn setup(lgtm: LGTM, db: SurrealDB, s3: S3) -> Self {
+    pub async fn setup(lgtm: LGTM, db: SurrealDB, s3: S3) -> Self {
         let surreal_client = Arc::new(db);
         let s3_client = Arc::new(s3);
 
@@ -130,6 +135,9 @@ impl Api {
             reviewed_repository.clone(),
             user_service.clone(),
         );
+
+        user_service.init_metrics().await;
+        profile_service.init_metrics().await;
 
         Self {
             config: AppConfig {

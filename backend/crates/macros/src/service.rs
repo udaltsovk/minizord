@@ -8,7 +8,7 @@ macro_rules! service {
         {
             $(
                 $(#[$fn_meta:meta])*
-                async fn $method:ident $sig:tt -> $res:ty;
+                async fn $method:ident $sig:tt $(-> $res:ty)?;
             )*
         }
     ) => {
@@ -19,7 +19,7 @@ macro_rules! service {
             pub trait [<$name Service>] {
                 $(
                     $(#[$fn_meta])*
-                    async fn $method $sig-> [<$name ServiceResult>]<$res>;
+                    async fn $method $sig $(-> [<$name ServiceResult>]<$res>)?;
                 )*
             }
 

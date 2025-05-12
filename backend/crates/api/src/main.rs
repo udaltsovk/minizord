@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
     )
     .await;
 
-    Api::setup(lgtm.clone(), db, s3).run().await?;
+    Api::setup(lgtm.clone(), db, s3).await.run().await?;
 
     lgtm.shutdown().expect("Failed to shut down LGTM stuff");
     Ok(())

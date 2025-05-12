@@ -3,6 +3,7 @@ use std::{
     time::Duration,
 };
 
+use macros::metric_name;
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder};
 use metrics_process::Collector;
 use metrics_tracing_context::{MetricsLayer, TracingContextLayer};
@@ -48,6 +49,11 @@ mod actix_web_specific;
 fn parse_directive(directive: &'static str) -> Directive {
     directive.parse().expect("Failed to parse directive")
 }
+
+metric_name!(
+    HTTP_REQUESTS_DURATION_SECONDS,
+    "http_server_request_duration_seconds"
+);
 
 #[allow(dead_code)]
 #[derive(Clone, Debug)]
@@ -205,7 +211,7 @@ impl LGTM {
             )
             .set_buckets_for_metric(
                 Matcher::Full(
-                    "http_server_request_duration_seconds".to_string(),
+                    HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME.to_string(),
                 ),
                 &[
                     0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0,
@@ -232,10 +238,9 @@ impl LGTM {
 
         let collector = lgtm.metrics_process_collector.clone();
         tokio::spawn(async move {
-            let mut interval = tokio::time::interval(Duration::from_secs(1));
             loop {
                 collector.collect();
-                interval.tick().await;
+                tokio::time::sleep(Duration::from_secs(1)).await;
             }
         });
 
@@ -254,7 +259,7 @@ impl LGTM {
             .metrics_config(
                 ActixWebMetricsConfig::default()
                     .http_requests_duration_seconds_name(
-                        "http_server_request_duration_seconds",
+                        HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME,
                     )
                     .labels(
                         LabelsConfig::default()

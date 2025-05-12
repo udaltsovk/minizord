@@ -5,6 +5,7 @@ mod dto;
 mod entity;
 mod implementation;
 mod impls;
+mod metrics;
 mod repository;
 mod reqresp;
 mod service;

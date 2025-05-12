@@ -1,12 +1,13 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use entity::profile::{Profile, ProfileId, UpsertProfile};
 use macros::{EntityId, implementation, surql_query};
+use surrealdb::Value;
 use tracing::instrument;
 use utils::adapters::SurrealDB;
 
 use super::{ProfileRepository, ProfileRepositoryResult};
-use crate::common::RepositoryError;
+use crate::common::{ExtractValue as _, RepositoryError};
 
 implementation! {
     ProfileRepository {
@@ -41,6 +42,27 @@ implementation! {
             self.db.0
                 .delete(id.record_id())
                 .await?
+        }
+
+        #[instrument(skip_all, name = "ProfileRepository::count_filled")]
+        async fn count_filled(&self) -> u32 {
+            self.db.0
+                .query(surql_query!("table/count"))
+                .bind(("table", ProfileId::TABLE))
+                .await?
+                .take::<Value>(0)?
+                .extract()
+        }
+
+        #[instrument(skip_all, name = "ProfileRepository::count_by_city")]
+        async fn count_by_city(&self) -> HashMap<String, u32> {
+            self.db.0
+                .query(surql_query!("table/count_by_field"))
+                .bind(("table", ProfileId::TABLE))
+                .bind(("field", "city"))
+                .await?
+                .take::<Value>(0)?
+                .extract()
         }
     }
 }

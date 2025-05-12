@@ -30,6 +30,7 @@ bytes.workspace = true
 tokio.workspace = true
 
 tracing.workspace = true
+metrics.workspace = true
 
 actix-multipart.workspace = true
 

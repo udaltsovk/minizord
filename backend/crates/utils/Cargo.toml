@@ -16,6 +16,8 @@ actix-web = [
 ]
 
 [dependencies]
+macros.workspace = true
+
 lazy_static = "1.4"
 
 tokio.workspace = true
