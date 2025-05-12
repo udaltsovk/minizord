@@ -61,7 +61,7 @@ macro_rules! crud_repository {
         $({
             $(
                 $(#[$fn_meta:meta])*
-                $method:ident $sig:tt -> $res:ty;
+                async fn $method:ident $sig:tt -> $res:ty;
             )*
         })?
     ) => {
@@ -156,7 +156,7 @@ macro_rules! urd_repository {
         $({
             $(
                 $(#[$fn_meta:meta])*
-                $method:ident $sig:tt -> $res:ty;
+                async fn $method:ident $sig:tt -> $res:ty;
             )*
         })?
     ) => {
@@ -204,7 +204,7 @@ macro_rules! urd_repository {
         $({
             $(
                 $(#[$fn_meta:meta])*
-                $method:ident $sig:tt -> $res:ty;
+                async fn $method:ident $sig:tt -> $res:ty;
             )*
         })?
     ) => {
