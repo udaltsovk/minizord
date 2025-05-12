@@ -45,9 +45,14 @@ handler_implementation! {
             review_service: Data<ReviewServiceDependency>,
             Path(reviewee_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>> {
             let resp = review_service
-                .find_all_by_reviewee(reviewee_id, pagination.into())
+                .find_all_by_reviewee(
+                    reviewee_id,
+                    pagination.into(),
+                    reviewee_id != user.id
+                )
                 .await?;
             Json(resp)
         }
@@ -79,12 +84,16 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::upsert_review_by_id")]
         async fn upsert_review_by_id(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
+            user: ReqData<User>,
             Validated(Json(body)): Validated<Json<UpsertReview>>,
         ) -> Json<Review> {
             let resp = review_service
-                .upsert_by_id(user.id, reviewee_id, body)
+                .upsert_by_id(
+                    user.id,
+                    reviewee_id,
+                    body
+                )
                 .await?;
             Json(resp)
         }
@@ -111,11 +120,16 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::delete_review_by_id")]
         async fn delete_review_by_id(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             Path(reviewee_id): Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse {
             review_service
-                .delete_by_id(user.id, reviewee_id)
+                .delete_by_id(
+                    user.id,
+                    reviewee_id,
+                    false,
+                    true,
+                )
                 .await?;
             HttpResponse::NoContent().finish()
         }
@@ -143,11 +157,15 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::get_current_reviews_received_paginated")]
         async fn get_current_reviews_received_paginated(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>> {
             let resp = review_service
-                .find_all_by_reviewee(user.id, pagination.into())
+                .find_all_by_reviewee(
+                    user.id,
+                    pagination.into(),
+                    false
+                )
                 .await?;
             Json(resp)
         }
@@ -175,11 +193,15 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::get_current_reviews_sent_paginated")]
         async fn get_current_reviews_sent_paginated(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>> {
             let resp = review_service
-                .find_all_by_reviewer(user.id, pagination.into())
+                .find_all_by_reviewer(
+                    user.id,
+                    pagination.into(),
+                    false
+                )
                 .await?;
             Json(resp)
         }
@@ -210,9 +232,14 @@ handler_implementation! {
             review_service: Data<ReviewServiceDependency>,
             Path(reviewer_id): Path<Ulid>,
             Validated(Query(pagination)): Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>> {
             let resp = review_service
-                .find_all_by_reviewer(reviewer_id, pagination.into())
+                .find_all_by_reviewer(
+                    reviewer_id,
+                    pagination.into(),
+                    reviewer_id != user.id
+                )
                 .await?;
             Json(resp)
         }
@@ -242,9 +269,15 @@ handler_implementation! {
         async fn get_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
+            user: ReqData<User>,
         ) -> Json<Review> {
             let resp = review_service
-                .get_by_id(reviewer_id, reviewee_id)
+                .get_by_id(
+                    reviewer_id,
+                    reviewee_id,
+                    reviewer_id != user.id,
+                    reviewee_id != user.id,
+                )
                 .await?;
             Json(resp)
         }
@@ -272,9 +305,15 @@ handler_implementation! {
         async fn delete_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
+            user: ReqData<User>,
         ) -> HttpResponse {
             review_service
-                .delete_by_id(reviewer_id, reviewee_id)
+                .delete_by_id(
+                    reviewer_id,
+                    reviewee_id,
+                    reviewer_id != user.id,
+                    reviewee_id != user.id,
+                )
                 .await?;
             HttpResponse::NoContent().finish()
         }

@@ -21,9 +21,11 @@ implementation! {
             &self,
             id: Ulid,
             file: TempFile,
+            check_user: bool,
         ) -> () {
             let profile = self.profile_service
-                .get_by_id(id).await?;
+                .get_by_id(id, check_user)
+                .await?;
 
             if file.size > MAX_IMAGE_SIZE {
                 Err(ServiceError::PayloadTooLarge("5.7 MB".into()))?;
@@ -63,7 +65,8 @@ implementation! {
                 .upsert_by_id(
                     profile.id,
                     profile.into(),
-                    Some(true)
+                    Some(true),
+                    check_user
                 )
                 .await?;
         }
@@ -72,9 +75,11 @@ implementation! {
         async fn find_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> Option<Image> {
             let profile = self.profile_service
-                .get_by_id(id).await?;
+                .get_by_id(id, check_user)
+                .await?;
 
             if !profile.has_avatar {
                 return Ok(None);
@@ -90,9 +95,10 @@ implementation! {
         async fn get_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> Image {
             self
-                .find_by_id(id)
+                .find_by_id(id, check_user)
                 .await?
                 .ok_or(
                     ServiceError::NotFound("Profile image with provided id".into())
@@ -103,10 +109,11 @@ implementation! {
         async fn delete_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> () {
             let profile = self.profile_service
-                .get_by_id(id).await?;
-            self.get_by_id(id).await?;
+                .get_by_id(id, check_user).await?;
+            self.get_by_id(id, false).await?;
 
             self.image_repository
                 .delete_by_id(id.into())
@@ -117,6 +124,7 @@ implementation! {
                     profile.id,
                     profile.into(),
                     Some(false),
+                    false
                 )
                 .await?;
         }

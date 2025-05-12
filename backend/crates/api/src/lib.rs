@@ -120,6 +120,7 @@ impl Api {
         let profile_service = ProfileServiceImpl::new(
             user_repository.clone(),
             profile_repository.clone(),
+            user_service.clone(),
         );
         let profile_image_service = ProfileImageServiceImpl::new(
             image_repository.clone(),

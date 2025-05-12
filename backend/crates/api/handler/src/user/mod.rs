@@ -82,23 +82,27 @@ handler! {
 
         async fn get_user_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             user_id: Path<Ulid>
         ) -> Json<User>;
 
         async fn update_user_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             user_id: Path<Ulid>,
             body: Validated<Json<UserUpdate>>
         ) -> Json<User>;
 
         async fn change_user_password_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             user_id: Path<Ulid>,
             body: Validated<Json<PasswordChangeRequest>>
         ) -> Json<UserAuthResponse>;
 
         async fn delete_user_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             user_id: Path<Ulid>
         ) -> HttpResponse;
     }

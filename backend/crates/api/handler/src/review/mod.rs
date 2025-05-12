@@ -48,49 +48,53 @@ handler! {
 
         async fn upsert_review_by_id(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             path: Path<Ulid>,
+            user: ReqData<User>,
             body: Validated<Json<UpsertReview>>,
         ) -> Json<Review>;
 
         async fn delete_review_by_id(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             path: Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse;
 
         async fn get_current_reviews_sent_paginated(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             query: Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>>;
 
         async fn get_current_reviews_received_paginated(
             review_service: Data<ReviewServiceDependency>,
-            user: ReqData<User>,
             query: Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>>;
 
         async fn get_reviews_by_reviewer_id_paginated(
             review_service: Data<ReviewServiceDependency>,
             path: Path<Ulid>,
             query: Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>>;
 
         async fn get_reviews_by_reviewee_id_paginated(
             review_service: Data<ReviewServiceDependency>,
             path: Path<Ulid>,
             query: Validated<Query<Pagination>>,
+            user: ReqData<User>,
         ) -> Json<Vec<Review>>;
 
         async fn get_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             path: Path<(Ulid, Ulid)>,
+            user: ReqData<User>,
         ) -> Json<Review>;
 
         async fn delete_review_by_reviewee_id_and_reviewer_id(
             review_service: Data<ReviewServiceDependency>,
             path: Path<(Ulid, Ulid)>,
+            user: ReqData<User>,
         ) -> HttpResponse;
     }
 }

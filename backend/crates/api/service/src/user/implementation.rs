@@ -107,7 +107,9 @@ implementation! {
                     "Unable to update specified user".to_string(),
                 ))?
             }
-            self.get_by_id(id).await?;
+            if !is_self {
+                self.get_by_id(id).await?;
+            }
             if let Some(username) = update.username.as_ref() {
                 if self.user_repository
                     .exists_by_username(username)
@@ -154,7 +156,7 @@ implementation! {
                 .find_by_id(id.into())
                 .await?
                 .ok_or(
-                    ServiceError::NotFound("User with provided username".into())
+                    ServiceError::NotFound("User with provided id".into())
                 )?;
 
             PasswordHasher::new()
@@ -181,13 +183,16 @@ implementation! {
         async fn delete_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> () {
             if id.to_string() == DEFAULT_ADMIN_ID {
                 Err(ServiceError::Forbidden(
                     "Unable to delete specified user".to_string(),
                 ))?
             }
-            self.get_by_id(id).await?;
+            if check_user {
+                self.get_by_id(id).await?;
+            }
             self.user_repository
                 .delete_by_id(id.into())
                 .await?;

@@ -11,12 +11,13 @@ use tracing::instrument;
 use ulid::Ulid;
 
 use super::{ProfileService, ProfileServiceResult};
-use crate::common::ServiceError;
+use crate::{common::ServiceError, user::UserServiceDependency};
 
 implementation! {
     ProfileService {
         user_repository: UserRepositoryDependency,
         profile_repository: ProfileRepositoryDependency,
+        user_service: UserServiceDependency,
     } as ProfileServiceImpl {
         #[instrument(skip_all, name = "ProfileService::update_by_id")]
         async fn upsert_by_id(
@@ -24,7 +25,14 @@ implementation! {
             id: Ulid,
             object: UpsertProfile,
             has_avatar: Option<bool>,
+            check_user: bool,
         ) -> Profile {
+            if check_user {
+                self.user_service
+                    .get_by_id(id)
+                    .await?;
+            }
+
             let profile_id: ProfileId = id.into();
             let profile = self.profile_repository
                 .find_by_id(profile_id.clone())
@@ -61,7 +69,14 @@ implementation! {
         async fn find_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> Option<Profile> {
+            if check_user {
+                self.user_service
+                    .get_by_id(id)
+                    .await?;
+            }
+
             self.profile_repository
                 .find_by_id(id.into())
                 .await?
@@ -72,9 +87,10 @@ implementation! {
         async fn get_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> Profile {
             self
-                .find_by_id(id)
+                .find_by_id(id, check_user)
                 .await?
                 .ok_or(
                     ServiceError::NotFound("Profile with provided id".into())
@@ -85,8 +101,9 @@ implementation! {
         async fn delete_by_id(
             &self,
             id: Ulid,
+            check_user: bool,
         ) -> () {
-            self.get_by_id(id).await?;
+            self.get_by_id(id, check_user).await?;
             self.profile_repository
                 .delete_by_id(id.into())
                 .await?;

@@ -199,7 +199,7 @@ handler_implementation! {
         ) -> HttpResponse {
             let user: User = user.into_inner();
             user_service
-                .delete_by_id(user.id)
+                .delete_by_id(user.id, false)
                 .await?;
             HttpResponse::NoContent().finish()
         }
@@ -227,11 +227,17 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::get_user_by_id")]
         async fn get_user_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             Path(user_id): Path<Ulid>,
         ) -> Json<User> {
-            let res = user_service
+            let user: User = user.into_inner();
+            let res = if user_id == user.id {
+                user
+            } else {
+                user_service
                 .get_by_id(user_id)
-                .await?;
+                .await?
+            };
             Json(res)
         }
 
@@ -262,11 +268,12 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::update_user_by_id")]
         async fn update_user_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             Path(user_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<UserUpdate>>,
         ) -> Json<User> {
             let res = user_service
-                .update_by_id(user_id, body, false)
+                .update_by_id(user_id, body, user_id == user.id)
                 .await?;
             Json(res)
         }
@@ -297,11 +304,12 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::change_user_password_by_id")]
         async fn change_user_password_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             Path(user_id): Path<Ulid>,
             Validated(Json(body)): Validated<Json<PasswordChangeRequest>>,
         ) -> Json<UserAuthResponse> {
             let res = user_service
-                .change_password_by_id(user_id, body, false)
+                .change_password_by_id(user_id, body, user_id == user.id)
                 .await?;
             Json(res.into())
         }
@@ -327,10 +335,11 @@ handler_implementation! {
         #[instrument(skip_all, name = "ReviewHandler::delete_user_by_id")]
         async fn delete_user_by_id(
             user_service: Data<UserServiceDependency>,
+            user: ReqData<User>,
             Path(user_id): Path<Ulid>,
         ) -> HttpResponse {
             user_service
-                .delete_by_id(user_id)
+                .delete_by_id(user_id, user_id != user.id)
                 .await?;
             HttpResponse::NoContent().finish()
         }

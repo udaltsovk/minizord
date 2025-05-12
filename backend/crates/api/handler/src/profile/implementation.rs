@@ -47,7 +47,7 @@ handler_implementation! {
             user: ReqData<User>,
         ) -> Json<Profile> {
             let res = profile_service
-                .get_by_id(user.id)
+                .get_by_id(user.id, false)
                 .await?;
             Json(res)
         }
@@ -79,7 +79,7 @@ handler_implementation! {
             Validated(Json(body)): Validated<Json<UpsertProfile>>
         ) -> Json<Profile> {
             let resp: Profile = profile_service
-                .upsert_by_id(user.id, body, None)
+                .upsert_by_id(user.id, body, None, false)
                 .await?;
             Json(resp)
         }
@@ -106,7 +106,7 @@ handler_implementation! {
             user: ReqData<User>,
         ) -> HttpResponse {
             profile_service
-                .delete_by_id(user.id)
+                .delete_by_id(user.id, false)
                 .await?;
             HttpResponse::NoContent().finish()
         }
@@ -134,7 +134,7 @@ handler_implementation! {
             user: ReqData<User>,
         ) -> HttpResponse {
             let res = profile_image_service
-                .get_by_id(user.id)
+                .get_by_id(user.id, false)
                 .await?;
             HttpResponse::Ok()
                .content_type(res.content_type)
@@ -170,7 +170,7 @@ handler_implementation! {
             MultipartForm(form): MultipartForm<UploadForm>,
         ) -> HttpResponse {
             profile_image_service
-               .upsert_by_id(user.id, form.file)
+               .upsert_by_id(user.id, form.file, false)
                .await?;
 
             HttpResponse::Ok().finish()
@@ -197,7 +197,7 @@ handler_implementation! {
             user: ReqData<User>,
         ) -> HttpResponse {
             profile_image_service
-                .delete_by_id(user.id)
+                .delete_by_id(user.id, false)
                 .await?;
             HttpResponse::NoContent().finish()
         }
@@ -208,13 +208,13 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizer" = []),
+            ),
+            params(
+                ("profile_id" = Ulid, description = "")
             ),
             responses(
                 (status = 200, description = "", body = Profile),
@@ -227,9 +227,10 @@ handler_implementation! {
         async fn get_profile_by_id(
             profile_service: Data<ProfileServiceDependency>,
             Path(profile_id): Path<Ulid>,
+            user: ReqData<User>,
         ) -> Json<Profile> {
             let res = profile_service
-                .get_by_id(profile_id)
+                .get_by_id(profile_id, profile_id != user.id)
                 .await?;
             Json(res)
         }
@@ -238,11 +239,11 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("organizer" = []),
+            ),
+            params(
+                ("profile_id" = Ulid, description = "")
             ),
             responses(
                 (status = 204, description = ""),
@@ -255,9 +256,10 @@ handler_implementation! {
         async fn delete_profile_by_id(
             profile_service: Data<ProfileServiceDependency>,
             Path(profile_id): Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse {
             profile_service
-                .delete_by_id(profile_id)
+                .delete_by_id(profile_id, profile_id != user.id)
                 .await?;
             HttpResponse::NoContent().finish()
         }
@@ -266,13 +268,13 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("participant" = []),
                 ("mentor" = []),
                 ("organizer" = []),
+            ),
+            params(
+                ("profile_id" = Ulid, description = "")
             ),
             responses(
                 (status = 200, description = ""),
@@ -284,9 +286,10 @@ handler_implementation! {
         async fn get_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             Path(profile_id): Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse {
             let res = profile_image_service
-                .get_by_id(profile_id)
+                .get_by_id(profile_id, profile_id != user.id)
                 .await?;
             HttpResponse::Ok()
               .content_type(res.content_type)
@@ -297,11 +300,11 @@ handler_implementation! {
         ///
         ///
         #[openapi(
-            params(
-                ("profile_id" = Ulid, description = "")
-            ),
             security(
                 ("organizer" = []),
+            ),
+            params(
+                ("profile_id" = Ulid, description = "")
             ),
             responses(
                 (status = 204, description = ""),
@@ -314,9 +317,10 @@ handler_implementation! {
         async fn delete_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             Path(profile_id): Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse {
             profile_image_service
-                .delete_by_id(profile_id)
+                .delete_by_id(profile_id, profile_id != user.id)
                 .await?;
             HttpResponse::NoContent().finish()
         }

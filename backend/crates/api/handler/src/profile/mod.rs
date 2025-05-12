@@ -91,21 +91,25 @@ handler! {
         async fn get_profile_by_id(
             profile_service: Data<ProfileServiceDependency>,
             profile_id: Path<Ulid>,
+            user: ReqData<User>,
         ) -> Json<Profile>;
 
         async fn get_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             profile_id: Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse;
 
         async fn delete_profile_by_id(
             profile_service: Data<ProfileServiceDependency>,
             profile_id: Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse;
 
         async fn delete_profile_image_by_id(
             profile_image_service: Data<ProfileImageServiceDependency>,
             profile_id: Path<Ulid>,
+            user: ReqData<User>,
         ) -> HttpResponse;
     }
 }
