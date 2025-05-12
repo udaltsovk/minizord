@@ -15,7 +15,7 @@ use utils::auth::{jwt, password_hashing::PasswordHasher};
 use super::{UserService, UserServiceResult};
 use crate::common::ServiceError;
 
-const DEFAULT_ADMIN_ID: &str = "00000000000000000000000000";
+const DEFAULT_ADMIN_ID: &str = "0000000000000000000000000A";
 
 implementation! {
     UserService {
