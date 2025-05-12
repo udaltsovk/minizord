@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::{
     knows::{Knows, KnowsId, UpsertKnows},
     technology::TechnologyId,
@@ -14,24 +12,24 @@ use crate::common::RepositoryError;
 
 implementation! {
     KnowsRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealKnowsRepository {
         #[instrument(skip_all, name = "KnowsRepository::upsert_by_in_and_out")]
         async fn upsert_by_in_and_out(&self, r#in: UserId, out: TechnologyId, object: UpsertKnows) -> Knows {
-            let result: Option<Knows> = self.db.0
+            self.db
                 .query(surql_query!("relation/upsert_by_in_and_out"))
                 .bind(("in", r#in))
                 .bind(("id", object.get_id().record_id()))
                 .bind(("out", out))
                 .bind(("object", object))
                 .await?
-                .take(0)?;
-            result.ok_or(RepositoryError::FailedToSaveObject)?
+                .take::<Option<Knows>>(0)?
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         #[instrument(skip_all, name = "KnowsRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Knows> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", KnowsId::TABLE))
                 .bind(("in", r#in))
@@ -48,7 +46,7 @@ implementation! {
 
         #[instrument(skip_all, name = "KnowsRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Knows> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", KnowsId::TABLE))
                 .bind(("out", out))
@@ -65,7 +63,7 @@ implementation! {
 
         #[instrument(skip_all, name = "KnowsRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
-            self.db.0
+            self.db
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -77,7 +75,7 @@ implementation! {
 
         #[instrument(skip_all, name = "KnowsRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
-            self.db.0
+            self.db
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }

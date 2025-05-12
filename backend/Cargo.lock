@@ -532,6 +532,7 @@ dependencies = [
  "api-service",
  "env-vars-config",
  "garde",
+ "include_dir",
  "opentelemetry",
  "tracing",
  "utils",

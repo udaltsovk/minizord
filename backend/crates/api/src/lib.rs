@@ -104,16 +104,10 @@ pub struct Api {
 impl Api {
     #[tracing::instrument(skip_all, level = "trace")]
     pub async fn setup(lgtm: LGTM, db: SurrealDB, s3: S3) -> Self {
-        let surreal_client = Arc::new(db);
-        let s3_client = Arc::new(s3);
-
-        let user_repository =
-            SurrealUserRepository::new(surreal_client.clone());
-        let profile_repository =
-            SurrealProfileRepository::new(surreal_client.clone());
-        let image_repository = S3ImageRepository::new(s3_client.clone());
-        let reviewed_repository =
-            SurrealReviewedRepository::new(surreal_client.clone());
+        let user_repository = SurrealUserRepository::new(db.clone());
+        let profile_repository = SurrealProfileRepository::new(db.clone());
+        let image_repository = S3ImageRepository::new(s3.clone());
+        let reviewed_repository = SurrealReviewedRepository::new(db.clone());
 
         let password_hasher = PasswordHasher::new();
 

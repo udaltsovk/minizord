@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::{
     participated_in::{
         CreateParticipatedIn, ParticipatedIn, ParticipatedInId,
@@ -17,11 +15,11 @@ use crate::common::RepositoryError;
 
 implementation! {
     ParticipatedInRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealParticipatedInRepository {
         #[instrument(skip_all, name = "ParticipatedInRepository::save")]
         async fn save(&self, new: CreateParticipatedIn) -> ParticipatedIn {
-            self.db.0
+            self.db
                 .create(new.get_id().record_id())
                 .content(ParticipatedIn::from(new))
                 .await?
@@ -30,7 +28,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ParticipatedInRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", ParticipatedInId::TABLE))
                 .bind(("in", r#in))
@@ -47,7 +45,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ParticipatedInRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: TourId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", ParticipatedInId::TABLE))
                 .bind(("out", out))
@@ -64,7 +62,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ParticipatedInRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: TourId) -> Option<ParticipatedIn> {
-            self.db.0
+            self.db
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -76,7 +74,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ParticipatedInRepository::update_by_in_and_out")]
         async fn update_by_in_and_out(&self, r#in: UserId, out: TourId, update: ParticipatedInUpdate) -> Option<ParticipatedIn> {
-            self.db.0
+            self.db
                 .update(self.get_id(&r#in, &out))
                 .merge(update)
                 .await?
@@ -84,7 +82,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ParticipatedInRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: TourId) -> Option<ParticipatedIn> {
-            self.db.0
+            self.db
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }

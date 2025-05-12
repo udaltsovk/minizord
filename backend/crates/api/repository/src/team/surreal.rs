@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::{
     team::{CreateTeam, Team, TeamId, TeamUpdate},
     tour::TourId,
@@ -14,12 +12,12 @@ use crate::common::RepositoryError;
 
 implementation! {
     TeamRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealTeamRepository {
         #[instrument(skip_all, name = "TeamRepository::save")]
         async fn save(&self, new: CreateTeam) -> Team {
             let entity: Team = new.into();
-            self.db.0
+            self.db
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
@@ -28,7 +26,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TeamRepository::find_by_id")]
         async fn find_by_id(&self, id: TeamId) -> Option<Team> {
-            self.db.0
+            self.db
                 .select(id.record_id())
                 .await?
         }
@@ -40,7 +38,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TeamRepository::find_by_tour_and_name")]
         async fn find_by_tour_and_name(&self, tour: TourId, name: &str) -> Option<Team> {
-            self.db.0
+            self.db
                 .query(surql_query!("table/team/find_by_tour_and_name"))
                 .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
@@ -56,7 +54,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TeamRepository::find_by_tour_and_lead")]
         async fn find_by_tour_and_lead(&self, tour: TourId, lead: UserId) -> Option<Team> {
-            self.db.0
+            self.db
                 .query(surql_query!("table/team/find_by_tour_and_lead"))
                 .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
@@ -72,7 +70,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TeamRepository::find_all_by_tour")]
         async fn find_all_by_tour(&self, tour: TourId, limit: u64, offset: u64) -> Vec<Team> {
-            self.db.0
+            self.db
                 .query(surql_query!("table/team/find_all_by_tour"))
                 .bind(("table", TeamId::TABLE))
                 .bind(("tour_id", tour))
@@ -89,7 +87,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TeamRepository::update_by_id")]
         async fn update_by_id(&self, id: TeamId, update: TeamUpdate) -> Option<Team> {
-            self.db.0
+            self.db
                 .update(id.record_id())
                 .merge(update)
                 .await?
@@ -97,7 +95,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TeamRepository::delete_by_id")]
         async fn delete_by_id(&self, id: TeamId) -> Option<Team> {
-            self.db.0
+            self.db
                 .delete(id.record_id())
                 .await?
         }

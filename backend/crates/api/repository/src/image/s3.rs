@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use aws_sdk_s3::{
     operation::{get_object::GetObjectError, head_object::HeadObjectError},
     primitives::ByteStream,
@@ -30,12 +28,12 @@ fn mime_extension(content_type: &str) -> String {
 
 implementation! {
     ImageRepository {
-        s3: Arc<S3>
+        s3: S3
     } as S3ImageRepository {
         #[instrument(skip_all, name = "ImageRepository::upsert_by_id")]
         async fn upsert_by_id(&self, id: ImageId, object: UpsertImage) -> Image {
             let content_type = object.content_type.clone();
-            self.s3.0
+            self.s3
                 .put_object()
                 .bucket(ImageId::BUCKET)
                 .key(id.to_string())
@@ -55,7 +53,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ImageRepository::find_by_id")]
         async fn find_by_id(&self, id: ImageId) -> Option<Image> {
-            let response = match self.s3.0
+            let response = match self.s3
                 .get_object()
                 .bucket(ImageId::BUCKET)
                 .key(id.to_string())
@@ -84,7 +82,7 @@ implementation! {
 
         #[instrument(skip_all, name = "ImageRepository::exists_by_id")]
         async fn exists_by_id(&self, id: ImageId) -> bool {
-            match self.s3.0
+            match self.s3
                 .head_object()
                 .bucket(ImageId::BUCKET)
                 .key(id.to_string())
@@ -105,7 +103,7 @@ implementation! {
         async fn delete_by_id(&self, id: ImageId) -> Option<Image> {
             let image = self.find_by_id(id.clone()).await?;
             if image.is_some() {
-                self.s3.0
+                self.s3
                     .delete_object()
                     .bucket(ImageId::BUCKET)
                     .key(id.to_string())

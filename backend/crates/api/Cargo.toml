@@ -42,6 +42,8 @@ garde.workspace = true
 opentelemetry.workspace = true
 tracing.workspace = true
 
+include_dir.workspace = true
+
 utoipa.workspace = true
 utoipa-scalar = { version = "0.3", features = ["actix-web"], optional = true }
 utoipa-swagger-ui = { version = "9.0", features = [

@@ -1,4 +1,6 @@
-use include_dir::include_dir;
+use std::{ops::Deref, sync::Arc};
+
+use include_dir::Dir;
 use surrealdb::{
     Result, Surreal,
     engine::remote::ws::{Client, Ws},
@@ -7,7 +9,7 @@ use surrealdb::{
 use surrealdb_migrations::MigrationRunner;
 
 #[derive(Clone)]
-pub struct SurrealDB(pub Surreal<Client>);
+pub struct SurrealDB(Arc<Surreal<Client>>);
 impl SurrealDB {
     #[tracing::instrument(name = "SurrealDB::setup", skip_all, level = "debug")]
     async fn setup(
@@ -42,8 +44,7 @@ impl SurrealDB {
         username: &str,
         password: &str,
     ) -> Self {
-        let surreal: Surreal<Client> = Surreal::init();
-        let db = Self(surreal);
+        let db = Self(Arc::new(Surreal::init()));
         db.setup(address, username, password, namespace, database)
             .await
             .expect("Failed to init the database")
@@ -54,14 +55,21 @@ impl SurrealDB {
         skip_all,
         level = "debug"
     )]
-    pub async fn migrate(self) -> Self {
+    pub async fn migrate(self, dir: &Dir<'static>) -> Self {
         tracing::trace!("Running database migrations");
         MigrationRunner::new(&self.0)
-            .load_files(&include_dir!("crates/api/repository/db/surreal"))
+            .load_files(dir)
             .up()
             .await
             .expect("Failed to run migrations");
 
         self
+    }
+}
+impl Deref for SurrealDB {
+    type Target = Arc<Surreal<Client>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

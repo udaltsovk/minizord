@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::{
     has_experience_as::{
         HasExperienceAs, HasExperienceAsId, UpsertHasExperienceAs,
@@ -16,24 +14,24 @@ use crate::common::RepositoryError;
 
 implementation! {
     HasExperienceAsRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealHasExperienceAsRepository {
         #[instrument(skip_all, name = "HasExperienceAsRepository::upsert_by_in_and_out")]
         async fn upsert_by_in_and_out(&self, r#in: UserId, out: SpecializationId, object: UpsertHasExperienceAs) -> HasExperienceAs {
-            let result: Option<HasExperienceAs> = self.db.0
+            self.db
                 .query(surql_query!("relation/upsert_by_in_and_out"))
                 .bind(("in", r#in))
                 .bind(("id", object.get_id().record_id()))
                 .bind(("out", out))
                 .bind(("object", object))
                 .await?
-                .take(0)?;
-            result.ok_or(RepositoryError::FailedToSaveObject)?
+                .take::<Option<HasExperienceAs>>(0)?
+                .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
         #[instrument(skip_all, name = "HasExperienceAsRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", HasExperienceAsId::TABLE))
                 .bind(("in", r#in))
@@ -50,7 +48,7 @@ implementation! {
 
         #[instrument(skip_all, name = "HasExperienceAsRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: SpecializationId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", HasExperienceAsId::TABLE))
                 .bind(("out", out))
@@ -67,7 +65,7 @@ implementation! {
 
         #[instrument(skip_all, name = "HasExperienceAsRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> Option<HasExperienceAs> {
-            self.db.0
+            self.db
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -79,7 +77,7 @@ implementation! {
 
         #[instrument(skip_all, name = "HasExperienceAsRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> Option<HasExperienceAs> {
-            self.db.0
+            self.db
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::{
     mentors::{CreateMentors, Mentors, MentorsId, MentorsUpdate},
     team::TeamId,
@@ -14,11 +12,11 @@ use crate::common::RepositoryError;
 
 implementation! {
     MentorsRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealMentorsRepository {
         #[instrument(skip_all, name = "MentorsRepository::save")]
         async fn save(&self, new: CreateMentors) -> Mentors {
-            self.db.0
+            self.db
                 .create(new.get_id().record_id())
                 .content(Mentors::from(new))
                 .await?
@@ -27,7 +25,7 @@ implementation! {
 
         #[instrument(skip_all, name = "MentorsRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Mentors> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", MentorsId::TABLE))
                 .bind(("in", r#in))
@@ -44,7 +42,7 @@ implementation! {
 
         #[instrument(skip_all, name = "MentorsRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: TeamId, limit: u16, offset: u64) -> Vec<Mentors> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", MentorsId::TABLE))
                 .bind(("out", out))
@@ -61,7 +59,7 @@ implementation! {
 
         #[instrument(skip_all, name = "MentorsRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<Mentors> {
-            self.db.0
+            self.db
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -73,7 +71,7 @@ implementation! {
 
         #[instrument(skip_all, name = "MentorsRepository::update_by_in_and_out")]
         async fn update_by_in_and_out(&self, r#in: UserId, out: TeamId, update: MentorsUpdate) -> Option<Mentors> {
-            self.db.0
+            self.db
                 .update(self.get_id(&r#in, &out))
                 .merge(update)
                 .await?
@@ -81,7 +79,7 @@ implementation! {
 
         #[instrument(skip_all, name = "MentorsRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<Mentors> {
-            self.db.0
+            self.db
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }

@@ -1,5 +1,6 @@
 use api::{Api, config};
 use env_vars_config::set_env_only;
+use include_dir::include_dir;
 use utils::{
     adapters::{S3, SurrealDB},
     lgtm::LGTM,
@@ -29,7 +30,7 @@ async fn main() -> std::io::Result<()> {
         &config::DB_PASSWORD,
     )
     .await
-    .migrate()
+    .migrate(&include_dir!("crates/api/repository/db/surreal"))
     .await;
 
     let s3 = S3::init(

@@ -72,7 +72,7 @@ metrics-exporter-prometheus = "0.17"
 
 surrealdb = { workspace = true, optional = true }
 surrealdb-migrations = { version = "2.2", optional = true }
-include_dir = { version = "0.7", optional = true }
+include_dir = { workspace = true, optional = true }
 
 aws-sdk-s3 = { workspace = true, optional = true }
 

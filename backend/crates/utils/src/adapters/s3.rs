@@ -1,10 +1,12 @@
+use std::{ops::Deref, sync::Arc};
+
 use aws_sdk_s3::{
     Client, Config,
     config::{Credentials, Region},
 };
 
 #[derive(Clone)]
-pub struct S3(pub Client);
+pub struct S3(Arc<Client>);
 
 impl S3 {
     #[tracing::instrument(name = "S3::init", skip_all, level = "debug")]
@@ -23,7 +25,7 @@ impl S3 {
             ))
             .build();
 
-        Self(Client::from_conf(config))
+        Self(Arc::new(Client::from_conf(config)))
     }
 
     #[tracing::instrument(
@@ -42,5 +44,12 @@ impl S3 {
                 .await
                 .expect("Failed to create bucket");
         }
+    }
+}
+impl Deref for S3 {
+    type Target = Arc<Client>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

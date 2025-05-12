@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::technology::{
     CreateTechnology, Technology, TechnologyId, TechnologyUpdate,
 };
@@ -12,12 +10,12 @@ use crate::common::RepositoryError;
 
 implementation! {
     TechnologyRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealTechnologyRepository {
         #[instrument(skip_all, name = "TechnologyRepository::save")]
         async fn save(&self, new: CreateTechnology) -> Technology {
             let entity: Technology = new.into();
-            self.db.0
+            self.db
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
@@ -26,7 +24,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::find_by_id")]
         async fn find_by_id(&self, id: TechnologyId) -> Option<Technology> {
-            self.db.0
+            self.db
                 .select(id.record_id())
                 .await?
         }
@@ -38,7 +36,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::find_by_name")]
         async fn find_by_name(&self, name: &str) -> Option<Technology> {
-            self.db.0
+            self.db
                 .query(surql_query!("table/find_by_name"))
                 .bind(("table", TechnologyId::TABLE))
                 .bind(("name", name.to_string()))
@@ -53,7 +51,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::update_by_id")]
         async fn update_by_id(&self, id: TechnologyId, update: TechnologyUpdate) -> Option<Technology> {
-            self.db.0
+            self.db
                 .update(id.record_id())
                 .merge(update)
                 .await?
@@ -61,7 +59,7 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::delete_by_id")]
         async fn delete_by_id(&self, id: TechnologyId) -> Option<Technology> {
-            self.db.0
+            self.db
                 .delete(id.record_id())
                 .await?
         }

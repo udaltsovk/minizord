@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use entity::{
     team::TeamId,
     technology::TechnologyId,
@@ -14,11 +12,11 @@ use crate::common::RepositoryError;
 
 implementation! {
     UsesRepository {
-        db: Arc<SurrealDB>
+        db: SurrealDB
     } as SurrealUsesRepository {
         #[instrument(skip_all, name = "UsesRepository::save")]
         async fn save(&self, new: CreateUses) -> Uses {
-            self.db.0
+            self.db
                 .create(new.get_id().record_id())
                 .content(Uses::from(new))
                 .await?
@@ -27,7 +25,7 @@ implementation! {
 
         #[instrument(skip_all, name = "UsesRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: TeamId, limit: u16, offset: u64) -> Vec<Uses> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", UsesId::TABLE))
                 .bind(("in", r#in))
@@ -44,7 +42,7 @@ implementation! {
 
         #[instrument(skip_all, name = "UsesRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Uses> {
-            self.db.0
+            self.db
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", UsesId::TABLE))
                 .bind(("out", out))
@@ -61,7 +59,7 @@ implementation! {
 
         #[instrument(skip_all, name = "UsesRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: TeamId, out: TechnologyId) -> Option<Uses> {
-            self.db.0
+            self.db
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -73,7 +71,7 @@ implementation! {
 
         #[instrument(skip_all, name = "UsesRepository::update_by_in_and_out")]
         async fn update_by_in_and_out(&self, r#in: TeamId, out: TechnologyId, update: UsesUpdate) -> Option<Uses> {
-            self.db.0
+            self.db
                 .update(self.get_id(&r#in, &out))
                 .merge(update)
                 .await?
@@ -81,7 +79,7 @@ implementation! {
 
         #[instrument(skip_all, name = "UsesRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: TeamId, out: TechnologyId) -> Option<Uses> {
-            self.db.0
+            self.db
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }
