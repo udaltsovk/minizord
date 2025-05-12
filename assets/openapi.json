@@ -91,7 +91,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "organizer": []
+          }
+        ]
       }
     },
     "/users/login": {
