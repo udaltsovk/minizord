@@ -12,6 +12,10 @@ services:
       SURREAL_USER: ${DB_USER}
       SURREAL_PASS: ${DB_PASSWORD}
       SURREAL_PATH: rocksdb:/var/lib/surrealdb
+      SURREAL_TELEMETRY_PROVIDER: otlp
+      SURREAL_TELEMETRY_DISABLE_METRICS: false
+      SURREAL_TELEMETRY_DISABLE_TRACING: false
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 

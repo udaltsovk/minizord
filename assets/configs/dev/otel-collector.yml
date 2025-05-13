@@ -29,6 +29,10 @@ exporters:
     endpoint: http://tempo:4319
     tls:
       insecure: true
+  otlphttp/mimir:
+    endpoint: http://mimir:9009/otlp
+    tls:
+      insecure: true
   prometheus:
     endpoint: 0.0.0.0:8889
     send_timestamps: true
@@ -47,7 +51,11 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlphttp/loki]
-    metrics:
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/mimir]
+    metrics/scrape:
       receivers: [prometheus]
       exporters: [prometheus]
   telemetry:
