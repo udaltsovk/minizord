@@ -2,8 +2,8 @@ use api::{Api, config};
 use env_vars_config::set_env_only;
 use include_dir::include_dir;
 use utils::{
+    LGTM,
     adapters::{S3, SurrealPool},
-    lgtm::LGTM,
 };
 
 #[actix_rt::main]

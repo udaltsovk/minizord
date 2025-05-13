@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use ::utils::{
+    LGTM,
     adapters::{S3, SurrealPool},
-    auth::password_hashing::PasswordHasher,
-    lgtm::LGTM,
+    auth::PasswordHasher,
     logger::CustomActixLogger,
 };
 use actix_web::{

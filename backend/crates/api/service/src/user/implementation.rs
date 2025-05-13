@@ -13,7 +13,7 @@ use metrics::{describe_gauge, gauge};
 use repository::user::UserRepositoryDependency;
 use tracing::instrument;
 use ulid::Ulid;
-use utils::auth::{jwt, password_hashing::PasswordHasher};
+use utils::auth::{PasswordHasher, jwt};
 
 use super::{
     USERS_BY_ROLE_METRIC_NAME, USERS_REGISTERED_METRIC_NAME, UserService,
