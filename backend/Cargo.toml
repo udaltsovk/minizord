@@ -32,17 +32,17 @@ ulid = { version = "1.2", features = ["serde"] }
 
 bytes = { version = "1.10", features = ["serde"] }
 
-tokio = { version = "1.44", features = [
+tokio = { version = "1.45", features = [
     "rt-multi-thread",
     "macros",
     "io-util",
     "fs",
 ] }
 
-surrealdb = "2.2"
+surrealdb = "2.3"
 include_dir = "0.7"
 
-aws-sdk-s3 = { version = "1.82", features = ["behavior-version-latest"] }
+aws-sdk-s3 = { version = "1.85", features = ["behavior-version-latest"] }
 
 # tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost", "zstd"] }
 
@@ -60,7 +60,7 @@ utoipa = { version = "5.3", features = [
     "url",
 ] }
 
-actix-web = "4.10"
+actix-web = "4.11"
 actix-web-lab = "0.24"
 actix-web-validation = { version = "0.8", features = ["garde"] }
 actix-multipart = "0.7"
