@@ -6,7 +6,12 @@ license.workspace = true
 edition.workspace = true
 
 [features]
-surrealdb = ["dep:surrealdb", "dep:surrealdb-migrations", "dep:include_dir"]
+surrealdb = [
+    "dep:mobc-surrealdb", 
+    "dep:surrealdb", 
+    "dep:surrealdb-migrations", 
+    "dep:include_dir"
+]
 s3 = ["dep:aws-sdk-s3"]
 actix-web = [
     "dep:actix-web", 
@@ -70,6 +75,8 @@ metrics-util = "0.19"
 metrics-tracing-context = "0.18"
 metrics-exporter-prometheus = "0.17"
 
+mobc.workspace = true
+mobc-surrealdb = { git = "https://github.com/NikSneMC/mobc-surrealdb", optional = true }
 surrealdb = { workspace = true, optional = true }
 surrealdb-migrations = { version = "2.2", optional = true }
 include_dir = { workspace = true, optional = true }

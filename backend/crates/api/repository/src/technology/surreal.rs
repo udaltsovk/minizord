@@ -3,19 +3,21 @@ use entity::technology::{
 };
 use macros::{EntityId, implementation, surql_query};
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{TechnologyRepository, TechnologyRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {
     TechnologyRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealTechnologyRepository {
         #[instrument(skip_all, name = "TechnologyRepository::save")]
         async fn save(&self, new: CreateTechnology) -> Technology {
             let entity: Technology = new.into();
-            self.db
+            self.pool
+                .get()
+                .await?
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
@@ -24,7 +26,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::find_by_id")]
         async fn find_by_id(&self, id: TechnologyId) -> Option<Technology> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(id.record_id())
                 .await?
         }
@@ -36,7 +40,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::find_by_name")]
         async fn find_by_name(&self, name: &str) -> Option<Technology> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/find_by_name"))
                 .bind(("table", TechnologyId::TABLE))
                 .bind(("name", name.to_string()))
@@ -51,7 +57,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::update_by_id")]
         async fn update_by_id(&self, id: TechnologyId, update: TechnologyUpdate) -> Option<Technology> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .update(id.record_id())
                 .merge(update)
                 .await?
@@ -59,7 +67,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TechnologyRepository::delete_by_id")]
         async fn delete_by_id(&self, id: TechnologyId) -> Option<Technology> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(id.record_id())
                 .await?
         }

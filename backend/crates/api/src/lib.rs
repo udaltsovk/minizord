@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use ::utils::{
-    adapters::{S3, SurrealDB},
+    adapters::{S3, SurrealPool},
     auth::password_hashing::PasswordHasher,
     lgtm::LGTM,
     logger::CustomActixLogger,
@@ -51,6 +51,7 @@ env_vars_config! {
     DB_NAME: String = "api",
     DB_USER: String = "root",
     DB_PASSWORD: String = "root",
+    DB_MAX_POOL_SIZE: u64 = 16u64,
     JWT_SECRET: String = "P9mzO6aO64hgkVCBN96CfpUXB1x58XA3zmGuoT4HjSdhHgyRBnqv/EsPDCfs9CRT/oEJYSu6YDcvmdrf/utDNQ==",
     METRICS_ADDRESS: String = "0.0.0.0:8081",
     OTEL_ENDPOINT: String = "http://localhost:4317",
@@ -103,7 +104,7 @@ pub struct Api {
 }
 impl Api {
     #[tracing::instrument(skip_all, level = "trace")]
-    pub async fn setup(lgtm: LGTM, db: SurrealDB, s3: S3) -> Self {
+    pub async fn setup(lgtm: LGTM, db: SurrealPool, s3: S3) -> Self {
         let user_repository = SurrealUserRepository::new(db.clone());
         let profile_repository = SurrealProfileRepository::new(db.clone());
         let image_repository = S3ImageRepository::new(s3.clone());

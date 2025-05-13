@@ -1,8 +1,13 @@
+#[cfg(feature = "surrealdb")]
+type DBError = surrealdb::Error;
+
 #[derive(thiserror::Error, Debug)]
 pub enum RepositoryError {
-    #[cfg(feature = "surrealdb")]
     #[error("Database error: {0}")]
-    SurrealDB(#[from] surrealdb::Error),
+    Pool(#[from] mobc::Error<DBError>),
+
+    #[error("Database error: {0}")]
+    Database(#[from] DBError),
 
     #[cfg(feature = "surrealdb")]
     #[error("Failed to save object to the database")]

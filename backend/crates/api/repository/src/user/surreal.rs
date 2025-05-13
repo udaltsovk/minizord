@@ -4,19 +4,21 @@ use entity::user::{CreateUser, User, UserId, UserUpdate};
 use macros::{EntityId, implementation, surql_query};
 use surrealdb::Value;
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{UserRepository, UserRepositoryResult};
 use crate::common::{ExtractValue as _, RepositoryError};
 
 implementation! {
     UserRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealUserRepository {
         #[instrument(skip_all, name = "UserRepository::save")]
         async fn save(&self, new: CreateUser) -> User {
             let entity: User = new.into();
-            self.db
+            self.pool
+                .get()
+                .await?
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
@@ -25,7 +27,9 @@ implementation! {
 
         #[instrument(skip_all, name = "UserRepository::find_by_id")]
         async fn find_by_id(&self, id: UserId) -> Option<User> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(id.record_id())
                 .await?
         }
@@ -37,7 +41,9 @@ implementation! {
 
         #[instrument(skip_all, name = "UserRepository::find_by_email")]
         async fn find_by_email(&self, email: &str) -> Option<User> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/user/find_by_email"))
                 .bind(("table", UserId::TABLE))
                 .bind(("email", email.to_string()))
@@ -52,7 +58,9 @@ implementation! {
 
         #[instrument(skip_all, name = "UserRepository::find_by_username")]
         async fn find_by_username(&self, username: &str) -> Option<User> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/user/find_by_username"))
                 .bind(("table", UserId::TABLE))
                 .bind(("username", username.to_string()))
@@ -67,7 +75,9 @@ implementation! {
 
         #[instrument(skip_all, name = "UserRepository::update_by_id")]
         async fn update_by_id(&self, id: UserId, update: UserUpdate) -> Option<User> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .update(id.record_id())
                 .merge(update)
                 .await?
@@ -75,14 +85,18 @@ implementation! {
 
         #[instrument(skip_all, name = "UserRepository::delete_by_id")]
         async fn delete_by_id(&self, id: UserId) -> Option<User> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(id.record_id())
                 .await?
         }
 
         #[instrument(skip_all, name = "UserRepository::count_registered")]
         async fn count_registered(&self) -> u32 {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/count"))
                 .bind(("table", UserId::TABLE))
                 .await?
@@ -92,7 +106,9 @@ implementation! {
 
         #[instrument(skip_all, name = "UserRepository::count_by_role")]
         async fn count_by_role(&self) -> HashMap<String, u32> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/count_by_field"))
                 .bind(("table", UserId::TABLE))
                 .bind(("field", "role"))

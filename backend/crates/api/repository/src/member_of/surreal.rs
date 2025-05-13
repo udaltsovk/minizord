@@ -5,18 +5,20 @@ use entity::{
 };
 use macros::{EntityId, implementation, surql_query};
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{MemberOfRepository, MemberOfRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {
     MemberOfRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealMemberOfRepository {
         #[instrument(skip_all, name = "MemberOfRepository::save")]
         async fn save(&self, new: CreateMemberOf) -> MemberOf {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .create(new.get_id().record_id())
                 .content(MemberOf::from(new))
                 .await?
@@ -25,7 +27,9 @@ implementation! {
 
         #[instrument(skip_all, name = "MemberOfRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<MemberOf> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", MemberOfId::TABLE))
                 .bind(("in", r#in))
@@ -42,7 +46,9 @@ implementation! {
 
         #[instrument(skip_all, name = "MemberOfRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: TeamId, limit: u16, offset: u64) -> Vec<MemberOf> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", MemberOfId::TABLE))
                 .bind(("out", out))
@@ -59,7 +65,9 @@ implementation! {
 
         #[instrument(skip_all, name = "MemberOfRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<MemberOf> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -71,7 +79,9 @@ implementation! {
 
         #[instrument(skip_all, name = "MemberOfRepository::update_by_in_and_out")]
         async fn update_by_in_and_out(&self, r#in: UserId, out: TeamId, update: MemberOfUpdate) -> Option<MemberOf> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .update(self.get_id(&r#in, &out))
                 .merge(update)
                 .await?
@@ -79,7 +89,9 @@ implementation! {
 
         #[instrument(skip_all, name = "MemberOfRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<MemberOf> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }

@@ -240,7 +240,7 @@ impl LGTM {
         tokio::spawn(async move {
             loop {
                 collector.collect();
-                tokio::time::sleep(Duration::from_secs(1)).await;
+                tokio::time::sleep(Duration::from_secs(5)).await;
             }
         });
 

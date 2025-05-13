@@ -26,6 +26,7 @@ serde_json.workspace = true
 
 tracing.workspace = true
 
+mobc.workspace = true
 surrealdb = { workspace = true, optional = true }
 aws-sdk-s3 = { workspace = true, optional = true }
 

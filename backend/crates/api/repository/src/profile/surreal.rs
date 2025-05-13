@@ -4,19 +4,21 @@ use entity::profile::{Profile, ProfileId, UpsertProfile};
 use macros::{EntityId, implementation, surql_query};
 use surrealdb::Value;
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{ProfileRepository, ProfileRepositoryResult};
 use crate::common::{ExtractValue as _, RepositoryError};
 
 implementation! {
     ProfileRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealProfileRepository {
         #[instrument(skip_all, name = "ProfileRepository::upsert_by_id")]
         async fn upsert_by_id(&self, id: ProfileId, object: UpsertProfile) -> Profile {
             let entity = Profile::from((object, id));
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/upsert_by_id"))
                 .bind(("id", entity.id.clone()))
                 .bind(("object", entity))
@@ -27,7 +29,9 @@ implementation! {
 
         #[instrument(skip_all, name = "ProfileRepository::find_by_id")]
         async fn find_by_id(&self, id: ProfileId) -> Option<Profile> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(id.record_id())
                 .await?
         }
@@ -39,14 +43,18 @@ implementation! {
 
         #[instrument(skip_all, name = "ProfileRepository::delete_by_id")]
         async fn delete_by_id(&self, id: ProfileId) -> Option<Profile> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(id.record_id())
                 .await?
         }
 
         #[instrument(skip_all, name = "ProfileRepository::count_filled")]
         async fn count_filled(&self) -> u32 {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/count"))
                 .bind(("table", ProfileId::TABLE))
                 .await?
@@ -56,7 +64,9 @@ implementation! {
 
         #[instrument(skip_all, name = "ProfileRepository::count_by_city")]
         async fn count_by_city(&self) -> HashMap<String, u32> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/count_by_field"))
                 .bind(("table", ProfileId::TABLE))
                 .bind(("field", "city"))

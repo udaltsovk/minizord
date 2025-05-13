@@ -598,6 +598,7 @@ dependencies = [
  "api-entity",
  "aws-sdk-s3",
  "macros",
+ "mobc",
  "serde",
  "serde_json",
  "surrealdb",
@@ -3770,6 +3771,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "mobc"
+version = "0.8.5"
+source = "git+https://github.com/NikSneMC/mobc#c511c5d889a5312cbbfacf46fdc5a7f1d86b21f5"
+dependencies = [
+ "async-trait",
+ "futures-channel",
+ "futures-core",
+ "futures-timer",
+ "futures-util",
+ "log",
+ "metrics",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "mobc-surrealdb"
+version = "0.2.0"
+source = "git+https://github.com/NikSneMC/mobc-surrealdb#6837fd76f0e51694b80bc87401dd3e7d7c3a40eb"
+dependencies = [
+ "mobc",
+ "surrealdb",
+]
+
+[[package]]
 name = "multer"
 version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6742,6 +6770,8 @@ dependencies = [
  "metrics-process",
  "metrics-tracing-context",
  "metrics-util",
+ "mobc",
+ "mobc-surrealdb",
  "opentelemetry",
  "opentelemetry-appender-tracing",
  "opentelemetry-otlp",

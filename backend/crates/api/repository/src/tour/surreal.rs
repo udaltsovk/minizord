@@ -1,19 +1,21 @@
 use entity::tour::{CreateTour, Tour, TourId, TourUpdate};
 use macros::{EntityId, implementation, surql_query};
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{TourRepository, TourRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {
     TourRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealTourRepository {
         #[instrument(skip_all, name = "TourRepository::save")]
         async fn save(&self, new: CreateTour) -> Tour {
             let entity: Tour = new.into();
-            self.db
+            self.pool
+                .get()
+                .await?
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
@@ -22,7 +24,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TourRepository::find_by_id")]
         async fn find_by_id(&self, id: TourId) -> Option<Tour> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(id.record_id())
                 .await?
         }
@@ -34,7 +38,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TourRepository::find_by_name")]
         async fn find_by_name(&self, name: &str) -> Option<Tour> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/find_by_name"))
                 .bind(("table", TourId::TABLE))
                 .bind(("name", name.to_string()))
@@ -49,7 +55,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TourRepository::update_by_id")]
         async fn update_by_id(&self, id: TourId, update: TourUpdate) -> Option<Tour> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .update(id.record_id())
                 .merge(update)
                 .await?
@@ -57,7 +65,9 @@ implementation! {
 
         #[instrument(skip_all, name = "TourRepository::delete_by_id")]
         async fn delete_by_id(&self, id: TourId) -> Option<Tour> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(id.record_id())
                 .await?
         }

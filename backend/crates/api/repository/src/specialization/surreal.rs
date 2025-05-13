@@ -4,19 +4,21 @@ use entity::specialization::{
 };
 use macros::{EntityId, implementation, surql_query};
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{SpecializationRepository, SpecializationRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {
     SpecializationRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealSpecializationRepository {
         #[instrument(skip_all, name = "SpecializationRepository::save")]
         async fn save(&self, new: CreateSpecialization) -> Specialization {
             let entity: Specialization = new.into();
-            self.db
+            self.pool
+                .get()
+                .await?
                 .create(entity.id.record_id())
                 .content(entity)
                 .await?
@@ -25,7 +27,9 @@ implementation! {
 
         #[instrument(skip_all, name = "SpecializationRepository::find_by_id")]
         async fn find_by_id(&self, id: SpecializationId) -> Option<Specialization> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(id.record_id())
                 .await?
         }
@@ -37,7 +41,9 @@ implementation! {
 
         #[instrument(skip_all, name = "SpecializationRepository::find_by_name")]
         async fn find_by_name(&self, name: &str) -> Option<Specialization> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("table/find_by_name"))
                 .bind(("table", SpecializationId::TABLE))
                 .bind(("name", name.to_string()))
@@ -52,7 +58,9 @@ implementation! {
 
         #[instrument(skip_all, name = "SpecializationRepository::update_by_id")]
         async fn update_by_id(&self, id: SpecializationId, update: SpecializationUpdate) -> Option<Specialization> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .update(id.record_id())
                 .merge(update)
                 .await?
@@ -60,7 +68,9 @@ implementation! {
 
         #[instrument(skip_all, name = "SpecializationRepository::delete_by_id")]
         async fn delete_by_id(&self, id: SpecializationId) -> Option<Specialization> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(id.record_id())
                 .await?
         }

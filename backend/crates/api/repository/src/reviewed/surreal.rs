@@ -4,18 +4,20 @@ use entity::{
 };
 use macros::{EntityId, implementation, surql_query};
 use tracing::instrument;
-use utils::adapters::SurrealDB;
+use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{ReviewedRepository, ReviewedRepositoryResult};
 use crate::common::RepositoryError;
 
 implementation! {
     ReviewedRepository {
-        db: SurrealDB
+        pool: SurrealPool
     } as SurrealReviewedRepository {
         #[instrument(skip_all, name = "ReviewedRepository::upsert_by_in_and_out")]
         async fn upsert_by_in_and_out(&self, r#in: UserId, out: UserId, object: UpsertReviewed) -> Reviewed {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("relation/upsert_by_in_and_out"))
                 .bind(("in", r#in))
                 .bind(("id", object.get_id().record_id()))
@@ -28,7 +30,9 @@ implementation! {
 
         #[instrument(skip_all, name = "ReviewedRepository::find_all_by_in")]
         async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Reviewed> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("relation/find_all_by_in"))
                 .bind(("table", ReviewedId::TABLE))
                 .bind(("in", r#in))
@@ -45,7 +49,9 @@ implementation! {
 
         #[instrument(skip_all, name = "ReviewedRepository::find_all_by_out")]
         async fn find_all_by_out(&self, out: UserId, limit: u16, offset: u64) -> Vec<Reviewed> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .query(surql_query!("relation/find_all_by_out"))
                 .bind(("table", ReviewedId::TABLE))
                 .bind(("out", out))
@@ -62,7 +68,9 @@ implementation! {
 
         #[instrument(skip_all, name = "ReviewedRepository::find_by_in_and_out")]
         async fn find_by_in_and_out(&self, r#in: UserId, out: UserId) -> Option<Reviewed> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .select(self.get_id(&r#in, &out))
                 .await?
         }
@@ -74,7 +82,9 @@ implementation! {
 
         #[instrument(skip_all, name = "ReviewedRepository::delete_by_in_and_out")]
         async fn delete_by_in_and_out(&self, r#in: UserId, out: UserId) -> Option<Reviewed> {
-            self.db
+            self.pool
+                .get()
+                .await?
                 .delete(self.get_id(&r#in, &out))
                 .await?
         }

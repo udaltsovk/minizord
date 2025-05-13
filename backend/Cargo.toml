@@ -39,6 +39,7 @@ tokio = { version = "1.45", features = [
     "fs",
 ] }
 
+mobc = "0.8"
 surrealdb = "2.3"
 include_dir = "0.7"
 
@@ -71,6 +72,9 @@ utoipa-actix-web = "0.1"
 # Tests
 rstest = "0.25"
 # bon = "3.6"
+
+[patch.crates-io]
+mobc = { git = "https://github.com/NikSneMC/mobc" }
 
 [profile.release]
 lto = true
