@@ -23,6 +23,7 @@ COPY --from=planner /usr/src/minizord/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json --bin $CRATE
 
 COPY . .
+COPY --from=git . .git
 RUN cargo build --release --bin $CRATE
 
 
