@@ -49,13 +49,15 @@ impl SurrealPool {
         skip_all,
         level = "debug"
     )]
-    pub async fn migrate(self, dir: &Dir<'static>) -> Result<Self, ()> {
+    pub async fn migrate(self, dir: &Dir<'static>) -> Result<Self, String> {
         tracing::trace!("Running database migrations");
-        MigrationRunner::new(&*self.get().await.map_err(|_| ())?)
-            .load_files(dir)
-            .up()
-            .await
-            .map_err(|_| ())?;
+        MigrationRunner::new(
+            &*self.get().await.map_err(|err| err.to_string())?,
+        )
+        .load_files(dir)
+        .up()
+        .await
+        .map_err(|err| err.to_string())?;
 
         Ok(self)
     }
