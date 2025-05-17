@@ -6,9 +6,12 @@
       ];
     },
 }: let
-  packages = with pkgs; [
+  packages = with pkgs; let
+    jre = pkgs.zulu17;
+    kotlin = pkgs.kotlin.override {inherit jre;};
+  in [
     (rust-bin.nightly.latest.default.override {
-      extensions = [ "rust-src" ];
+      extensions = ["rust-src"];
     })
 
     watchexec
@@ -17,6 +20,9 @@
     cargo-udeps
     cargo-audit
     cargo-expand
+
+    jre
+    kotlin
 
     bun
   ];

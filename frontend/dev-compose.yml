@@ -1,11 +1,11 @@
 name: minizord-dev-frontend
 services:
-  db:
+  db-surreal:
     image: surrealdb/surrealdb:latest
     restart: on-failure
     user: root
     volumes:
-      - db:/var/lib/surrealdb
+      - db-surreal:/var/lib/surrealdb
     command:
       - start
     environment:
@@ -16,6 +16,15 @@ services:
       SURREAL_TELEMETRY_DISABLE_METRICS: false
       SURREAL_TELEMETRY_DISABLE_TRACING: false
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+  db-postgres:
+    image: postgres:latest
+    volumes:
+      - db-postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
   s3:
     image: minio/minio:latest
@@ -26,6 +35,19 @@ services:
     volumes:
       - s3:/data
     command: server /data --console-address ":9001"
+
+  smtp:
+    image: mailhog/mailhog:latest
+    user: root
+    environment:
+      MH_AUTH_FILE: /etc/mailhog/credentials
+      MH_STORAGE: /data
+    volumes:
+      - ../assets/configs/dev/mailhog-credentials:/etc/mailhog/credentials
+      - smtp:/data
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
   init-buckets:
     image: minio/mc:latest
@@ -116,8 +138,10 @@ services:
     ports:
       - '8080:8080'
 volumes:
-  db:
+  db-surreal:
+  db-postgres:
   s3:
+  smtp:
   prometheus:
   tempo:
   grafana:
