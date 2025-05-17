@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option java_package = "ru.udaltsovk.minizord.email.proto";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+
+message SendEmailRequest {
+
+  message RegistrationEmail {
+    string password = 1;
+  }
+
+  message PasswordResetEmail {
+    string new_password = 1;
+  }
+
+  string receiver = 1;
+  oneof email {
+    RegistrationEmail registration_email = 2;
+    PasswordResetEmail password_reset_email = 3;
+  }
+}
+
+message SendEmailResponse {
+  bool successful = 1;
+}
+
+enum EmailType {
+  REGISTRATION_EMAIL = 0;
+  PASSWORD_RESET_EMAIL = 1;
+}
+
+message GetEmailHistoryRequest {
+  optional uint32 size = 1;
+  optional uint32 page = 2;
+  optional EmailType email_type = 3;
+  optional string receiver = 4;
+}
+
+message GetEmailHistoryItemResponse {
+  string id = 1;
+  string receiver = 2;
+  EmailType email_type = 3;
+  google.protobuf.Timestamp sent_at = 4;
+}
+
+message GetEmailHistoryResponse {
+  repeated GetEmailHistoryItemResponse history = 1;
+}
+
+message GetEmailHistoryItemRequest {
+  string id = 1;
+}
+
+service Email {
+  rpc SendEmail(SendEmailRequest) returns (SendEmailResponse);
+
+  rpc GetEmailHistory(GetEmailHistoryRequest) returns (GetEmailHistoryResponse);
+
+  rpc GetEmailHistoryItem(GetEmailHistoryItemRequest) returns (GetEmailHistoryItemResponse);
+}

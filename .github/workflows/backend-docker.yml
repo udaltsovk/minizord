@@ -3,7 +3,15 @@ name: (BACKEND) Build and publish docker image
 on:
   workflow_call:
     inputs:
-      crate:
+      context:
+        description: "Build directory"
+        required: true
+        type: string
+      dockerfile:
+        description: "Dockerfile to use"
+        required: true
+        type: string
+      service:
         description: "Crate to build"
         required: true
         type: "string"
@@ -50,8 +58,8 @@ jobs:
         env:
           GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
         with:
-          context: ./backend
-          file: ./backend/Dockerfile
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: ${{ matrix.platform }}
@@ -62,7 +70,7 @@ jobs:
             git=.git
           build-args: |
             BUILDKIT_CONTEXT_KEEP_GIT_DIR=1
-            CRATE=${{ inputs.crate }}
+            CRATE=${{ inputs.service }}
 
       - name: Export digest
         run: |

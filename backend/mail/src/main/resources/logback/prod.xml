@@ -1,0 +1,23 @@
+<configuration>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+
+    <appender name="OpenTelemetry" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+        <captureExperimentalAttributes>false</captureExperimentalAttributes>
+        <captureCodeAttributes>true</captureCodeAttributes>
+        <captureMarkerAttribute>true</captureMarkerAttribute>
+        <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+        <captureLoggerContext>true</captureLoggerContext>
+        <captureMdcAttributes>*</captureMdcAttributes>
+        <encoder>
+            <pattern>
+                %clr(%d{HH:mm:ss.SSS}){green} %highlight(%-5level) [${appName},%X{trace_id},%X{span_id}] %clr([%thread]){faint} %clr(%logger{36}){cyan} - %msg%n%wex
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="OpenTelemetry"/>
+    </root>
+</configuration>

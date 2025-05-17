@@ -1,0 +1,39 @@
+minizord:
+  platform-url: ${PLATFORM_URL}
+  mail-address: ${MAIL_ADDRESS}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${POSTGRES_JDBC_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    test-connection: true
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+  output:
+    ansi:
+      enabled: never
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${OTLP_BASE_URL}
+      protocol: ${OTLP_PROTOCOL}
+
+logging:
+  config: classpath:logback/prod.yml

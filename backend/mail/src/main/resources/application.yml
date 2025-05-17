@@ -1,0 +1,22 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+spring:
+  application:
+    name: minizord-mail
+  profiles:
+    active: dev
+  grpc:
+    server:
+      enabled: true
+      port: 9090
+      reflection:
+        enabled: true
+      observations:
+        enabled: true
+      health:
+        enabled: true
+        actuator:
+          enabled: true

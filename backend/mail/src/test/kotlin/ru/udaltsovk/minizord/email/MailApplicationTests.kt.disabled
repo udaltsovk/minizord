@@ -1,0 +1,188 @@
+package ru.udaltsovk.minizord.email
+
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import ru.udaltsovk.minizord.email.entity.Email
+import ru.udaltsovk.minizord.email.proto.EmailType
+import ru.udaltsovk.minizord.email.proto.SendEmailRequest.PasswordResetEmail
+import ru.udaltsovk.minizord.email.proto.SendEmailRequest.RegistrationEmail
+import ru.udaltsovk.minizord.email.proto.SendEmailRequest
+import ru.udaltsovk.minizord.email.repository.EmailRepository
+import ru.udaltsovk.minizord.email.service.EmailService
+import java.util.*
+import com.icegreen.greenmail.configuration.GreenMailConfiguration
+import com.icegreen.greenmail.junit.
+import com.icegreen.greenmail.util.ServerSetupTest
+import jakarta.mail.internet.MimeMessage
+import org.junit.jupiter.api.extension.RegisterExtension
+
+@SpringBootTest
+@ActiveProfiles("dev") // Ensure we use application-dev.yml for mailhog etc.
+class `MailApplicationTests.disabled` {
+
+    @Autowired
+    private lateinit var emailService: EmailService
+
+    @Autowired
+    private lateinit var emailRepository: EmailRepository
+
+    @JvmField
+    @RegisterExtension
+    val greenMail: GreenMailExtension = GreenMailExtension(ServerSetupTest.SMTP)
+        .withConfiguration(GreenMailConfiguration.aConfig().withUser("mailhog", "mailhog"))
+
+    @BeforeEach
+    fun setup() {
+        emailRepository.deleteAll()
+    }
+
+    @Test
+    fun contextLoads() {
+        assertNotNull(emailService)
+        assertNotNull(emailRepository)
+    }
+
+    @Test
+    fun `should send registration email and save to repository`() {
+        val receiverEmail = "registration@example.com"
+        val password = "securePassword123"
+        val request = SendEmailRequest.newBuilder()
+            .setReceiver(receiverEmail)
+            .setEmailType(EmailType.REGISTRATION_EMAIL)
+            .setRegistrationEmail(RegistrationEmail.newBuilder().setPassword(password))
+            .build()
+
+        val response = emailService.sendEmail(request)
+
+        assertTrue(response.successful)
+
+        // Verify email was sent via GreenMail
+        val receivedMessages: Array<MimeMessage> = greenMail.receivedMessages
+        assertEquals(1, receivedMessages.size)
+        val receivedMessage = receivedMessages[0]
+        assertEquals(receiverEmail, receivedMessage.getRecipients(MimeMessage.RecipientType.TO)[0].toString())
+        assertTrue(receivedMessage.subject.contains("Minizord: завершение регистрации"))
+        val content = greenMail.getReceivedMessagesForDomain(receiverEmail)[0].content.toString()
+        assertTrue(content.contains(password))
+        assertTrue(content.contains(emailService.platformUrl))
+
+        // Verify email was saved to repository
+        val savedEmails = emailRepository.findAllByReceiver(receiverEmail, org.springframework.data.domain.Pageable.unpaged())
+        assertEquals(1, savedEmails.content.size)
+        val savedEmail = savedEmails.content[0]
+        assertEquals(receiverEmail, savedEmail.receiver)
+        assertEquals(EmailType.REGISTRATION_EMAIL, savedEmail.emailType)
+        assertEquals(password, savedEmail.params["password"])
+    }
+
+    @Test
+    fun `should send password reset email and save to repository`() {
+        val receiverEmail = "passwordreset@example.com"
+        val newPassword = "newSecurePassword456"
+        val request = SendEmailRequest.newBuilder()
+            .setReceiver(receiverEmail)
+            .setEmailType(EmailType.PASSWORD_RESET_EMAIL)
+            .setPasswordResetEmail(PasswordResetEmail.newBuilder().setNewPassword(newPassword))
+            .build()
+
+        val response = emailService.sendEmail(request)
+
+        assertTrue(response.successful)
+
+        // Verify email was sent via GreenMail
+        val receivedMessages: Array<MimeMessage> = greenMail.receivedMessages
+        assertEquals(1, receivedMessages.size)
+        val receivedMessage = receivedMessages[0]
+        assertEquals(receiverEmail, receivedMessage.getRecipients(MimeMessage.RecipientType.TO)[0].toString())
+        assertTrue(receivedMessage.subject.contains("Minizord: сброс пароля"))
+        val content = greenMail.getReceivedMessagesForDomain(receiverEmail)[0].content.toString()
+        assertTrue(content.contains(newPassword))
+        assertTrue(content.contains(emailService.platformUrl))
+
+        // Verify email was saved to repository
+        val savedEmails = emailRepository.findAllByReceiver(receiverEmail, org.springframework.data.domain.Pageable.unpaged())
+        assertEquals(1, savedEmails.content.size)
+        val savedEmail = savedEmails.content[0]
+        assertEquals(receiverEmail, savedEmail.receiver)
+        assertEquals(EmailType.PASSWORD_RESET_EMAIL, savedEmail.emailType)
+        assertEquals(newPassword, savedEmail.params["newPassword"])
+    }
+
+    @Test
+    fun `getEmailHistory should retrieve emails`() {
+        val email1 = Email(receiver = "history1@example.com", emailType = EmailType.REGISTRATION_EMAIL, params = mapOf("password" to "pass1"))
+        val email2 = Email(receiver = "history2@example.com", emailType = EmailType.PASSWORD_RESET_EMAIL, params = mapOf("newPassword" to "pass2"))
+        emailRepository.saveAll(listOf(email1, email2))
+
+        val historyRequest = ru.udaltsovk.minizord.email.proto.GetEmailHistoryRequest.newBuilder().build()
+        val historyResponse = emailService.getEmailHistory(historyRequest)
+
+        assertEquals(2, historyResponse.historyList.size)
+    }
+
+    @Test
+    fun `getEmailHistory should filter by email type`() {
+        val email1 = Email(receiver = "filtertype1@example.com", emailType = EmailType.REGISTRATION_EMAIL, params = mapOf("password" to "pass1"))
+        val email2 = Email(receiver = "filtertype2@example.com", emailType = EmailType.PASSWORD_RESET_EMAIL, params = mapOf("newPassword" to "pass2"))
+        val email3 = Email(receiver = "filtertype3@example.com", emailType = EmailType.REGISTRATION_EMAIL, params = mapOf("password" to "pass3"))
+        emailRepository.saveAll(listOf(email1, email2, email3))
+
+        val historyRequest = ru.udaltsovk.minizord.email.proto.GetEmailHistoryRequest.newBuilder()
+            .setEmailType(EmailType.REGISTRATION_EMAIL)
+            .build()
+        val historyResponse = emailService.getEmailHistory(historyRequest)
+
+        assertEquals(2, historyResponse.historyList.size)
+        assertTrue(historyResponse.historyList.all { it.emailType == EmailType.REGISTRATION_EMAIL })
+    }
+
+    @Test
+    fun `getEmailHistory should filter by receiver`() {
+        val targetReceiver = "filterreceiver@example.com"
+        val email1 = Email(receiver = targetReceiver, emailType = EmailType.REGISTRATION_EMAIL, params = mapOf("password" to "pass1"))
+        val email2 = Email(receiver = "another@example.com", emailType = EmailType.PASSWORD_RESET_EMAIL, params = mapOf("newPassword" to "pass2"))
+        val email3 = Email(receiver = targetReceiver, emailType = EmailType.PASSWORD_RESET_EMAIL, params = mapOf("newPassword" to "pass3"))
+        emailRepository.saveAll(listOf(email1, email2, email3))
+
+        val historyRequest = ru.udaltsovk.minizord.email.proto.GetEmailHistoryRequest.newBuilder()
+            .setReceiver(targetReceiver)
+            .build()
+        val historyResponse = emailService.getEmailHistory(historyRequest)
+
+        assertEquals(2, historyResponse.historyList.size)
+        assertTrue(historyResponse.historyList.all { it.receiver == targetReceiver })
+    }
+
+    @Test
+    fun `getById should retrieve specific email`() {
+        val emailToSave = Email(receiver = "specific@example.com", emailType = EmailType.REGISTRATION_EMAIL, params = mapOf("password" to "specificPass"))
+        val savedEmail = emailRepository.save(emailToSave)
+        assertNotNull(savedEmail.id)
+
+        val getByIdRequest = ru.udaltsovk.minizord.email.proto.GetEmailHistoryItemRequest.newBuilder()
+            .setId(savedEmail.id.toString())
+            .build()
+
+        val response = emailService.getById(getByIdRequest)
+
+        assertEquals(savedEmail.id.toString(), response.id)
+        assertEquals(savedEmail.receiver, response.receiver)
+        assertEquals(savedEmail.emailType.toString(), response.emailType.toString()) // Compare string representations as proto enum might differ slightly
+    }
+
+    @Test
+    fun `getById should throw EmailNotFoundException for non-existent id`() {
+        val nonExistentId = UUID.randomUUID().toString()
+        val getByIdRequest = ru.udaltsovk.minizord.email.proto.GetEmailHistoryItemRequest.newBuilder()
+            .setId(nonExistentId)
+            .build()
+
+        assertThrows(ru.udaltsovk.minizord.email.exception.EmailNotFoundException::class.java) {
+            emailService.getById(getByIdRequest)
+        }
+    }
+}
