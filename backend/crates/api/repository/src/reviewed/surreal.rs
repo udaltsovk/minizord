@@ -1,13 +1,16 @@
+use std::collections::HashMap;
+
 use entity::{
     reviewed::{Reviewed, ReviewedId, UpsertReviewed},
     user::UserId,
 };
 use macros::{EntityId, implementation, surql_query};
+use surrealdb::Value;
 use tracing::instrument;
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{ReviewedRepository, ReviewedRepositoryResult};
-use crate::common::RepositoryError;
+use crate::common::{ExtractValue as _, RepositoryError};
 
 implementation! {
     ReviewedRepository {
@@ -87,6 +90,19 @@ implementation! {
                 .await?
                 .delete(self.get_id(&r#in, &out))
                 .await?
+        }
+
+        #[instrument(skip_all, name = "ReviewedRepositoryRepository::count_by_score")]
+        async fn count_by_score(&self) -> HashMap<u16, u32> {
+            self.pool
+                .get()
+                .await?
+                .query(surql_query!("table/count_by_field"))
+                .bind(("table", ReviewedId::TABLE))
+                .bind(("field", "score"))
+                .await?
+                .take::<Value>(0)?
+                .extract()
         }
     }
 }

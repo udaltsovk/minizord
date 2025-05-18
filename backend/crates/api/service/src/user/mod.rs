@@ -9,6 +9,8 @@ use crate::common::ServiceError;
 
 pub mod implementation;
 
+const DEFAULT_ADMIN_ID: &str = "0000000000000000000000000A";
+
 service! {
     User
         Err: ServiceError
@@ -41,5 +43,4 @@ service! {
     }
 }
 
-metric_name!(USERS_REGISTERED, "users_registered");
 metric_name!(USERS_BY_ROLE, "users_by_role");

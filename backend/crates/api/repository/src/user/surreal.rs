@@ -92,18 +92,6 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "UserRepository::count_registered")]
-        async fn count_registered(&self) -> u32 {
-            self.pool
-                .get()
-                .await?
-                .query(surql_query!("table/count"))
-                .bind(("table", UserId::TABLE))
-                .await?
-                .take::<Value>(0)?
-                .extract()
-        }
-
         #[instrument(skip_all, name = "UserRepository::count_by_role")]
         async fn count_by_role(&self) -> HashMap<String, u32> {
             self.pool

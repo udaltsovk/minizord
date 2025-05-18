@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use entity::{reviewed, user::UserId};
 use macros::urd_repository;
 
@@ -9,4 +11,7 @@ pub mod surreal;
 urd_repository! {
     UserId -> reviewed -> UserId
         Err: RepositoryError
+    {
+        async fn count_by_score(&self) -> HashMap<u16, u32>;
+    }
 }

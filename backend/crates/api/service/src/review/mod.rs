@@ -1,5 +1,5 @@
 use dto::review::{Review, UpsertReview};
-use macros::service;
+use macros::{metric_name, service};
 use ulid::Ulid;
 
 use crate::common::ServiceError;
@@ -54,5 +54,9 @@ service! {
             check_reviewer: bool,
             check_reviewee: bool,
         ) -> ();
+
+        async fn init_metrics(&self);
     }
 }
+
+metric_name!(REVIEWS_BY_SCORE, "reviews_by_score");

@@ -1,11 +1,14 @@
+use std::time::Duration;
+
 use dto::review::{Review, UpsertReview};
 use entity::reviewed::UpsertReviewed;
 use macros::implementation;
+use metrics::{describe_gauge, gauge};
 use repository::reviewed::ReviewedRepositoryDependency;
 use tracing::instrument;
 use ulid::Ulid;
 
-use super::{ReviewService, ReviewServiceResult};
+use super::{REVIEWS_BY_SCORE_METRIC_NAME, ReviewService, ReviewServiceResult};
 use crate::{common::ServiceError, user::UserServiceDependency};
 
 implementation! {
@@ -149,6 +152,27 @@ implementation! {
             self.reviewed_repository
                 .delete_by_in_and_out(reviewer_id.into(), reviewee_id.into())
                 .await?;
+        }
+
+        #[instrument(skip_all, name = "ReviewService::init_metrics")]
+        async fn init_metrics(&self) {
+            describe_gauge!(REVIEWS_BY_SCORE_METRIC_NAME, "The number of reviews by score");
+
+            let reviewed_repository = self.reviewed_repository.clone();
+            tokio::spawn(async move {
+                loop {
+                    if let Ok(reviews_by_score) = reviewed_repository
+                        .count_by_score()
+                        .await
+                    {
+                        reviews_by_score.into_iter().for_each(|(score, count)| {
+                            gauge!(REVIEWS_BY_SCORE_METRIC_NAME, "score" => score.to_string()).set(count);
+                        });
+                    }
+
+                    tokio::time::sleep(Duration::from_secs(5)).await;
+                }
+            });
         }
     }
 }

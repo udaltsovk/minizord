@@ -33,7 +33,10 @@ use service::{
     profile_image::{
         ProfileImageServiceDependency, implementation::ProfileImageServiceImpl,
     },
-    review::{ReviewServiceDependency, implementation::ReviewServiceImpl},
+    review::{
+        ReviewService, ReviewServiceDependency,
+        implementation::ReviewServiceImpl,
+    },
     user::{
         UserService, UserServiceDependency, implementation::UserServiceImpl,
     },
@@ -133,6 +136,7 @@ impl Api {
 
         user_service.init_metrics().await;
         profile_service.init_metrics().await;
+        review_service.init_metrics().await;
 
         Self {
             config: AppConfig {

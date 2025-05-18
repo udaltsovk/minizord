@@ -16,7 +16,6 @@ crud_repository! {
         async fn exists_by_email(&self, email: &str) -> bool;
         async fn find_by_username(&self, username: &str) -> Option<User>;
         async fn exists_by_username(&self, username: &str) -> bool;
-        async fn count_registered(&self) -> u32;
         async fn count_by_role(&self) -> HashMap<String, u32>;
     }
 }

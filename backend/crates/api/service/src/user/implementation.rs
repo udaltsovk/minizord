@@ -16,12 +16,9 @@ use ulid::Ulid;
 use utils::auth::{PasswordHasher, jwt};
 
 use super::{
-    USERS_BY_ROLE_METRIC_NAME, USERS_REGISTERED_METRIC_NAME, UserService,
-    UserServiceResult,
+    DEFAULT_ADMIN_ID, USERS_BY_ROLE_METRIC_NAME, UserService, UserServiceResult,
 };
 use crate::common::ServiceError;
-
-const DEFAULT_ADMIN_ID: &str = "0000000000000000000000000A";
 
 implementation! {
     UserService {
@@ -206,18 +203,11 @@ implementation! {
 
         #[instrument(skip_all, name = "UserService::init_metrics")]
         async fn init_metrics(&self) {
-            describe_gauge!(USERS_REGISTERED_METRIC_NAME, "The number of currently registered users");
             describe_gauge!(USERS_BY_ROLE_METRIC_NAME, "The number of users by role");
 
             let user_repository = self.user_repository.clone();
             tokio::spawn(async move {
                 loop {
-                    if let Ok(registered_users) = user_repository
-                        .count_registered()
-                        .await
-                    {
-                        gauge!(USERS_REGISTERED_METRIC_NAME).set(registered_users);
-                    }
                     if let Ok(users_by_role) = user_repository
                         .count_by_role()
                         .await
