@@ -7,8 +7,8 @@ use macros::metric_name;
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder};
 use metrics_process::Collector;
 use metrics_tracing_context::{MetricsLayer, TracingContextLayer};
-use metrics_util::layers::Layer as _;
-use opentelemetry::{global, trace::TracerProvider as _};
+use metrics_util::{MetricKindMask, layers::Layer as _};
+use opentelemetry::{KeyValue, global, trace::TracerProvider as _};
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
 use opentelemetry_otlp::{
     ExportConfig, LogExporter, Protocol, SpanExporter, WithExportConfig,
@@ -19,6 +19,7 @@ use opentelemetry_sdk::{
     logs::{BatchLogProcessor, SdkLogger, SdkLoggerProvider},
     trace::{BatchSpanProcessor, SdkTracerProvider, Tracer},
 };
+use opentelemetry_semantic_conventions::attribute;
 use tracing::{Subscriber, level_filters::LevelFilter};
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{
@@ -50,6 +51,7 @@ fn parse_directive(directive: &'static str) -> Directive {
     directive.parse().expect("Failed to parse directive")
 }
 
+#[cfg(feature = "actix-web")]
 metric_name!(
     HTTP_REQUESTS_DURATION_SECONDS,
     "http_server_request_duration_seconds"
@@ -66,6 +68,8 @@ pub struct LGTM {
     metrics_process_collector: Arc<Collector>,
 }
 impl LGTM {
+    pub const METRIC_SCRAPE_INTERVAL: Duration = Duration::from_secs(5);
+
     pub fn get_logger_provider(&self) -> SdkLoggerProvider {
         self.logger_provider
             .clone()
@@ -152,6 +156,7 @@ impl LGTM {
             .add_directive(parse_directive("reqwest=off"))
             .add_directive(parse_directive("aws=off"))
             .add_directive(parse_directive("rustls=off"))
+            .add_directive(parse_directive("tungstenite=off"))
     }
 
     #[inline]
@@ -180,14 +185,21 @@ impl LGTM {
 
     pub fn init(
         otel_endpoint: &'static str,
-        otel_service_name: &'static str,
         prometheus_address: &'static str,
+        otel_service_namespace: &'static str,
+        otel_service_name: &'static str,
     ) -> Self {
         let lgtm = Self {
             otel_endpoint: otel_endpoint.into(),
             otel_service_name: otel_service_name.into(),
             resource: Resource::builder()
-                .with_service_name(otel_service_name)
+                .with_attributes(vec![
+                    KeyValue::new(
+                        attribute::SERVICE_NAMESPACE,
+                        otel_service_namespace,
+                    ),
+                    KeyValue::new(attribute::SERVICE_NAME, otel_service_name),
+                ])
                 .build(),
             logger_provider: None,
             tracer_provider: None,
@@ -204,21 +216,31 @@ impl LGTM {
             .with(MetricsLayer::new())
             .init();
 
-        let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
+        let mut prometheus_builder = PrometheusBuilder::new()
             .with_http_listener(
                 SocketAddr::from_str(prometheus_address)
                     .expect("a valid address"),
             )
-            .set_buckets_for_metric(
-                Matcher::Full(
-                    HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME.to_string(),
-                ),
-                &[
-                    0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0,
-                    10.0,
-                ],
-            )
-            .expect("values to be not empty")
+            .idle_timeout(
+                MetricKindMask::ALL,
+                Some(LGTM::METRIC_SCRAPE_INTERVAL),
+            );
+
+        if cfg!(any(feature = "actix-web")) {
+            prometheus_builder = prometheus_builder
+                .set_buckets_for_metric(
+                    Matcher::Full(
+                        HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME.to_string(),
+                    ),
+                    &[
+                        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5,
+                        5.0, 10.0,
+                    ],
+                )
+                .expect("values to be not empty");
+        }
+
+        let (prometheus_recorder, serve_prometheus) = prometheus_builder
             .build()
             .expect("Failed to build Prometheus");
 
@@ -233,6 +255,7 @@ impl LGTM {
 
         tokio::spawn(
             tokio_metrics::RuntimeMetricsReporterBuilder::default()
+                .with_interval(LGTM::METRIC_SCRAPE_INTERVAL)
                 .describe_and_run(),
         );
 
@@ -240,7 +263,7 @@ impl LGTM {
         tokio::spawn(async move {
             loop {
                 collector.collect();
-                tokio::time::sleep(Duration::from_secs(5)).await;
+                tokio::time::sleep(LGTM::METRIC_SCRAPE_INTERVAL).await;
             }
         });
 

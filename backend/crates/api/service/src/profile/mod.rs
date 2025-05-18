@@ -28,5 +28,4 @@ service! {
     }
 }
 
-metric_name!(PROFILES_FILLED, "profiles_filled");
-metric_name!(PROFILES_BY_CITY, "profiles_by_city");
+metric_name!(PROFILES_BY_CITY_COUNT, "profiles_by_city_count");

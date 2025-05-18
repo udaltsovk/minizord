@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use dto::profile::{Profile, UpsertProfile};
 use entity::{
     profile::{ProfileId, UpsertProfile as UpsertProfileEntity},
@@ -12,10 +10,10 @@ use repository::{
 };
 use tracing::instrument;
 use ulid::Ulid;
+use utils::LGTM;
 
 use super::{
-    PROFILES_BY_CITY_METRIC_NAME, PROFILES_FILLED_METRIC_NAME, ProfileService,
-    ProfileServiceResult,
+    PROFILES_BY_CITY_COUNT_METRIC_NAME, ProfileService, ProfileServiceResult,
 };
 use crate::{common::ServiceError, user::UserServiceDependency};
 
@@ -126,28 +124,21 @@ implementation! {
 
         #[instrument(skip_all, name = "ProfileService::init_metrics")]
         async fn init_metrics(&self) {
-            describe_gauge!(PROFILES_FILLED_METRIC_NAME, "The number of filled profiles");
-            describe_gauge!(PROFILES_BY_CITY_METRIC_NAME, "The city from the profile");
+            describe_gauge!(PROFILES_BY_CITY_COUNT_METRIC_NAME, "The city from the profile");
 
             let profile_repository = self.profile_repository.clone();
             tokio::spawn(async move {
                 loop {
-                    if let Ok(filled_profiles) = profile_repository
-                        .count_filled()
-                        .await
-                    {
-                        gauge!(PROFILES_FILLED_METRIC_NAME).set(filled_profiles);
-                    }
                     if let Ok(profiles_by_city) = profile_repository
                         .count_by_city()
                         .await
                     {
-                        profiles_by_city.into_iter().for_each(|(city, count)| {
-                            gauge!(PROFILES_BY_CITY_METRIC_NAME, "city" => city).set(count);
+                        profiles_by_city.iter().for_each(|(city, count)| {
+                            gauge!(PROFILES_BY_CITY_COUNT_METRIC_NAME, "city" => city.to_string()).set(*count);
                         });
                     }
 
-                    tokio::time::sleep(Duration::from_secs(5)).await;
+                    tokio::time::sleep(LGTM::METRIC_SCRAPE_INTERVAL).await;
                 }
             });
         }

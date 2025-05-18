@@ -59,4 +59,5 @@ service! {
     }
 }
 
-metric_name!(REVIEWS_BY_SCORE, "reviews_by_score");
+metric_name!(REVIEWS_BY_SCORE_COUNT, "reviews_by_score_count");
+metric_name!(REVIEWS_BY_SCORE_SUM, "reviews_by_score_sum");

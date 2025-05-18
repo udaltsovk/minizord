@@ -50,18 +50,6 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "ProfileRepository::count_filled")]
-        async fn count_filled(&self) -> u32 {
-            self.pool
-                .get()
-                .await?
-                .query(surql_query!("table/count"))
-                .bind(("table", ProfileId::TABLE))
-                .await?
-                .take::<Value>(0)?
-                .extract()
-        }
-
         #[instrument(skip_all, name = "ProfileRepository::count_by_city")]
         async fn count_by_city(&self) -> HashMap<String, u32> {
             self.pool

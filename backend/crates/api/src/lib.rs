@@ -58,7 +58,6 @@ env_vars_config! {
     JWT_SECRET: String = "P9mzO6aO64hgkVCBN96CfpUXB1x58XA3zmGuoT4HjSdhHgyRBnqv/EsPDCfs9CRT/oEJYSu6YDcvmdrf/utDNQ==",
     METRICS_ADDRESS: String = "0.0.0.0:8081",
     OTEL_ENDPOINT: String = "http://localhost:4317",
-    OTEL_SERVICE_NAME: String = "minizord_api",
     S3_BASE_URL: String = "http://localhost:9000",
     S3_ACCESS_KEY: String = "minioadmin",
     S3_SECRET_KEY: String = "minioadmin",

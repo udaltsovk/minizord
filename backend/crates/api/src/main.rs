@@ -1,5 +1,4 @@
 use api::{Api, config};
-use env_vars_config::set_env_only;
 use include_dir::include_dir;
 use utils::{
     LGTM,
@@ -8,16 +7,13 @@ use utils::{
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    unsafe {
-        use config::OTEL_SERVICE_NAME;
-        set_env_only!(OTEL_SERVICE_NAME);
-    }
     config::init();
 
     let lgtm = LGTM::init(
         &config::OTEL_ENDPOINT,
-        &config::OTEL_SERVICE_NAME,
         &config::METRICS_ADDRESS,
+        "minizord",
+        "api",
     );
 
     config::test_values();

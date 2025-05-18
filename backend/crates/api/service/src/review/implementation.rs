@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use dto::review::{Review, UpsertReview};
 use entity::reviewed::UpsertReviewed;
 use macros::implementation;
@@ -7,8 +5,12 @@ use metrics::{describe_gauge, gauge};
 use repository::reviewed::ReviewedRepositoryDependency;
 use tracing::instrument;
 use ulid::Ulid;
+use utils::LGTM;
 
-use super::{REVIEWS_BY_SCORE_METRIC_NAME, ReviewService, ReviewServiceResult};
+use super::{
+    REVIEWS_BY_SCORE_COUNT_METRIC_NAME, REVIEWS_BY_SCORE_SUM_METRIC_NAME,
+    ReviewService, ReviewServiceResult,
+};
 use crate::{common::ServiceError, user::UserServiceDependency};
 
 implementation! {
@@ -156,7 +158,8 @@ implementation! {
 
         #[instrument(skip_all, name = "ReviewService::init_metrics")]
         async fn init_metrics(&self) {
-            describe_gauge!(REVIEWS_BY_SCORE_METRIC_NAME, "The number of reviews by score");
+            describe_gauge!(REVIEWS_BY_SCORE_COUNT_METRIC_NAME, "The number of reviews by score");
+            describe_gauge!(REVIEWS_BY_SCORE_SUM_METRIC_NAME, "The sum of review scores by score");
 
             let reviewed_repository = self.reviewed_repository.clone();
             tokio::spawn(async move {
@@ -165,12 +168,15 @@ implementation! {
                         .count_by_score()
                         .await
                     {
-                        reviews_by_score.into_iter().for_each(|(score, count)| {
-                            gauge!(REVIEWS_BY_SCORE_METRIC_NAME, "score" => score.to_string()).set(count);
+                        reviews_by_score.iter().for_each(|(score, count)| {
+                            gauge!(REVIEWS_BY_SCORE_COUNT_METRIC_NAME, "score" => score.to_string()).set(*count);
+                        });
+                        reviews_by_score.iter().for_each(|(score, count)| {
+                            gauge!(REVIEWS_BY_SCORE_SUM_METRIC_NAME, "score" => score.to_string()).set(count.saturating_mul((*score).into()))
                         });
                     }
 
-                    tokio::time::sleep(Duration::from_secs(5)).await;
+                    tokio::time::sleep(LGTM::METRIC_SCRAPE_INTERVAL).await;
                 }
             });
         }

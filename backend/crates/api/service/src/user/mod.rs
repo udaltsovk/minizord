@@ -43,4 +43,4 @@ service! {
     }
 }
 
-metric_name!(USERS_BY_ROLE, "users_by_role");
+metric_name!(USERS_BY_ROLE_COUNT, "users_by_role_count");

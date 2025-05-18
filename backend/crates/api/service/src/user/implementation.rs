@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use dto::{
     auth::{LoginRequest, PasswordChangeRequest},
     user::{CreateUser, User, UserUpdate},
@@ -13,10 +11,14 @@ use metrics::{describe_gauge, gauge};
 use repository::user::UserRepositoryDependency;
 use tracing::instrument;
 use ulid::Ulid;
-use utils::auth::{PasswordHasher, jwt};
+use utils::{
+    LGTM,
+    auth::{PasswordHasher, jwt},
+};
 
 use super::{
-    DEFAULT_ADMIN_ID, USERS_BY_ROLE_METRIC_NAME, UserService, UserServiceResult,
+    DEFAULT_ADMIN_ID, USERS_BY_ROLE_COUNT_METRIC_NAME, UserService,
+    UserServiceResult,
 };
 use crate::common::ServiceError;
 
@@ -203,7 +205,7 @@ implementation! {
 
         #[instrument(skip_all, name = "UserService::init_metrics")]
         async fn init_metrics(&self) {
-            describe_gauge!(USERS_BY_ROLE_METRIC_NAME, "The number of users by role");
+            describe_gauge!(USERS_BY_ROLE_COUNT_METRIC_NAME, "The number of users by role");
 
             let user_repository = self.user_repository.clone();
             tokio::spawn(async move {
@@ -212,12 +214,12 @@ implementation! {
                         .count_by_role()
                         .await
                     {
-                        users_by_role.into_iter().for_each(|(role, count)| {
-                            gauge!(USERS_BY_ROLE_METRIC_NAME, "role" => role).set(count);
+                        users_by_role.iter().for_each(|(role, count)| {
+                            gauge!(USERS_BY_ROLE_COUNT_METRIC_NAME, "role" => role.to_string()).set(*count);
                         });
                     }
 
-                    tokio::time::sleep(Duration::from_secs(5)).await;
+                    tokio::time::sleep(LGTM::METRIC_SCRAPE_INTERVAL).await;
                 }
             });
         }
