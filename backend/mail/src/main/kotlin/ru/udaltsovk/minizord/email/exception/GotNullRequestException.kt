@@ -1,3 +1,6 @@
 package ru.udaltsovk.minizord.email.exception
 
-class GotNullRequestException(): NullPointerException()
+/**
+ * Исключение, выбрасываемое, когда получен нулевой запрос.
+ */
+class GotNullRequestException : NullPointerException()

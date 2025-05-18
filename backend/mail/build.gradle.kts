@@ -1,5 +1,4 @@
 import com.google.protobuf.gradle.id
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     kotlin("jvm") version "1.9.25"
@@ -8,6 +7,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.protobuf") version "0.9.4"
     kotlin("plugin.jpa") version "1.9.25"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 group = "ru.udaltsovk.minizord"
@@ -23,6 +23,14 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+
+    all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin") {
+                useVersion(io.gitlab.arturbosch.detekt.getSupportedKotlinVersion())
+            }
+        }
+    }
 }
 
 repositories {
@@ -34,6 +42,8 @@ extra["opentelemetryInstrumentationVersion"] = "2.15.0"
 extra["opentelemetrySamplersVersion"] = "1.46.0-alpha"
 
 dependencies {
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")

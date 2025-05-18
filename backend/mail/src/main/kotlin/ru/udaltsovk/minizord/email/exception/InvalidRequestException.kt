@@ -1,3 +1,6 @@
 package ru.udaltsovk.minizord.email.exception
 
-class InvalidRequestException: IllegalArgumentException()
+/**
+ * Исключение, выбрасываемое, когда получен невалидный запрос.
+ */
+class InvalidRequestException : IllegalArgumentException()

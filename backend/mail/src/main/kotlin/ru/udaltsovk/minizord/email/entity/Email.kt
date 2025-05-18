@@ -10,18 +10,37 @@ import ru.udaltsovk.minizord.email.proto.EmailType
 import java.time.LocalDateTime
 import java.util.UUID
 
+/**
+ * Сущность, представляющая отправленное электронное письмо.
+ * @property id Уникальный идентификатор письма.
+ * @property receiver Получатель письма.
+ * @property emailType Тип письма.
+ * @property sentAt Время отправки письма.
+ */
 @Entity(name = "sent_emails")
 data class Email(
+    /**
+     * Уникальный идентификатор письма.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
 
+    /**
+     * Получатель письма.
+     */
     @Column(nullable = false)
     val receiver: String,
 
+    /**
+     * Тип письма.
+     */
     @Column(nullable = false)
     val emailType: EmailType,
 
+    /**
+     * Время отправки письма.
+     */
     @Column(nullable = false)
     val sentAt: LocalDateTime = LocalDateTime.now(),
 ) {

@@ -1,3 +1,6 @@
 package ru.udaltsovk.minizord.email.exception
 
-class GotNullResponseObserverException(): NullPointerException()
+/**
+ * Исключение, выбрасываемое, когда получен нулевой наблюдатель ответа.
+ */
+class GotNullResponseObserverException : NullPointerException()

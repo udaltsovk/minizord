@@ -17,7 +17,7 @@ services:
       SURREAL_TELEMETRY_PROVIDER: otlp
       SURREAL_TELEMETRY_DISABLE_METRICS: false
       SURREAL_TELEMETRY_DISABLE_TRACING: false
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
   db-postgres:
     image: postgres:latest
     volumes:
@@ -46,10 +46,8 @@ services:
     user: root
     environment:
       MH_AUTH_FILE: /etc/mailhog/credentials
-      MH_STORAGE: /data
     volumes:
       - ../assets/configs/dev/mailhog-credentials:/etc/mailhog/credentials
-      - smtp:/data
     ports:
       - "1025:1025"
       - "8025:8025"
@@ -134,8 +132,6 @@ volumes:
   db-surreal:
   db-postgres:
   s3:
-  smtp:
-
   prometheus:
   tempo:
   grafana:

@@ -6,6 +6,10 @@ import ru.udaltsovk.minizord.email.proto.EmailType
 import ru.udaltsovk.minizord.email.proto.GetEmailHistoryItemResponse
 import ru.udaltsovk.minizord.email.proto.SendEmailRequest
 
+/**
+ * Преобразует сущность [Email] в DTO [GetEmailHistoryItemResponse].
+ * @return DTO элемент истории писем.
+ */
 fun Email.toDto(): GetEmailHistoryItemResponse =
     GetEmailHistoryItemResponse.newBuilder()
         .setId(id.toString())
@@ -14,6 +18,11 @@ fun Email.toDto(): GetEmailHistoryItemResponse =
         .setSentAt(sentAt.toTimestamp())
         .build()
 
+/**
+ * Преобразует DTO [SendEmailRequest] в сущность [Email].
+ * @return Сущность письма.
+ * @throws InvalidRequestException если тип письма не распознан.
+ */
 fun SendEmailRequest.toEntity() = Email(
     receiver = receiver,
     emailType = when {

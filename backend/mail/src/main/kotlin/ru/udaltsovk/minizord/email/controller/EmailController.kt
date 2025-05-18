@@ -13,10 +13,13 @@ import ru.udaltsovk.minizord.email.proto.SendEmailRequest
 import ru.udaltsovk.minizord.email.proto.SendEmailResponse
 import ru.udaltsovk.minizord.email.service.EmailService
 
+/**
+ * Контроллер для обработки запросов, связанных с электронной почтой.
+ */
 @GrpcService
 class EmailController(
     private val emailService: EmailService,
-): EmailGrpc.EmailImplBase() {
+) : EmailGrpc.EmailImplBase() {
     override fun sendEmail(request: SendEmailRequest?, responseObserver: StreamObserver<SendEmailResponse?>?) {
         if (request == null) {
             throw GotNullRequestException()
