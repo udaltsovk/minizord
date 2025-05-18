@@ -20,11 +20,6 @@ path = "./src/main.rs"
 name = "gen-openapi"
 path = "./src/gen_openapi.rs"
 
-[features]
-default = ["scalar"]
-scalar = ["utoipa-scalar"]
-swagger = ["utoipa-swagger-ui"]
-
 [dependencies]
 env-vars-config.workspace = true
 utils = { workspace = true, features = ["actix-web"] }
@@ -45,11 +40,7 @@ tracing.workspace = true
 include_dir.workspace = true
 
 utoipa.workspace = true
-utoipa-scalar = { version = "0.3", features = ["actix-web"], optional = true }
-utoipa-swagger-ui = { version = "9.0", features = [
-    "actix-web",
-    "vendored",
-], optional = true }
+utoipa-scalar = { version = "0.3", features = ["actix-web"] }
 
 actix-web.workspace = true
 actix-rt = "2.10"

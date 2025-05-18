@@ -6,10 +6,7 @@ use utoipa::{
         security::{Http, HttpAuthScheme, SecurityScheme},
     },
 };
-#[cfg(feature = "scalar")]
 use utoipa_scalar::{Scalar, Servable};
-#[cfg(feature = "swagger")]
-use utoipa_swagger_ui::SwaggerUi;
 
 use crate::config;
 
@@ -70,14 +67,8 @@ use crate::config;
 )]
 pub struct OpenApi;
 impl OpenApi {
-    #[cfg(feature = "scalar")]
     pub fn ui_service(api: OpenApiStruct) -> Scalar<OpenApiStruct> {
         Scalar::with_url("/openapi", api)
-    }
-
-    #[cfg(feature = "swagger")]
-    pub fn ui_service(api: OpenApiStruct) -> SwaggerUi {
-        SwaggerUi::new("/openapi/{_}*").url("/openapi.json", api)
     }
 
     pub fn json_string() -> String {
