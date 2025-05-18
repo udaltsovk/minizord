@@ -53,14 +53,15 @@ jobs:
     - name: Install Rust
       run: |
         rustup update nightly --no-self-update
-        rustup default nightly
-        rustup component add rustfmt clippy
+        rustup +nightly component add rustfmt
+        rustup update stable --no-self-update
+        rustup +stable component add clippy
     - name: Format code using Rustfmt
       run: |
-        cargo fmt --all -- --check
+        cargo +nightly fmt --all -- --check
     - name: Lint code using Clippy
       run: |
-        cargo clippy --all -- -D warnings
+        cargo +stable clippy --all -- -D warnings
   check-deps:
     name: Check for unused or insecure dependencies
     runs-on: ubuntu-latest
