@@ -1,12 +1,22 @@
-use entity::{applied_to_join, team::TeamId, user::UserId};
-use macros::crud_repository;
+use entity::{
+    applied_to_join::{
+        AppliedToJoin, AppliedToJoinUpdate, CreateAppliedToJoin,
+    },
+    team::TeamId,
+    user::UserId,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    UserId -> applied_to_join -> TeamId
-        Err: RepositoryError
-}
+#[repository(
+    r#in = UserId,
+    out = TeamId,
+    entity = AppliedToJoin,
+    create = CreateAppliedToJoin,
+    update = AppliedToJoinUpdate,
+    error = RepositoryError
+)]
+pub trait AppliedToJoinRepository {}

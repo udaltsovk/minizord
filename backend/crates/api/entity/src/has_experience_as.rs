@@ -1,16 +1,15 @@
-use macros::entity;
+use macros::relation;
 
-use crate::{specialization::SpecializationId, user::UserId};
+use crate::{EntityId, specialization::SpecializationId, user::UserId};
 
-entity! {
-    UserId -> HasExperienceAs -> SpecializationId {
-        fields {
-            level: u16,
-        },
-        upsert {
-            level: u16,
-        }
-    }
+#[relation]
+pub struct HasExperienceAs {
+    pub r#in: UserId,
+    pub out: SpecializationId,
+
+    #[field]
+    #[upsert]
+    pub level: u16,
 }
 
 impl From<UpsertHasExperienceAs> for HasExperienceAs {

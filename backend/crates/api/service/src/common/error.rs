@@ -42,9 +42,7 @@ impl From<RepositoryError> for ServiceError {
         use RepositoryError as RE;
         match err {
             RE::Pool(..) | RE::Database(..) => Self::Database(err.to_string()),
-            #[cfg(feature = "surrealdb")]
             RE::FailedToSaveObject => Self::Database(err.to_string()),
-            #[cfg(feature = "s3")]
             RE::S3(..) | RE::S3BrokenImage | RE::S3ByteStream(..) => {
                 Self::Database(err.to_string())
             },

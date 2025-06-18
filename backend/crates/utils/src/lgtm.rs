@@ -3,6 +3,14 @@ use std::{
     time::Duration,
 };
 
+use actix_web::{
+    body::MessageBody,
+    dev::{ServiceRequest, ServiceResponse},
+};
+use actix_web_metrics::{
+    ActixWebMetrics, ActixWebMetricsBuilder, ActixWebMetricsConfig,
+    LabelsConfig,
+};
 use macros::metric_name;
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder};
 use metrics_process::Collector;
@@ -20,7 +28,10 @@ use opentelemetry_sdk::{
     trace::{BatchSpanProcessor, SdkTracerProvider, Tracer},
 };
 use opentelemetry_semantic_conventions::attribute;
-use tracing::{Subscriber, level_filters::LevelFilter};
+use tracing::{Level, Span, Subscriber, level_filters::LevelFilter};
+use tracing_actix_web::{
+    DefaultRootSpanBuilder, RootSpanBuilder, TracingLogger,
+};
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{
     EnvFilter,
@@ -33,25 +44,12 @@ use tracing_subscriber::{
     registry::LookupSpan,
     util::SubscriberInitExt,
 };
-#[cfg(feature = "actix-web")]
-use {
-    actix_web_metrics::{
-        ActixWebMetrics, ActixWebMetricsBuilder, ActixWebMetricsConfig,
-        LabelsConfig,
-    },
-    actix_web_specific::CustomLevelRootSpanBuilder,
-    tracing_actix_web::{RootSpanBuilder, TracingLogger},
-};
-
-#[cfg(feature = "actix-web")]
-mod actix_web_specific;
 
 #[inline]
 fn parse_directive(directive: &'static str) -> Directive {
     directive.parse().expect("Failed to parse directive")
 }
 
-#[cfg(feature = "actix-web")]
 metric_name!(
     HTTP_REQUESTS_DURATION_SECONDS,
     "http_server_request_duration_seconds"
@@ -216,7 +214,7 @@ impl LGTM {
             .with(MetricsLayer::new())
             .init();
 
-        let mut prometheus_builder = PrometheusBuilder::new()
+        let (prometheus_recorder, serve_prometheus) = PrometheusBuilder::new()
             .with_http_listener(
                 SocketAddr::from_str(prometheus_address)
                     .expect("a valid address"),
@@ -224,23 +222,17 @@ impl LGTM {
             .idle_timeout(
                 MetricKindMask::ALL,
                 Some(LGTM::METRIC_SCRAPE_INTERVAL),
-            );
-
-        if cfg!(any(feature = "actix-web")) {
-            prometheus_builder = prometheus_builder
-                .set_buckets_for_metric(
-                    Matcher::Full(
-                        HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME.to_string(),
-                    ),
-                    &[
-                        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5,
-                        5.0, 10.0,
-                    ],
-                )
-                .expect("values to be not empty");
-        }
-
-        let (prometheus_recorder, serve_prometheus) = prometheus_builder
+            )
+            .set_buckets_for_metric(
+                Matcher::Full(
+                    HTTP_REQUESTS_DURATION_SECONDS_METRIC_NAME.to_string(),
+                ),
+                &[
+                    0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0,
+                    10.0,
+                ],
+            )
+            .expect("values to be not empty")
             .build()
             .expect("Failed to build Prometheus");
 
@@ -270,12 +262,10 @@ impl LGTM {
         lgtm
     }
 
-    #[cfg(feature = "actix-web")]
     pub fn tracing_middleware() -> TracingLogger<impl RootSpanBuilder> {
         TracingLogger::<CustomLevelRootSpanBuilder>::new()
     }
 
-    #[cfg(feature = "actix-web")]
     pub fn metrics_middleware(&self) -> ActixWebMetrics {
         ActixWebMetricsBuilder::new()
             .mask_unmatched_patterns("UNKNOWN")
@@ -302,5 +292,22 @@ impl LGTM {
         self.get_logger_provider().shutdown()?;
 
         Ok(())
+    }
+}
+pub struct CustomLevelRootSpanBuilder;
+impl RootSpanBuilder for CustomLevelRootSpanBuilder {
+    fn on_request_start(request: &ServiceRequest) -> Span {
+        let level = match request.path() {
+            "/metrics" => Level::TRACE,
+            _ => Level::INFO,
+        };
+        tracing_actix_web::root_span!(level = level, request)
+    }
+
+    fn on_request_end<B: MessageBody>(
+        span: Span,
+        outcome: &Result<ServiceResponse<B>, actix_web::Error>,
+    ) {
+        DefaultRootSpanBuilder::on_request_end(span, outcome);
     }
 }

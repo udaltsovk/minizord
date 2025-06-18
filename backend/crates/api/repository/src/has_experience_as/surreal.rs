@@ -1,23 +1,30 @@
 use entity::{
+    EntityId,
     has_experience_as::{
         HasExperienceAs, HasExperienceAsId, UpsertHasExperienceAs,
     },
     specialization::SpecializationId,
     user::UserId,
 };
-use macros::{EntityId, implementation, surql_query};
-use tracing::instrument;
+use macros::{implementation, surql_query};
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{HasExperienceAsRepository, HasExperienceAsRepositoryResult};
 use crate::common::RepositoryError;
 
-implementation! {
-    HasExperienceAsRepository {
-        pool: SurrealPool
-    } as SurrealHasExperienceAsRepository {
-        #[instrument(skip_all, name = "HasExperienceAsRepository::upsert_by_in_and_out")]
-        async fn upsert_by_in_and_out(&self, r#in: UserId, out: SpecializationId, object: UpsertHasExperienceAs) -> HasExperienceAs {
+#[implementation(result = HasExperienceAsRepositoryResult)]
+pub mod repository {
+    struct SurrealHasExperienceAsRepository {
+        pool: SurrealPool,
+    }
+
+    impl HasExperienceAsRepository for SurrealHasExperienceAsRepository {
+        async fn upsert_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: SpecializationId,
+            object: UpsertHasExperienceAs,
+        ) -> HasExperienceAs {
             self.pool
                 .get()
                 .await?
@@ -31,8 +38,12 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::find_all_by_in")]
-        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
+        async fn find_all_by_in(
+            &self,
+            r#in: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<HasExperienceAs> {
             self.pool
                 .get()
                 .await?
@@ -45,13 +56,16 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::find_all_by_out")]
-        async fn find_all_by_out(&self, out: SpecializationId, limit: u16, offset: u64) -> Vec<HasExperienceAs> {
+        async fn find_all_by_out(
+            &self,
+            out: SpecializationId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<HasExperienceAs> {
             self.pool
                 .get()
                 .await?
@@ -64,13 +78,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::exists_by_out")]
         async fn exists_by_out(&self, out: SpecializationId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::find_by_in_and_out")]
-        async fn find_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> Option<HasExperienceAs> {
+        async fn find_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: SpecializationId,
+        ) -> Option<HasExperienceAs> {
             self.pool
                 .get()
                 .await?
@@ -78,13 +94,19 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::exists_by_in_and_out")]
-        async fn exists_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> bool {
+        async fn exists_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: SpecializationId,
+        ) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "HasExperienceAsRepository::delete_by_in_and_out")]
-        async fn delete_by_in_and_out(&self, r#in: UserId, out: SpecializationId) -> Option<HasExperienceAs> {
+        async fn delete_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: SpecializationId,
+        ) -> Option<HasExperienceAs> {
             self.pool
                 .get()
                 .await?

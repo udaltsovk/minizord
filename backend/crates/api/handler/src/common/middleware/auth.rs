@@ -27,7 +27,7 @@ pub async fn user_extractor_middleware(
 ) -> Result<ServiceResponse<impl MessageBody>, actix_web::Error> {
     let token = extract_token_from_authorization_header(&req)?;
 
-    let claims = jwt::parse(&token, &jwt_secret.0)
+    let claims = jwt::parse(&token, &jwt_secret)
         .ok_or(AuthenticationError::InvalidCredentials)?;
 
     if claims.iat

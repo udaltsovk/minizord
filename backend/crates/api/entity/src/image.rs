@@ -6,7 +6,6 @@ use ulid::Ulid;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ImageId(Ulid);
 impl ImageId {
-    #[cfg(feature = "s3")]
     pub const BUCKET: &'static str = "images";
 }
 impl fmt::Display for ImageId {

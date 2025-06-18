@@ -25,93 +25,90 @@ use crate::common::{
 
 pub mod implementation;
 
-handler! {
-    Profile
-        Err: HandlerError,
-        Impl: ImplementedProfileHandler
-    {
-        fn routes(
-            profile_service: ProfileServiceDependency,
-            profile_image_service: ProfileImageServiceDependency,
-        ) {
-            move |cfg: &mut ServiceConfig| {
-                cfg.app_data(Data::new(profile_service))
-                    .app_data(Data::new(profile_image_service))
-                    .service(scope("/profiles")
-                        .wrap(from_fn(user_extractor_middleware))
-                        .service(Self::get_current_profile())
-                        .service(Self::upsert_current_profile())
-                        .service(Self::delete_current_profile())
-                        .service(Self::get_current_profile_image())
-                        .service(Self::upsert_current_profile_image())
-                        .service(Self::delete_current_profile_image())
-                        .service(Self::get_profile_by_id())
-                        .service(Self::get_profile_image_by_id())
-                        .service(scope("")
+#[handler(error = HandlerError)]
+pub trait ProfileHandler {
+    fn routes(
+        profile_service: ProfileServiceDependency,
+        profile_image_service: ProfileImageServiceDependency,
+        cfg: &mut ServiceConfig,
+    ) {
+        cfg.app_data(Data::new(profile_service))
+            .app_data(Data::new(profile_image_service))
+            .service(
+                scope("/profiles")
+                    .wrap(from_fn(user_extractor_middleware))
+                    .service(Self::get_current_profile())
+                    .service(Self::upsert_current_profile())
+                    .service(Self::delete_current_profile())
+                    .service(Self::get_current_profile_image())
+                    .service(Self::upsert_current_profile_image())
+                    .service(Self::delete_current_profile_image())
+                    .service(Self::get_profile_by_id())
+                    .service(Self::get_profile_image_by_id())
+                    .service(
+                        scope("")
                             .guard(UserRoleGuard::new(&[UserRole::Organizer]))
                             .service(Self::delete_profile_by_id())
-                            .service(Self::delete_profile_image_by_id())
-                        )
-                    );
-            }
-        }
-
-        async fn get_current_profile(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-        ) -> Json<Profile>;
-
-        async fn upsert_current_profile(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-            body: Validated<Json<UpsertProfile>>,
-        ) -> Json<Profile>;
-
-        async fn delete_current_profile(
-            profile_service: Data<ProfileServiceDependency>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
-
-        async fn get_current_profile_image(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
-
-        async fn upsert_current_profile_image(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            user: ReqData<User>,
-            form: MultipartForm<UploadForm>,
-        ) -> HttpResponse;
-
-        async fn delete_current_profile_image(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
-
-        async fn get_profile_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
-            user: ReqData<User>,
-        ) -> Json<Profile>;
-
-        async fn get_profile_image_by_id(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            profile_id: Path<Ulid>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
-
-        async fn delete_profile_by_id(
-            profile_service: Data<ProfileServiceDependency>,
-            profile_id: Path<Ulid>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
-
-        async fn delete_profile_image_by_id(
-            profile_image_service: Data<ProfileImageServiceDependency>,
-            profile_id: Path<Ulid>,
-            user: ReqData<User>,
-        ) -> HttpResponse;
+                            .service(Self::delete_profile_image_by_id()),
+                    ),
+            );
     }
+
+    async fn get_current_profile(
+        profile_service: Data<ProfileServiceDependency>,
+        user: ReqData<User>,
+    ) -> Json<Profile>;
+
+    async fn upsert_current_profile(
+        profile_service: Data<ProfileServiceDependency>,
+        user: ReqData<User>,
+        body: Validated<Json<UpsertProfile>>,
+    ) -> Json<Profile>;
+
+    async fn delete_current_profile(
+        profile_service: Data<ProfileServiceDependency>,
+        user: ReqData<User>,
+    ) -> HttpResponse;
+
+    async fn get_current_profile_image(
+        profile_image_service: Data<ProfileImageServiceDependency>,
+        user: ReqData<User>,
+    ) -> HttpResponse;
+
+    async fn upsert_current_profile_image(
+        profile_image_service: Data<ProfileImageServiceDependency>,
+        user: ReqData<User>,
+        form: MultipartForm<UploadForm>,
+    ) -> HttpResponse;
+
+    async fn delete_current_profile_image(
+        profile_image_service: Data<ProfileImageServiceDependency>,
+        user: ReqData<User>,
+    ) -> HttpResponse;
+
+    async fn get_profile_by_id(
+        profile_service: Data<ProfileServiceDependency>,
+        profile_id: Path<Ulid>,
+        user: ReqData<User>,
+    ) -> Json<Profile>;
+
+    async fn get_profile_image_by_id(
+        profile_image_service: Data<ProfileImageServiceDependency>,
+        profile_id: Path<Ulid>,
+        user: ReqData<User>,
+    ) -> HttpResponse;
+
+    async fn delete_profile_by_id(
+        profile_service: Data<ProfileServiceDependency>,
+        profile_id: Path<Ulid>,
+        user: ReqData<User>,
+    ) -> HttpResponse;
+
+    async fn delete_profile_image_by_id(
+        profile_image_service: Data<ProfileImageServiceDependency>,
+        profile_id: Path<Ulid>,
+        user: ReqData<User>,
+    ) -> HttpResponse;
 }
 
 #[derive(MultipartForm, ToSchema, Debug)]

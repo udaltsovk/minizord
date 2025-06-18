@@ -1,18 +1,19 @@
-use macros::entity;
+use macros::relation;
 
-use crate::user::UserId;
+use crate::{EntityId, user::UserId};
 
-entity! {
-    UserId -> Reviewed -> UserId {
-        fields {
-            score: u16,
-            review: String,
-        },
-        upsert {
-            score: u16,
-            review: String,
-        },
-    }
+#[relation]
+pub struct Reviewed {
+    pub r#in: UserId,
+    pub out: UserId,
+
+    #[field]
+    #[upsert]
+    pub score: u16,
+
+    #[field]
+    #[upsert]
+    pub review: String,
 }
 
 impl From<UpsertReviewed> for Reviewed {

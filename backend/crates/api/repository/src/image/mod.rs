@@ -1,12 +1,14 @@
-use entity::image;
-use macros::urd_repository;
+use entity::image::{Image, ImageId, UpsertImage};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "s3")]
 pub mod s3;
 
-urd_repository! {
-    Image
-        Err: RepositoryError
-}
+#[repository(
+    entity = Image,
+    entity_id = ImageId,
+    upsert = UpsertImage,
+    error = RepositoryError
+)]
+pub trait ImageRepository {}

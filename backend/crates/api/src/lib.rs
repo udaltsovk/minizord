@@ -68,6 +68,8 @@ env_vars_config! {
 
 #[derive(Clone)]
 struct AppConfig {
+    base_api_url: BaseApiUrl,
+    jwt_secret: JwtSecret,
     user_service: UserServiceDependency,
     profile_service: ProfileServiceDependency,
     profile_image_service: ProfileImageServiceDependency,
@@ -85,8 +87,8 @@ impl AppConfig {
                 QueryConfig::default().error_handler(handler::input_error),
             )
             .app_data(JsonConfig::default().error_handler(handler::input_error))
-            .app_data(Data::new(JwtSecret(config::JWT_SECRET.to_owned())))
-            .app_data(Data::new(BaseApiUrl(config::BASE_API_URL.to_owned())))
+            .app_data(Data::new(self.base_api_url.clone()))
+            .app_data(Data::new(self.jwt_secret.clone()))
             .configure(UserHandlerImpl::routes(self.user_service))
             .configure(ProfileHandlerImpl::routes(
                 self.profile_service,
@@ -112,11 +114,13 @@ impl Api {
         let image_repository = S3ImageRepository::new(s3.clone());
         let reviewed_repository = SurrealReviewedRepository::new(db.clone());
 
+        let base_api_url = BaseApiUrl::from(config::BASE_API_URL.to_owned());
+        let jwt_secret = JwtSecret::from(config::JWT_SECRET.to_owned());
         let password_hasher = PasswordHasher::new();
 
         let user_service = UserServiceImpl::new(
             user_repository.clone(),
-            config::JWT_SECRET.clone(),
+            jwt_secret.clone(),
             password_hasher.clone(),
         );
         let profile_service = ProfileServiceImpl::new(
@@ -139,6 +143,8 @@ impl Api {
 
         Self {
             config: AppConfig {
+                jwt_secret,
+                base_api_url,
                 user_service,
                 profile_service,
                 profile_image_service,

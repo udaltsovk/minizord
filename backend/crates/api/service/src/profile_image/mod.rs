@@ -7,16 +7,20 @@ use crate::common::ServiceError;
 
 pub mod implementation;
 
-service! {
-    ProfileImage
-        Err: ServiceError
-    {
-        async fn upsert_by_id(&self, id: Ulid, file: TempFile, check_user: bool) -> ();
+const MAX_IMAGE_SIZE: usize = 5_976_883;
 
-        async fn find_by_id(&self, id: Ulid, check_user: bool) -> Option<Image>;
+#[service(error = ServiceError)]
+pub trait ProfileImageService {
+    async fn upsert_by_id(
+        &self,
+        id: Ulid,
+        file: TempFile,
+        check_user: bool,
+    ) -> ();
 
-        async fn get_by_id(&self, id: Ulid, check_user: bool) -> Image;
+    async fn find_by_id(&self, id: Ulid, check_user: bool) -> Option<Image>;
 
-        async fn delete_by_id(&self, id: Ulid, check_user: bool) -> ();
-    }
+    async fn get_by_id(&self, id: Ulid, check_user: bool) -> Image;
+
+    async fn delete_by_id(&self, id: Ulid, check_user: bool) -> ();
 }

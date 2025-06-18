@@ -1,8 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/macros",
-    "crates/utils",
+    "crates/utils*",
     "crates/api*",
     "crates/mail*",
     "crates/telegram*",
@@ -13,7 +12,7 @@ license = "MIT"
 edition = "2024"
 
 [workspace.dependencies]
-macros = { path = "./crates/macros" }
+macros = { path = "./crates/utils/macros" }
 utils = { path = "./crates/utils" }
 
 env-vars-config = "0.5"

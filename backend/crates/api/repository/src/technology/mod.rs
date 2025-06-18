@@ -1,16 +1,20 @@
-use entity::technology::{self, Technology};
-use macros::crud_repository;
+use entity::technology::{
+    CreateTechnology, Technology, TechnologyId, TechnologyUpdate,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    Technology
-        Err: RepositoryError
-    {
-        async fn find_by_name(&self, name: &str) -> Option<Technology>;
-        async fn exists_by_name(&self, name: &str) -> bool;
-    }
+#[repository(
+    entity = Technology,
+    entity_id = TechnologyId,
+    create = CreateTechnology,
+    update = TechnologyUpdate,
+    error = RepositoryError
+)]
+pub trait TechnologyRepository {
+    async fn find_by_name(&self, name: &str) -> Option<Technology>;
+    async fn exists_by_name(&self, name: &str) -> bool;
 }

@@ -9,9 +9,6 @@ edition.workspace = true
 name = "dto"
 path = "./src/lib.rs"
 
-[features]
-surrealdb = ["api-entity/surrealdb"]
-
 [dependencies]
 macros.workspace = true
 utils.workspace = true

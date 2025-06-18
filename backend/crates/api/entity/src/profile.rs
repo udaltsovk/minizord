@@ -1,28 +1,39 @@
 use macros::entity;
 use ulid::Ulid;
 
-entity! {
-    Profile {
-        id: Ulid,
-        fields {
-            name: String,
-            surname: String,
-            telegram: String,
-            city: String,
-            bio: String,
-            portfolio_urls: Vec<String>,
-            has_avatar: bool,
-        },
-        upsert {
-            name: String,
-            surname: String,
-            telegram: String,
-            city: String,
-            bio: String,
-            portfolio_urls: Vec<String>,
-            has_avatar: bool,
-        },
-    }
+use crate::EntityId;
+
+#[entity]
+pub struct Profile {
+    pub id: Ulid,
+
+    #[field]
+    #[upsert]
+    pub name: String,
+
+    #[field]
+    #[upsert]
+    pub surname: String,
+
+    #[field]
+    #[upsert]
+    pub telegram: String,
+
+    #[field]
+    #[upsert]
+    pub city: String,
+
+    #[field]
+    #[upsert]
+    pub bio: String,
+
+    #[field]
+    #[upsert]
+    pub portfolio_urls: Vec<String>,
+
+    #[field]
+    #[upsert]
+    pub has_avatar: bool,
 }
 
 impl From<(UpsertProfile, ProfileId)> for Profile {

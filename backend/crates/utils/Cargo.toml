@@ -5,21 +5,6 @@ authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true
 edition.workspace = true
 
-[features]
-surrealdb = [
-    "dep:mobc-surrealdb", 
-    "dep:surrealdb", 
-    "dep:surrealdb-migrations", 
-    "dep:include_dir"
-]
-s3 = ["dep:aws-sdk-s3"]
-actix-web = [
-    "dep:actix-web", 
-    "dep:actix-contrib-logger", 
-    "dep:tracing-actix-web", 
-    "dep:actix-web-metrics"
-]
-
 [dependencies]
 macros.workspace = true
 
@@ -77,20 +62,19 @@ metrics-tracing-context = "0.18"
 metrics-exporter-prometheus = "0.17"
 
 mobc.workspace = true
-mobc-surrealdb = { git = "https://github.com/NikSneMC/mobc-surrealdb", optional = true }
-surrealdb = { workspace = true, optional = true }
-surrealdb-migrations = { version = "2.2", optional = true }
-include_dir = { workspace = true, optional = true }
+mobc-surrealdb = { git = "https://github.com/NikSneMC/mobc-surrealdb" }
+surrealdb-migrations.version = "2.2"
+include_dir.workspace = true
 
-aws-sdk-s3 = { workspace = true, optional = true }
+aws-sdk-s3.workspace = true
 
-actix-web = { workspace = true, optional = true }
-actix-contrib-logger = { version = "0.1", optional = true }
+actix-web.workspace = true
+actix-contrib-logger.version = "0.1"
 tracing-actix-web = { version = "0.7", default-features = false, features = [
     "opentelemetry_0_29",
     "uuid_v7",
-], optional = true }
-actix-web-metrics = { version = "0.2", optional = true }
+] }
+actix-web-metrics.version = "0.2"
 
 [dev-dependencies]
 rstest.workspace = true

@@ -1,5 +1,5 @@
 use entity::user::{User as UserEntity, UserRole as UserEntityRole};
-use macros::dto;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use ulid::Ulid;
@@ -53,64 +53,75 @@ impl From<UserEntityRole> for UserRole {
     }
 }
 
-dto! {
+#[derive(Serialize, ToSchema, Clone, PartialEq, Debug)]
+///
+pub struct User {
     ///
-    User {
-        fields {
-            ///
-            #[schema(format = Ulid, examples(Ulid::default))]
-            id: Ulid,
+    #[schema(format = Ulid, examples(Ulid::default))]
+    pub id: Ulid,
 
-            ///
-            #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
-            email: String,
+    ///
+    #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
+    pub email: String,
 
-            ///
-            #[schema(min_length = 3, max_length = 20, pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#)]
-            username: String,
+    ///
+    #[schema(
+        min_length = 3,
+        max_length = 20,
+        pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#
+    )]
+    pub username: String,
 
-            ///
-            role: UserRole,
+    ///
+    pub role: UserRole,
 
-            ///
-            has_profile: bool,
-        },
-        create
-        ///
-        {
-            ///
-            #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
-            #[garde(length(min = 6, max = 50), email)]
-            email: String,
+    ///
+    pub has_profile: bool,
+}
 
-            ///
-            #[schema(min_length = 3, max_length = 20, pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#)]
-            #[garde(length(min = 3, max = 20), pattern(*RE_USERNAME))]
-            username: String,
+#[derive(Deserialize, ToSchema, Validate, Clone, PartialEq, Debug)]
+///
+pub struct CreateUser {
+    ///
+    #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
+    #[garde(length(min = 6, max = 50), email)]
+    pub email: String,
 
-            ///
-            #[schema(format = Password, min_length = 8, max_length = 100)]
-            #[garde(length(min = 8, max = 100), custom(validate_password))]
-            password: String,
+    ///
+    #[schema(
+        min_length = 3,
+        max_length = 20,
+        pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#
+    )]
+    #[garde(length(min = 3, max = 20), pattern(*RE_USERNAME))]
+    pub username: String,
 
-            ///
-            #[garde(skip)]
-            role: UserRole,
-        },
-        update
-        ///
-        {
-            ///
-            #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
-            #[garde(length(min = 6, max = 50), email)]
-            email: String,
+    ///
+    #[schema(format = Password, min_length = 8, max_length = 100)]
+    #[garde(length(min = 8, max = 100), custom(validate_password))]
+    pub password: String,
 
-            ///
-            #[schema(min_length = 3, max_length = 20, pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#)]
-            #[garde(length(min = 3, max = 20), pattern(*RE_USERNAME))]
-            username: String,
-        }
-    }
+    ///
+    #[garde(skip)]
+    pub role: UserRole,
+}
+
+#[derive(Deserialize, ToSchema, Validate, Clone, PartialEq, Debug)]
+///
+pub struct UserUpdate {
+    ///
+    #[schema(format = IdnEmail, min_length = 6, max_length = 50)]
+    #[garde(length(min = 6, max = 50), email)]
+    pub email: Option<String>,
+
+    ///
+    #[schema(
+        min_length = 3,
+        max_length = 20,
+        pattern = r#"^[a-zA-Z0-9._-]{3,20}$"#
+    )]
+    #[garde(length(min = 3, max = 20), pattern(*RE_USERNAME))]
+    pub username: Option<String>,
 }
 
 impl From<UserEntity> for User {

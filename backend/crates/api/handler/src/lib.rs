@@ -1,3 +1,5 @@
+#![allow(clippy::empty_docs)]
+
 use std::fmt::Display;
 
 use actix_web::{HttpRequest, HttpResponse};
@@ -10,10 +12,7 @@ pub mod review;
 pub mod user;
 
 #[tracing::instrument(skip_all, level = "trace")]
-pub fn input_error<'a, T: Display>(
-    err: T,
-    _req: &'a HttpRequest,
-) -> actix_web::Error {
+pub fn input_error<T: Display>(err: T, _req: &HttpRequest) -> actix_web::Error {
     ValidationError::with_description(&err.to_string()).into()
 }
 

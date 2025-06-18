@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 pub use argon2::password_hash::Error;
 use argon2::{
     Algorithm, Argon2, Params, PasswordHash,
@@ -7,10 +9,10 @@ use argon2::{
 use rand_chacha::{ChaCha20Rng, rand_core::SeedableRng};
 
 #[derive(Clone)]
-pub struct PasswordHasher<'a> {
-    hasher: Argon2<'a>,
+pub struct PasswordHasher {
+    hasher: Arc<Argon2<'static>>,
 }
-impl PasswordHasher<'_> {
+impl PasswordHasher {
     #[tracing::instrument(
         name = "PasswordHasher::new",
         skip_all,
@@ -18,11 +20,11 @@ impl PasswordHasher<'_> {
     )]
     pub fn new() -> Self {
         Self {
-            hasher: Argon2::new(
+            hasher: Arc::new(Argon2::new(
                 Algorithm::Argon2id,
                 Version::V0x13,
                 Params::new(19_456, 1, 4, Some(32)).unwrap_or_default(),
-            ),
+            )),
         }
     }
 
@@ -75,12 +77,12 @@ mod test {
     }
 
     #[fixture]
-    fn hasher<'a>() -> PasswordHasher<'a> {
+    fn hasher<'a>() -> PasswordHasher {
         PasswordHasher::new()
     }
 
     #[rstest]
-    fn basic(password: String, hasher: PasswordHasher<'_>) {
+    fn basic(password: String, hasher: PasswordHasher) {
         let hashed = hasher.hash(&password).unwrap();
 
         assert!(hasher.verify(&password, &hashed).is_ok())

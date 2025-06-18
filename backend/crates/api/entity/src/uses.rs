@@ -1,9 +1,11 @@
-use macros::entity;
+use macros::relation;
 
-use crate::{team::TeamId, technology::TechnologyId};
+use crate::{EntityId, team::TeamId, technology::TechnologyId};
 
-entity! {
-    TeamId -> Uses -> TechnologyId { }
+#[relation]
+pub struct Uses {
+    pub r#in: TeamId,
+    pub out: TechnologyId,
 }
 
 impl From<CreateUses> for Uses {

@@ -1,20 +1,22 @@
 use entity::{
+    EntityId,
     member_of::{CreateMemberOf, MemberOf, MemberOfId, MemberOfUpdate},
     team::TeamId,
     user::UserId,
 };
-use macros::{EntityId, implementation, surql_query};
-use tracing::instrument;
+use macros::{implementation, surql_query};
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{MemberOfRepository, MemberOfRepositoryResult};
 use crate::common::RepositoryError;
 
-implementation! {
-    MemberOfRepository {
-        pool: SurrealPool
-    } as SurrealMemberOfRepository {
-        #[instrument(skip_all, name = "MemberOfRepository::save")]
+#[implementation(result = MemberOfRepositoryResult)]
+pub mod repository {
+    struct SurrealMemberOfRepository {
+        pool: SurrealPool,
+    }
+
+    impl MemberOfRepository for SurrealMemberOfRepository {
         async fn save(&self, new: CreateMemberOf) -> MemberOf {
             self.pool
                 .get()
@@ -25,8 +27,12 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::find_all_by_in")]
-        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<MemberOf> {
+        async fn find_all_by_in(
+            &self,
+            r#in: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<MemberOf> {
             self.pool
                 .get()
                 .await?
@@ -39,13 +45,16 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::find_all_by_out")]
-        async fn find_all_by_out(&self, out: TeamId, limit: u16, offset: u64) -> Vec<MemberOf> {
+        async fn find_all_by_out(
+            &self,
+            out: TeamId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<MemberOf> {
             self.pool
                 .get()
                 .await?
@@ -58,13 +67,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::exists_by_out")]
         async fn exists_by_out(&self, out: TeamId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::find_by_in_and_out")]
-        async fn find_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<MemberOf> {
+        async fn find_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+        ) -> Option<MemberOf> {
             self.pool
                 .get()
                 .await?
@@ -72,13 +83,20 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::exists_by_in_and_out")]
-        async fn exists_by_in_and_out(&self, r#in: UserId, out: TeamId) -> bool {
+        async fn exists_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+        ) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::update_by_in_and_out")]
-        async fn update_by_in_and_out(&self, r#in: UserId, out: TeamId, update: MemberOfUpdate) -> Option<MemberOf> {
+        async fn update_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+            update: MemberOfUpdate,
+        ) -> Option<MemberOf> {
             self.pool
                 .get()
                 .await?
@@ -87,8 +105,11 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "MemberOfRepository::delete_by_in_and_out")]
-        async fn delete_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<MemberOf> {
+        async fn delete_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+        ) -> Option<MemberOf> {
             self.pool
                 .get()
                 .await?

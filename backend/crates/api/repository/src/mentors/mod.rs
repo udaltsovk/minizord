@@ -1,12 +1,20 @@
-use entity::{mentors, team::TeamId, user::UserId};
-use macros::crud_repository;
+use entity::{
+    mentors::{CreateMentors, Mentors, MentorsUpdate},
+    team::TeamId,
+    user::UserId,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    UserId -> mentors -> TeamId
-        Err: RepositoryError
-}
+#[repository(
+    r#in = UserId,
+    out = TeamId,
+    entity = Mentors,
+    create = CreateMentors,
+    update = MentorsUpdate,
+    error = RepositoryError
+)]
+pub trait MentorsRepository {}

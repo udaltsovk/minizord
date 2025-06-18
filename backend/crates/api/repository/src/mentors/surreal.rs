@@ -1,20 +1,22 @@
 use entity::{
+    EntityId,
     mentors::{CreateMentors, Mentors, MentorsId, MentorsUpdate},
     team::TeamId,
     user::UserId,
 };
-use macros::{EntityId, implementation, surql_query};
-use tracing::instrument;
+use macros::{implementation, surql_query};
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{MentorsRepository, MentorsRepositoryResult};
 use crate::common::RepositoryError;
 
-implementation! {
-    MentorsRepository {
-        pool: SurrealPool
-    } as SurrealMentorsRepository {
-        #[instrument(skip_all, name = "MentorsRepository::save")]
+#[implementation(result = MentorsRepositoryResult)]
+pub mod repository {
+    struct SurrealMentorsRepository {
+        pool: SurrealPool,
+    }
+
+    impl MentorsRepository for SurrealMentorsRepository {
         async fn save(&self, new: CreateMentors) -> Mentors {
             self.pool
                 .get()
@@ -25,8 +27,12 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::find_all_by_in")]
-        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Mentors> {
+        async fn find_all_by_in(
+            &self,
+            r#in: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<Mentors> {
             self.pool
                 .get()
                 .await?
@@ -39,13 +45,16 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::find_all_by_out")]
-        async fn find_all_by_out(&self, out: TeamId, limit: u16, offset: u64) -> Vec<Mentors> {
+        async fn find_all_by_out(
+            &self,
+            out: TeamId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<Mentors> {
             self.pool
                 .get()
                 .await?
@@ -58,13 +67,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::exists_by_out")]
         async fn exists_by_out(&self, out: TeamId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::find_by_in_and_out")]
-        async fn find_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<Mentors> {
+        async fn find_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+        ) -> Option<Mentors> {
             self.pool
                 .get()
                 .await?
@@ -72,13 +83,20 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::exists_by_in_and_out")]
-        async fn exists_by_in_and_out(&self, r#in: UserId, out: TeamId) -> bool {
+        async fn exists_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+        ) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::update_by_in_and_out")]
-        async fn update_by_in_and_out(&self, r#in: UserId, out: TeamId, update: MentorsUpdate) -> Option<Mentors> {
+        async fn update_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+            update: MentorsUpdate,
+        ) -> Option<Mentors> {
             self.pool
                 .get()
                 .await?
@@ -87,8 +105,11 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "MentorsRepository::delete_by_in_and_out")]
-        async fn delete_by_in_and_out(&self, r#in: UserId, out: TeamId) -> Option<Mentors> {
+        async fn delete_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TeamId,
+        ) -> Option<Mentors> {
             self.pool
                 .get()
                 .await?

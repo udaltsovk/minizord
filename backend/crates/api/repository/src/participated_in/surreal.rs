@@ -1,4 +1,5 @@
 use entity::{
+    EntityId,
     participated_in::{
         CreateParticipatedIn, ParticipatedIn, ParticipatedInId,
         ParticipatedInUpdate,
@@ -6,18 +7,19 @@ use entity::{
     tour::TourId,
     user::UserId,
 };
-use macros::{EntityId, implementation, surql_query};
-use tracing::instrument;
+use macros::{implementation, surql_query};
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{ParticipatedInRepository, ParticipatedInRepositoryResult};
 use crate::common::RepositoryError;
 
-implementation! {
-    ParticipatedInRepository {
-        pool: SurrealPool
-    } as SurrealParticipatedInRepository {
-        #[instrument(skip_all, name = "ParticipatedInRepository::save")]
+#[implementation(result = ParticipatedInRepositoryResult)]
+pub mod repository {
+    struct SurrealParticipatedInRepository {
+        pool: SurrealPool,
+    }
+
+    impl ParticipatedInRepository for SurrealParticipatedInRepository {
         async fn save(&self, new: CreateParticipatedIn) -> ParticipatedIn {
             self.pool
                 .get()
@@ -28,8 +30,12 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::find_all_by_in")]
-        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
+        async fn find_all_by_in(
+            &self,
+            r#in: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<ParticipatedIn> {
             self.pool
                 .get()
                 .await?
@@ -42,13 +48,16 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::find_all_by_out")]
-        async fn find_all_by_out(&self, out: TourId, limit: u16, offset: u64) -> Vec<ParticipatedIn> {
+        async fn find_all_by_out(
+            &self,
+            out: TourId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<ParticipatedIn> {
             self.pool
                 .get()
                 .await?
@@ -61,13 +70,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::exists_by_out")]
         async fn exists_by_out(&self, out: TourId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::find_by_in_and_out")]
-        async fn find_by_in_and_out(&self, r#in: UserId, out: TourId) -> Option<ParticipatedIn> {
+        async fn find_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TourId,
+        ) -> Option<ParticipatedIn> {
             self.pool
                 .get()
                 .await?
@@ -75,13 +86,20 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::exists_by_in_and_out")]
-        async fn exists_by_in_and_out(&self, r#in: UserId, out: TourId) -> bool {
+        async fn exists_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TourId,
+        ) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::update_by_in_and_out")]
-        async fn update_by_in_and_out(&self, r#in: UserId, out: TourId, update: ParticipatedInUpdate) -> Option<ParticipatedIn> {
+        async fn update_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TourId,
+            update: ParticipatedInUpdate,
+        ) -> Option<ParticipatedIn> {
             self.pool
                 .get()
                 .await?
@@ -90,8 +108,11 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "ParticipatedInRepository::delete_by_in_and_out")]
-        async fn delete_by_in_and_out(&self, r#in: UserId, out: TourId) -> Option<ParticipatedIn> {
+        async fn delete_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TourId,
+        ) -> Option<ParticipatedIn> {
             self.pool
                 .get()
                 .await?

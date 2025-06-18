@@ -1,19 +1,16 @@
 use macros::entity;
 use ulid::Ulid;
 
-entity! {
-    Specialization {
-        id: Ulid,
-        fields {
-            name: String,
-        },
-        create {
-            name: String,
-        },
-        update {
-            name: String,
-        }
-    }
+use crate::EntityId;
+
+#[entity]
+pub struct Specialization {
+    pub id: Ulid,
+
+    #[field]
+    #[create]
+    #[update]
+    pub name: String,
 }
 
 impl From<CreateSpecialization> for Specialization {
