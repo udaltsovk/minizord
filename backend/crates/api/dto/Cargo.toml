@@ -10,7 +10,6 @@ name = "dto"
 path = "./src/lib.rs"
 
 [dependencies]
-macros.workspace = true
 utils.workspace = true
 
 api-entity = { path = "../entity" }

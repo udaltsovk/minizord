@@ -35,35 +35,35 @@ tracing-subscriber = { version = "0.3", features = [
     "registry",
     "std",
 ] }
-tracing-opentelemetry = "0.30"
-opentelemetry-appender-tracing = { version = "0.29", features = [
-    "experimental_metadata_attributes", 
-    # "spec_unstable_logs_enabled",
+tracing-opentelemetry = "0.31"
+opentelemetry-appender-tracing = { version = "0.30", features = [
+    "experimental_metadata_attributes",
+#    "spec_unstable_logs_enabled",
     "experimental_use_tracing_span_context"
 ] }
-opentelemetry_sdk = { version = "0.29", features = [
+opentelemetry_sdk = { version = "0.30", features = [
     "rt-tokio",
     "trace",
     "logs",
     "metrics",
 ] }
-opentelemetry-otlp = { version = "0.29", features = [
+opentelemetry-otlp = { version = "0.30", features = [
     "grpc-tonic",
     "trace",
     "logs",
     "metrics",
 ] }
-opentelemetry-semantic-conventions = { version = "0.29", features = ["semconv_experimental"] }
+opentelemetry-semantic-conventions = { version = "0.30", features = ["semconv_experimental"] }
 metrics.workspace = true
 metrics-process = "2.4"
 tokio-metrics = { version = "0.4", features = ["rt", "metrics-rs-integration"] }
-metrics-util = "0.19"
+metrics-util = "0.20"
 metrics-tracing-context = "0.18"
 metrics-exporter-prometheus = "0.17"
 
 mobc.workspace = true
 mobc-surrealdb = { git = "https://github.com/NikSneMC/mobc-surrealdb" }
-surrealdb-migrations.version = "2.2"
+surrealdb-migrations.version = "2.3"
 include_dir.workspace = true
 
 aws-sdk-s3.workspace = true

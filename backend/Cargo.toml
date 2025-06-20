@@ -42,15 +42,15 @@ mobc = "0.8"
 surrealdb = "2.3"
 include_dir = "0.7"
 
-aws-sdk-s3 = { version = "1.85", features = ["behavior-version-latest"] }
+aws-sdk-s3 = { version = "1.93", features = ["behavior-version-latest"] }
 
 # tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost", "zstd"] }
 
-opentelemetry = { version = "0.29", features = ["trace", "logs", "metrics"] }
+opentelemetry = { version = "0.30", features = ["trace", "logs", "metrics"] }
 tracing = "0.1"
 metrics = "0.24"
 
-utoipa = { version = "5.3", features = [
+utoipa = { version = "5.4", features = [
     "actix_extras",
     "chrono",
     "ulid",

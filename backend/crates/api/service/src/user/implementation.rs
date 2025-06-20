@@ -51,7 +51,7 @@ pub mod service {
                 })
                 .await?;
 
-            let token = generate_jwt(&user, &*self.secret);
+            let token = generate_jwt(&user, &self.secret);
 
             (user.into(), token)
         }
