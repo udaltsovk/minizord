@@ -62,6 +62,11 @@ impl PasswordHasher {
         SaltString::generate(&mut ChaCha20Rng::from_entropy())
     }
 }
+impl Default for PasswordHasher {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 #[cfg(test)]
 mod test {

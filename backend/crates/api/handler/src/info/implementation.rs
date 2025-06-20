@@ -22,6 +22,6 @@ pub mod handler {
     )]
     #[get("")]
     async fn info(base_api_url: Data<BaseApiUrl>) -> Json<ApiInfoResponse> {
-        Json(ApiInfoResponse::new(&**base_api_url))
+        Json(ApiInfoResponse::new(&base_api_url))
     }
 }
