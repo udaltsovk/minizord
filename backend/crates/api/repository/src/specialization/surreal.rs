@@ -1,19 +1,23 @@
-use entity::specialization::{
-    CreateSpecialization, Specialization, SpecializationId,
-    SpecializationUpdate,
+use entity::{
+    EntityId,
+    specialization::{
+        CreateSpecialization, Specialization, SpecializationId,
+        SpecializationUpdate,
+    },
 };
-use macros::{EntityId, implementation, surql_query};
-use tracing::instrument;
+use macros::{implementation, surql_query};
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{SpecializationRepository, SpecializationRepositoryResult};
 use crate::common::RepositoryError;
 
-implementation! {
-    SpecializationRepository {
-        pool: SurrealPool
-    } as SurrealSpecializationRepository {
-        #[instrument(skip_all, name = "SpecializationRepository::save")]
+#[implementation(result = SpecializationRepositoryResult)]
+pub mod repository {
+    struct SurrealSpecializationRepository {
+        pool: SurrealPool,
+    }
+
+    impl SpecializationRepository for SurrealSpecializationRepository {
         async fn save(&self, new: CreateSpecialization) -> Specialization {
             let entity: Specialization = new.into();
             self.pool
@@ -25,21 +29,17 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "SpecializationRepository::find_by_id")]
-        async fn find_by_id(&self, id: SpecializationId) -> Option<Specialization> {
-            self.pool
-                .get()
-                .await?
-                .select(id.record_id())
-                .await?
+        async fn find_by_id(
+            &self,
+            id: SpecializationId,
+        ) -> Option<Specialization> {
+            self.pool.get().await?.select(id.record_id()).await?
         }
 
-        #[instrument(skip_all, name = "SpecializationRepository::exists_by_id")]
         async fn exists_by_id(&self, id: SpecializationId) -> bool {
             self.find_by_id(id).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "SpecializationRepository::find_by_name")]
         async fn find_by_name(&self, name: &str) -> Option<Specialization> {
             self.pool
                 .get()
@@ -51,13 +51,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "SpecializationRepository::exists_by_name")]
         async fn exists_by_name(&self, name: &str) -> bool {
             self.find_by_name(name).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "SpecializationRepository::update_by_id")]
-        async fn update_by_id(&self, id: SpecializationId, update: SpecializationUpdate) -> Option<Specialization> {
+        async fn update_by_id(
+            &self,
+            id: SpecializationId,
+            update: SpecializationUpdate,
+        ) -> Option<Specialization> {
             self.pool
                 .get()
                 .await?
@@ -66,13 +68,11 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "SpecializationRepository::delete_by_id")]
-        async fn delete_by_id(&self, id: SpecializationId) -> Option<Specialization> {
-            self.pool
-                .get()
-                .await?
-                .delete(id.record_id())
-                .await?
+        async fn delete_by_id(
+            &self,
+            id: SpecializationId,
+        ) -> Option<Specialization> {
+            self.pool.get().await?.delete(id.record_id()).await?
         }
     }
 }

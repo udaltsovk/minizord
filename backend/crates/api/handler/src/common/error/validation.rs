@@ -50,7 +50,7 @@ impl ValidationError {
 impl ResponseError for ValidationError {
     #[tracing::instrument(skip_all, level = "trace")]
     fn status_code(&self) -> StatusCode {
-        actix_web::http::StatusCode::BAD_REQUEST
+        StatusCode::BAD_REQUEST
     }
 
     #[tracing::instrument(skip_all, level = "trace")]

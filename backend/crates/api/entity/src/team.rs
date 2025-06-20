@@ -1,25 +1,24 @@
 use macros::entity;
 use ulid::Ulid;
 
-use crate::{tour::TourId, user::UserId};
+use crate::{EntityId, tour::TourId, user::UserId};
 
-entity! {
-    Team {
-        id: Ulid,
-        fields {
-            name: String,
-            lead: UserId,
-            tour: TourId,
-        },
-        create {
-            name: String,
-            lead: UserId,
-            tour: TourId,
-        },
-        update {
-            name: String,
-        }
-    }
+#[entity]
+pub struct Team {
+    pub id: Ulid,
+
+    #[field]
+    #[create]
+    #[update]
+    pub name: String,
+
+    #[field]
+    #[create]
+    pub lead: UserId,
+
+    #[field]
+    #[create]
+    pub tour: TourId,
 }
 
 impl From<CreateTeam> for Team {

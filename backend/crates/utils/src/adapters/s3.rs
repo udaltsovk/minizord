@@ -28,6 +28,7 @@ impl S3 {
         Self(Arc::new(Client::from_conf(config)))
     }
 
+    #[allow(dead_code)]
     #[tracing::instrument(
         name = "S3::create_bucket_if_not_exists",
         skip_all,

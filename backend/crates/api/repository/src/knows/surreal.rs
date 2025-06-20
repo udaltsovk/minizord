@@ -1,21 +1,28 @@
 use entity::{
+    EntityId,
     knows::{Knows, KnowsId, UpsertKnows},
     technology::TechnologyId,
     user::UserId,
 };
-use macros::{EntityId, implementation, surql_query};
-use tracing::instrument;
+use macros::{implementation, surql_query};
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{KnowsRepository, KnowsRepositoryResult};
 use crate::common::RepositoryError;
 
-implementation! {
-    KnowsRepository {
-        pool: SurrealPool
-    } as SurrealKnowsRepository {
-        #[instrument(skip_all, name = "KnowsRepository::upsert_by_in_and_out")]
-        async fn upsert_by_in_and_out(&self, r#in: UserId, out: TechnologyId, object: UpsertKnows) -> Knows {
+#[implementation(result = KnowsRepositoryResult)]
+pub mod repository {
+    struct SurrealKnowsRepository {
+        pool: SurrealPool,
+    }
+
+    impl KnowsRepository for SurrealKnowsRepository {
+        async fn upsert_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TechnologyId,
+            object: UpsertKnows,
+        ) -> Knows {
             self.pool
                 .get()
                 .await?
@@ -29,8 +36,12 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::find_all_by_in")]
-        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Knows> {
+        async fn find_all_by_in(
+            &self,
+            r#in: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<Knows> {
             self.pool
                 .get()
                 .await?
@@ -43,13 +54,16 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::find_all_by_out")]
-        async fn find_all_by_out(&self, out: TechnologyId, limit: u16, offset: u64) -> Vec<Knows> {
+        async fn find_all_by_out(
+            &self,
+            out: TechnologyId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<Knows> {
             self.pool
                 .get()
                 .await?
@@ -62,13 +76,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::exists_by_out")]
         async fn exists_by_out(&self, out: TechnologyId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::find_by_in_and_out")]
-        async fn find_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
+        async fn find_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TechnologyId,
+        ) -> Option<Knows> {
             self.pool
                 .get()
                 .await?
@@ -76,13 +92,19 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::exists_by_in_and_out")]
-        async fn exists_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> bool {
+        async fn exists_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TechnologyId,
+        ) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "KnowsRepository::delete_by_in_and_out")]
-        async fn delete_by_in_and_out(&self, r#in: UserId, out: TechnologyId) -> Option<Knows> {
+        async fn delete_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: TechnologyId,
+        ) -> Option<Knows> {
             self.pool
                 .get()
                 .await?

@@ -6,26 +6,23 @@ use crate::common::ServiceError;
 
 pub mod implementation;
 
-service! {
-    Profile
-        Err: ServiceError
-    {
-        async fn upsert_by_id(
-            &self,
-            id: Ulid,
-            object: UpsertProfile,
-            has_avatar: Option<bool>,
-            check_user: bool
-        ) -> Profile;
+#[service(error = ServiceError)]
+pub trait ProfileService {
+    async fn upsert_by_id(
+        &self,
+        id: Ulid,
+        object: UpsertProfile,
+        has_avatar: Option<bool>,
+        check_user: bool,
+    ) -> Profile;
 
-        async fn find_by_id(&self, id: Ulid, check_user: bool) -> Option<Profile>;
+    async fn find_by_id(&self, id: Ulid, check_user: bool) -> Option<Profile>;
 
-        async fn get_by_id(&self, id: Ulid, check_user: bool) -> Profile;
+    async fn get_by_id(&self, id: Ulid, check_user: bool) -> Profile;
 
-        async fn delete_by_id(&self, id: Ulid, check_user: bool) -> ();
+    async fn delete_by_id(&self, id: Ulid, check_user: bool) -> ();
 
-        async fn init_metrics(&self);
-    }
+    async fn init_metrics(&self);
 }
 
 metric_name!(PROFILES_BY_CITY_COUNT, "profiles_by_city_count");

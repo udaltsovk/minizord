@@ -1,19 +1,18 @@
 [package]
-name = "macros"
+name = "proc-macros"
 version = "0.1.0"
 authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true
 edition.workspace = true
 
-[features]
-surrealdb = ["dep:surrealdb"]
-actix-web = []
+[lib]
+proc-macro = true
 
 [dependencies]
-async-trait = "0.1"
-pastey = "0.1"
-
-surrealdb = { workspace = true, optional = true }
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "extra-traits"] }
+heck = "0.5"
 
 [lints]
 workspace = true

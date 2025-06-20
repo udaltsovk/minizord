@@ -1,23 +1,30 @@
 use std::collections::HashMap;
 
 use entity::{
+    EntityId,
     reviewed::{Reviewed, ReviewedId, UpsertReviewed},
     user::UserId,
 };
-use macros::{EntityId, implementation, surql_query};
+use macros::{implementation, surql_query};
 use surrealdb::Value;
-use tracing::instrument;
 use utils::adapters::{MobcPool, SurrealPool};
 
 use super::{ReviewedRepository, ReviewedRepositoryResult};
 use crate::common::{ExtractValue as _, RepositoryError};
 
-implementation! {
-    ReviewedRepository {
-        pool: SurrealPool
-    } as SurrealReviewedRepository {
-        #[instrument(skip_all, name = "ReviewedRepository::upsert_by_in_and_out")]
-        async fn upsert_by_in_and_out(&self, r#in: UserId, out: UserId, object: UpsertReviewed) -> Reviewed {
+#[implementation(result = ReviewedRepositoryResult)]
+pub mod repository {
+    struct SurrealReviewedRepository {
+        pool: SurrealPool,
+    }
+
+    impl ReviewedRepository for SurrealReviewedRepository {
+        async fn upsert_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: UserId,
+            object: UpsertReviewed,
+        ) -> Reviewed {
             self.pool
                 .get()
                 .await?
@@ -31,8 +38,12 @@ implementation! {
                 .ok_or(RepositoryError::FailedToSaveObject)?
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::find_all_by_in")]
-        async fn find_all_by_in(&self, r#in: UserId, limit: u16, offset: u64) -> Vec<Reviewed> {
+        async fn find_all_by_in(
+            &self,
+            r#in: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<Reviewed> {
             self.pool
                 .get()
                 .await?
@@ -45,13 +56,16 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::exists_by_in")]
         async fn exists_by_in(&self, r#in: UserId) -> bool {
             !self.find_all_by_in(r#in, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::find_all_by_out")]
-        async fn find_all_by_out(&self, out: UserId, limit: u16, offset: u64) -> Vec<Reviewed> {
+        async fn find_all_by_out(
+            &self,
+            out: UserId,
+            limit: u16,
+            offset: u64,
+        ) -> Vec<Reviewed> {
             self.pool
                 .get()
                 .await?
@@ -64,13 +78,15 @@ implementation! {
                 .take(0)?
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::exists_by_out")]
         async fn exists_by_out(&self, out: UserId) -> bool {
             !self.find_all_by_out(out, 1, 0).await?.is_empty()
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::find_by_in_and_out")]
-        async fn find_by_in_and_out(&self, r#in: UserId, out: UserId) -> Option<Reviewed> {
+        async fn find_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: UserId,
+        ) -> Option<Reviewed> {
             self.pool
                 .get()
                 .await?
@@ -78,13 +94,19 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::exists_by_in_and_out")]
-        async fn exists_by_in_and_out(&self, r#in: UserId, out: UserId) -> bool {
+        async fn exists_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: UserId,
+        ) -> bool {
             self.find_by_in_and_out(r#in, out).await?.is_some()
         }
 
-        #[instrument(skip_all, name = "ReviewedRepository::delete_by_in_and_out")]
-        async fn delete_by_in_and_out(&self, r#in: UserId, out: UserId) -> Option<Reviewed> {
+        async fn delete_by_in_and_out(
+            &self,
+            r#in: UserId,
+            out: UserId,
+        ) -> Option<Reviewed> {
             self.pool
                 .get()
                 .await?
@@ -92,7 +114,6 @@ implementation! {
                 .await?
         }
 
-        #[instrument(skip_all, name = "ReviewedRepositoryRepository::count_by_score")]
         async fn count_by_score(&self) -> HashMap<u16, u32> {
             self.pool
                 .get()

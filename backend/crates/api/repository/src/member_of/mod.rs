@@ -1,12 +1,20 @@
-use entity::{member_of, team::TeamId, user::UserId};
-use macros::crud_repository;
+use entity::{
+    member_of::{CreateMemberOf, MemberOf, MemberOfUpdate},
+    team::TeamId,
+    user::UserId,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    UserId -> member_of -> TeamId
-        Err: RepositoryError
-}
+#[repository(
+    r#in = UserId,
+    out = TeamId,
+    entity = MemberOf,
+    create = CreateMemberOf,
+    update = MemberOfUpdate,
+    error = RepositoryError
+)]
+pub trait MemberOfRepository {}

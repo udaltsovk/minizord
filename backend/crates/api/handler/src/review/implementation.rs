@@ -9,20 +9,21 @@ use dto::{
     review::{Review, UpsertReview},
     user::User,
 };
-use macros::handler_implementation;
+use macros::implementation;
 use service::review::ReviewServiceDependency;
-use tracing::instrument;
 use ulid::Ulid;
 
-use super::{ReviewHandler, ReviewHandlerHelper, ReviewHandlerResult};
+use super::{ReviewHandler, ReviewHandlerResult};
 use crate::common::{ApiError, ValidationError, openapi};
 
-handler_implementation! {
-    ReviewHandler as ReviewHandlerImpl {
-        ///
-        ///
-        ///
-        #[openapi(
+#[implementation(
+    r#trait = ReviewHandler,
+    name = ReviewHandlerImpl,
+    result = ReviewHandlerResult,
+)]
+pub mod handler {
+    ///
+    #[openapi(
             params(
                 ("reviewee_id" = Ulid, description = ""),
                 Pagination,
@@ -39,28 +40,25 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("/{reviewee_id}")]
-        #[instrument(skip_all, name = "ReviewHandler::get_reviews_by_reviewee_id_paginated")]
-        async fn get_reviews_by_reviewee_id_paginated(
-            review_service: Data<ReviewServiceDependency>,
-            Path(reviewee_id): Path<Ulid>,
-            Validated(Query(pagination)): Validated<Query<Pagination>>,
-            user: ReqData<User>,
-        ) -> Json<Vec<Review>> {
-            let resp = review_service
-                .find_all_by_reviewee(
-                    reviewee_id,
-                    pagination.into(),
-                    reviewee_id != user.id
-                )
-                .await?;
-            Json(resp)
-        }
+    #[get("/{reviewee_id}")]
+    async fn get_reviews_by_reviewee_id_paginated(
+        review_service: Data<ReviewServiceDependency>,
+        Path(reviewee_id): Path<Ulid>,
+        Validated(Query(pagination)): Validated<Query<Pagination>>,
+        user: ReqData<User>,
+    ) -> Json<Vec<Review>> {
+        let resp = review_service
+            .find_all_by_reviewee(
+                reviewee_id,
+                pagination.into(),
+                reviewee_id != user.id,
+            )
+            .await?;
+        Json(resp)
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 ("reviewee_id" = Ulid, description = ""),
             ),
@@ -80,28 +78,21 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[put("/{reviewee_id}")]
-        #[instrument(skip_all, name = "ReviewHandler::upsert_review_by_id")]
-        async fn upsert_review_by_id(
-            review_service: Data<ReviewServiceDependency>,
-            Path(reviewee_id): Path<Ulid>,
-            user: ReqData<User>,
-            Validated(Json(body)): Validated<Json<UpsertReview>>,
-        ) -> Json<Review> {
-            let resp = review_service
-                .upsert_by_id(
-                    user.id,
-                    reviewee_id,
-                    body
-                )
-                .await?;
-            Json(resp)
-        }
+    #[put("/{reviewee_id}")]
+    async fn upsert_review_by_id(
+        review_service: Data<ReviewServiceDependency>,
+        Path(reviewee_id): Path<Ulid>,
+        user: ReqData<User>,
+        Validated(Json(body)): Validated<Json<UpsertReview>>,
+    ) -> Json<Review> {
+        let resp = review_service
+            .upsert_by_id(user.id, reviewee_id, body)
+            .await?;
+        Json(resp)
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 ("reviewee_id" = Ulid, description = ""),
             ),
@@ -116,28 +107,20 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[delete("/{reviewee_id}")]
-        #[instrument(skip_all, name = "ReviewHandler::delete_review_by_id")]
-        async fn delete_review_by_id(
-            review_service: Data<ReviewServiceDependency>,
-            Path(reviewee_id): Path<Ulid>,
-            user: ReqData<User>,
-        ) -> HttpResponse {
-            review_service
-                .delete_by_id(
-                    user.id,
-                    reviewee_id,
-                    false,
-                    true,
-                )
-                .await?;
-            HttpResponse::NoContent().finish()
-        }
+    #[delete("/{reviewee_id}")]
+    async fn delete_review_by_id(
+        review_service: Data<ReviewServiceDependency>,
+        Path(reviewee_id): Path<Ulid>,
+        user: ReqData<User>,
+    ) -> HttpResponse {
+        review_service
+            .delete_by_id(user.id, reviewee_id, false, true)
+            .await?;
+        HttpResponse::NoContent().finish()
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 Pagination,
             ),
@@ -153,27 +136,20 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("/my")]
-        #[instrument(skip_all, name = "ReviewHandler::get_current_reviews_received_paginated")]
-        async fn get_current_reviews_received_paginated(
-            review_service: Data<ReviewServiceDependency>,
-            Validated(Query(pagination)): Validated<Query<Pagination>>,
-            user: ReqData<User>,
-        ) -> Json<Vec<Review>> {
-            let resp = review_service
-                .find_all_by_reviewee(
-                    user.id,
-                    pagination.into(),
-                    false
-                )
-                .await?;
-            Json(resp)
-        }
+    #[get("/my")]
+    async fn get_current_reviews_received_paginated(
+        review_service: Data<ReviewServiceDependency>,
+        Validated(Query(pagination)): Validated<Query<Pagination>>,
+        user: ReqData<User>,
+    ) -> Json<Vec<Review>> {
+        let resp = review_service
+            .find_all_by_reviewee(user.id, pagination.into(), false)
+            .await?;
+        Json(resp)
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 Pagination,
             ),
@@ -189,27 +165,20 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("/my/sent")]
-        #[instrument(skip_all, name = "ReviewHandler::get_current_reviews_sent_paginated")]
-        async fn get_current_reviews_sent_paginated(
-            review_service: Data<ReviewServiceDependency>,
-            Validated(Query(pagination)): Validated<Query<Pagination>>,
-            user: ReqData<User>,
-        ) -> Json<Vec<Review>> {
-            let resp = review_service
-                .find_all_by_reviewer(
-                    user.id,
-                    pagination.into(),
-                    false
-                )
-                .await?;
-            Json(resp)
-        }
+    #[get("/my/sent")]
+    async fn get_current_reviews_sent_paginated(
+        review_service: Data<ReviewServiceDependency>,
+        Validated(Query(pagination)): Validated<Query<Pagination>>,
+        user: ReqData<User>,
+    ) -> Json<Vec<Review>> {
+        let resp = review_service
+            .find_all_by_reviewer(user.id, pagination.into(), false)
+            .await?;
+        Json(resp)
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 ("reviewer_id" = Ulid, description = ""),
                 Pagination,
@@ -226,28 +195,25 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("/{reviewer_id}/sent")]
-        #[instrument(skip_all, name = "ReviewHandler::get_reviews_by_reviewer_id_paginated")]
-        async fn get_reviews_by_reviewer_id_paginated(
-            review_service: Data<ReviewServiceDependency>,
-            Path(reviewer_id): Path<Ulid>,
-            Validated(Query(pagination)): Validated<Query<Pagination>>,
-            user: ReqData<User>,
-        ) -> Json<Vec<Review>> {
-            let resp = review_service
-                .find_all_by_reviewer(
-                    reviewer_id,
-                    pagination.into(),
-                    reviewer_id != user.id
-                )
-                .await?;
-            Json(resp)
-        }
+    #[get("/{reviewer_id}/sent")]
+    async fn get_reviews_by_reviewer_id_paginated(
+        review_service: Data<ReviewServiceDependency>,
+        Path(reviewer_id): Path<Ulid>,
+        Validated(Query(pagination)): Validated<Query<Pagination>>,
+        user: ReqData<User>,
+    ) -> Json<Vec<Review>> {
+        let resp = review_service
+            .find_all_by_reviewer(
+                reviewer_id,
+                pagination.into(),
+                reviewer_id != user.id,
+            )
+            .await?;
+        Json(resp)
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 ("reviewee_id" = Ulid, description = ""),
                 ("reviewer_id" = Ulid, description = ""),
@@ -264,28 +230,25 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[get("/{reviewee_id}/{reviewer_id}")]
-        #[instrument(skip_all, name = "ReviewHandler::get_review_by_reviewee_id_and_reviewer_id")]
-        async fn get_review_by_reviewee_id_and_reviewer_id(
-            review_service: Data<ReviewServiceDependency>,
-            Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
-            user: ReqData<User>,
-        ) -> Json<Review> {
-            let resp = review_service
-                .get_by_id(
-                    reviewer_id,
-                    reviewee_id,
-                    reviewer_id != user.id,
-                    reviewee_id != user.id,
-                )
-                .await?;
-            Json(resp)
-        }
+    #[get("/{reviewee_id}/{reviewer_id}")]
+    async fn get_review_by_reviewee_id_and_reviewer_id(
+        review_service: Data<ReviewServiceDependency>,
+        Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
+        user: ReqData<User>,
+    ) -> Json<Review> {
+        let resp = review_service
+            .get_by_id(
+                reviewer_id,
+                reviewee_id,
+                reviewer_id != user.id,
+                reviewee_id != user.id,
+            )
+            .await?;
+        Json(resp)
+    }
 
-        ///
-        ///
-        ///
-        #[openapi(
+    ///
+    #[openapi(
             params(
                 ("reviewee_id" = Ulid, description = ""),
                 ("reviewer_id" = Ulid, description = ""),
@@ -300,22 +263,20 @@ handler_implementation! {
                 (status = 401, description = "", body = ApiError),
             ),
         )]
-        #[delete("/{reviewee_id}/{reviewer_id}")]
-        #[instrument(skip_all, name = "ReviewHandler::delete_review_by_reviewee_id_and_reviewer_id")]
-        async fn delete_review_by_reviewee_id_and_reviewer_id(
-            review_service: Data<ReviewServiceDependency>,
-            Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
-            user: ReqData<User>,
-        ) -> HttpResponse {
-            review_service
-                .delete_by_id(
-                    reviewer_id,
-                    reviewee_id,
-                    reviewer_id != user.id,
-                    reviewee_id != user.id,
-                )
-                .await?;
-            HttpResponse::NoContent().finish()
-        }
+    #[delete("/{reviewee_id}/{reviewer_id}")]
+    async fn delete_review_by_reviewee_id_and_reviewer_id(
+        review_service: Data<ReviewServiceDependency>,
+        Path((reviewee_id, reviewer_id)): Path<(Ulid, Ulid)>,
+        user: ReqData<User>,
+    ) -> HttpResponse {
+        review_service
+            .delete_by_id(
+                reviewer_id,
+                reviewee_id,
+                reviewer_id != user.id,
+                reviewee_id != user.id,
+            )
+            .await?;
+        HttpResponse::NoContent().finish()
     }
 }

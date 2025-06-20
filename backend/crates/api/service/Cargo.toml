@@ -9,10 +9,6 @@ edition.workspace = true
 name = "service"
 path = "./src/lib.rs"
 
-[features]
-surrealdb = ["api-repository/surrealdb"]
-s3 = ["api-repository/s3"]
-
 [dependencies]
 macros.workspace = true
 utils.workspace = true

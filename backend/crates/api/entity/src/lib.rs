@@ -13,3 +13,9 @@ pub mod technology;
 pub mod tour;
 pub mod user;
 pub mod uses;
+
+pub trait EntityId: std::fmt::Display {
+    const TABLE: &'static str;
+
+    fn record_id(&self) -> surrealdb::RecordId;
+}

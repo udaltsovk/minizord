@@ -47,7 +47,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "register_user",
         "requestBody": {
           "description": "",
@@ -104,7 +103,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "user_login",
         "requestBody": {
           "description": "",
@@ -156,7 +154,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_current_user",
         "responses": {
           "200": {
@@ -206,7 +203,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_current_user",
         "responses": {
           "204": {
@@ -259,7 +255,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "update_current_user",
         "requestBody": {
           "description": "",
@@ -342,7 +337,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "change_current_user_password",
         "requestBody": {
           "description": "",
@@ -415,7 +409,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_user_by_id",
         "parameters": [
           {
@@ -487,7 +480,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_user_by_id",
         "parameters": [
           {
@@ -546,7 +538,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "update_user_by_id",
         "parameters": [
           {
@@ -645,7 +636,6 @@
         "tags": [
           "Users"
         ],
-        "description": "\n\n\n\n",
         "operationId": "change_user_password_by_id",
         "parameters": [
           {
@@ -734,7 +724,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_current_profile",
         "responses": {
           "200": {
@@ -784,7 +773,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "upsert_current_profile",
         "requestBody": {
           "description": "",
@@ -845,7 +833,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_current_profile",
         "responses": {
           "204": {
@@ -890,7 +877,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_current_profile_image",
         "responses": {
           "200": {
@@ -933,7 +919,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "upsert_current_profile_image",
         "requestBody": {
           "description": "",
@@ -1007,7 +992,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_current_profile_image",
         "responses": {
           "204": {
@@ -1052,7 +1036,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_profile_by_id",
         "parameters": [
           {
@@ -1124,7 +1107,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_profile_by_id",
         "parameters": [
           {
@@ -1185,7 +1167,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_profile_image_by_id",
         "parameters": [
           {
@@ -1240,7 +1221,6 @@
         "tags": [
           "Profiles"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_profile_image_by_id",
         "parameters": [
           {
@@ -1301,7 +1281,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_reviews_by_reviewee_id_paginated",
         "parameters": [
           {
@@ -1398,7 +1377,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "upsert_review_by_id",
         "parameters": [
           {
@@ -1481,7 +1459,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_review_by_id",
         "parameters": [
           {
@@ -1538,7 +1515,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_current_reviews_received_paginated",
         "parameters": [
           {
@@ -1630,7 +1606,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_current_reviews_sent_paginated",
         "parameters": [
           {
@@ -1722,7 +1697,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_reviews_by_reviewer_id_paginated",
         "parameters": [
           {
@@ -1824,7 +1798,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "get_review_by_reviewee_id_and_reviewer_id",
         "parameters": [
           {
@@ -1906,7 +1879,6 @@
         "tags": [
           "Reviews"
         ],
-        "description": "\n\n\n\n",
         "operationId": "delete_review_by_reviewee_id_and_reviewer_id",
         "parameters": [
           {
@@ -2298,7 +2270,6 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "",
             "maxLength": 24,
             "minLength": 2,
             "pattern": "(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"

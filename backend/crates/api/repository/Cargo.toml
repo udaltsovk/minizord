@@ -9,10 +9,6 @@ edition.workspace = true
 name = "repository"
 path = "./src/lib.rs"
 
-[features]
-surrealdb = ["dep:surrealdb", "api-entity/surrealdb", "macros/surrealdb", "utils/surrealdb"]
-s3 = ["dep:aws-sdk-s3", "api-entity/s3", "utils/s3"]
-
 [dependencies]
 macros.workspace = true
 utils.workspace = true
@@ -27,8 +23,8 @@ serde_json.workspace = true
 tracing.workspace = true
 
 mobc.workspace = true
-surrealdb = { workspace = true, optional = true }
-aws-sdk-s3 = { workspace = true, optional = true }
+surrealdb.workspace = true
+aws-sdk-s3.workspace = true
 
 [lints]
 workspace = true

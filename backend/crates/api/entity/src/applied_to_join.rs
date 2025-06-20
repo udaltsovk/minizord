@@ -1,19 +1,16 @@
-use macros::entity;
+use macros::relation;
 
-use crate::{team::TeamId, user::UserId};
+use crate::{EntityId, team::TeamId, user::UserId};
 
-entity! {
-    UserId -> AppliedToJoin -> TeamId {
-        fields {
-            application: String,
-        },
-        create {
-            application: String,
-        },
-        update {
-            application: String,
-        }
-    }
+#[relation]
+pub struct AppliedToJoin {
+    pub r#in: UserId,
+    pub out: TeamId,
+
+    #[field]
+    #[create]
+    #[update]
+    pub application: String,
 }
 
 impl From<CreateAppliedToJoin> for AppliedToJoin {

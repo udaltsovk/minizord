@@ -1,28 +1,29 @@
-use macros::entity;
+use macros::relation;
 
 use crate::{
-    specialization::SpecializationId, technology::TechnologyId, tour::TourId,
-    user::UserId,
+    EntityId, specialization::SpecializationId, technology::TechnologyId,
+    tour::TourId, user::UserId,
 };
 
-entity! {
-    UserId -> ParticipatedIn -> TourId {
-        fields {
-            score: u16,
-            specialization: SpecializationId,
-            technologies: Vec<TechnologyId>,
-        },
-        create {
-            score: u16,
-            specialization: SpecializationId,
-            technologies: Vec<TechnologyId>,
-        },
-        update {
-            score: u16,
-            specialization: SpecializationId,
-            technologies: Vec<TechnologyId>,
-        }
-    }
+#[relation]
+pub struct ParticipatedIn {
+    pub r#in: UserId,
+    pub out: TourId,
+
+    #[field]
+    #[create]
+    #[update]
+    pub score: u16,
+
+    #[field]
+    #[create]
+    #[update]
+    pub specialization: SpecializationId,
+
+    #[field]
+    #[create]
+    #[update]
+    pub technologies: Vec<TechnologyId>,
 }
 
 impl From<CreateParticipatedIn> for ParticipatedIn {

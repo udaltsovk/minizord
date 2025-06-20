@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 use ulid::Ulid;
 
-use crate::profile::ProfileId;
+use crate::{EntityId, profile::ProfileId};
 
 #[derive(Deserialize, Serialize, Display, Clone, Copy, PartialEq, Debug)]
 #[serde(rename_all = "snake_case")]
@@ -16,30 +16,33 @@ pub enum UserRole {
     Participant,
 }
 
-entity! {
-    User {
-        id: Ulid,
-        fields {
-            email: String,
-            password_hash: String,
-            username: String,
-            role: UserRole,
-            profile: Option<ProfileId>,
-        },
-        create {
-            email: String,
-            password_hash: String,
-            username: String,
-            role: UserRole,
-        },
-        update {
-            email: String,
-            password_hash: String,
-            username: String,
-            role: UserRole,
-            profile: Option<ProfileId>,
-        }
-    }
+#[entity]
+pub struct User {
+    pub id: Ulid,
+
+    #[field]
+    #[create]
+    #[update]
+    pub email: String,
+
+    #[field]
+    #[create]
+    #[update]
+    pub password_hash: String,
+
+    #[field]
+    #[create]
+    #[update]
+    pub username: String,
+
+    #[field]
+    #[create]
+    #[update]
+    pub role: UserRole,
+
+    #[field]
+    #[update]
+    pub profile: Option<ProfileId>,
 }
 
 impl From<CreateUser> for User {

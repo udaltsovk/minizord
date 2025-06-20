@@ -2,32 +2,34 @@ use chrono::{DateTime, Utc};
 use macros::entity;
 use ulid::Ulid;
 
-use crate::specialization::SpecializationId;
+use crate::{EntityId, specialization::SpecializationId};
 
-entity! {
-    Tour {
-        id: Ulid,
-        fields {
-            name: String,
-            starts_at: DateTime<Utc>,
-            ends_at: DateTime<Utc>,
-            max_members: u16,
-            required_specializations: Vec<SpecializationId>,
-        },
-        create {
-            name: String,
-            starts_at: DateTime<Utc>,
-            ends_at: DateTime<Utc>,
-            max_members: u16,
-            required_specializations: Vec<SpecializationId>,
-        },
-        update {
-            name: String,
-            starts_at: DateTime<Utc>,
-            ends_at: DateTime<Utc>,
-            required_specializations: Vec<SpecializationId>,
-        }
-    }
+#[entity]
+pub struct Tour {
+    pub id: Ulid,
+
+    #[field]
+    #[create]
+    #[update]
+    pub name: String,
+
+    #[field]
+    #[create]
+    #[update]
+    pub starts_at: DateTime<Utc>,
+
+    #[field]
+    #[create]
+    #[update]
+    pub ends_at: DateTime<Utc>,
+
+    #[field]
+    #[create]
+    pub max_members: u16,
+
+    #[field]
+    #[create]
+    pub required_specializations: Vec<SpecializationId>,
 }
 
 impl From<CreateTour> for Tour {

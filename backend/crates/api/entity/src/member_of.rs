@@ -1,21 +1,22 @@
-use macros::entity;
+use macros::relation;
 
-use crate::{specialization::SpecializationId, team::TeamId, user::UserId};
+use crate::{
+    EntityId, specialization::SpecializationId, team::TeamId, user::UserId,
+};
 
-entity! {
-    UserId -> MemberOf -> TeamId {
-        fields {
-            accepted: bool,
-            specialization: SpecializationId,
-        },
-        create {
-            specialization: SpecializationId,
-        },
-        update {
-            accepted: bool,
-            specialization: SpecializationId,
-        }
-    }
+#[relation]
+pub struct MemberOf {
+    pub r#in: UserId,
+    pub out: TeamId,
+
+    #[field]
+    #[update]
+    pub accepted: bool,
+
+    #[field]
+    #[create]
+    #[update]
+    pub specialization: SpecializationId,
 }
 
 impl From<CreateMemberOf> for MemberOf {

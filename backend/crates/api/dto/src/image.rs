@@ -1,18 +1,16 @@
 use bytes::Bytes;
 use entity::image::{Image as ImageEntity, UpsertImage as UpsertImageEntity};
-use macros::dto;
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-dto! {
+#[derive(Serialize, Deserialize, ToSchema, Clone, PartialEq, Debug)]
+///
+pub struct Image {
     ///
-    Image {
-        fields {
-            ///
-            content_type: String,
-            ///
-            #[schema(value_type = String, format = Binary)]
-            data: Bytes,
-        },
-    }
+    pub content_type: String,
+    ///
+    #[schema(value_type = String, format = Binary)]
+    pub data: Bytes,
 }
 
 impl From<ImageEntity> for Image {

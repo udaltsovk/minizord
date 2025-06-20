@@ -1,109 +1,112 @@
 use entity::profile::{
     Profile as ProfileEntity, UpsertProfile as UpsertProfileEntity,
 };
-use macros::dto;
+use garde::Validate;
+use serde::{Deserialize, Serialize};
 use ulid::Ulid;
 use utils::validation::{
     RE_NAME, RE_TELEGRAM_USERNAME, validate_portfolio_url,
 };
+use utoipa::ToSchema;
 
-dto! {
+#[derive(Serialize, ToSchema, Clone, PartialEq, Debug)]
+///
+pub struct Profile {
     ///
-    Profile {
-        fields {
-            ///
-            #[schema(format = Ulid, examples(Ulid::default))]
-            id: Ulid,
+    #[schema(format = Ulid, examples(Ulid::default))]
+    pub id: Ulid,
 
-            ///
-            #[schema(
-                min_length = 2,
-                max_length = 24,
-                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
-            )]
-            name: String,
+    ///
+    #[schema(
+        min_length = 2,
+        max_length = 24,
+        pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+    )]
+    pub name: String,
 
-            ///
-            #[schema(
-                min_length = 2,
-                max_length = 24,
-                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
-            )]
-            surname: String,
+    ///
+    #[schema(
+        min_length = 2,
+        max_length = 24,
+        pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+    )]
+    pub surname: String,
 
-            ///
-            #[schema(min_length = 5, max_length = 32, pattern = r#"^[A-Za-z\d_]{5,32}$"#)]
-            telegram: String,
+    ///
+    #[schema(
+        min_length = 5,
+        max_length = 32,
+        pattern = r#"^[A-Za-z\d_]{5,32}$"#
+    )]
+    pub telegram: String,
 
-            //
-            #[schema(
-                min_length = 2,
-                max_length = 24,
-                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
-            )]
-            city: String,
+    //
+    #[schema(
+        min_length = 2,
+        max_length = 24,
+        pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+    )]
+    pub city: String,
 
-            ///
-            #[schema(min_length = 0, max_length = 4096)]
-            bio: String,
+    ///
+    #[schema(min_length = 0, max_length = 4096)]
+    pub bio: String,
 
-            ///
-            #[schema(min_length = 0)]
-            portfolio_urls: Vec<String>,
+    ///
+    #[schema(min_length = 0)]
+    pub portfolio_urls: Vec<String>,
 
-            ///
-            has_avatar: bool,
-        },
-        upsert
-        ///
-        {
-            ///
-            #[schema(
-                min_length = 2,
-                max_length = 24,
-                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
-            )]
-            #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
-            name: String,
+    ///
+    pub has_avatar: bool,
+}
 
-            ///
-            #[schema(
-                min_length = 2,
-                max_length = 24,
-                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
-            )]
-            #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
-            surname: String,
+#[derive(Deserialize, ToSchema, Validate, Clone, PartialEq, Debug)]
+///
+pub struct UpsertProfile {
+    #[schema(
+        min_length = 2,
+        max_length = 24,
+        pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+    )]
+    #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
+    pub name: String,
 
-            ///
-            #[schema(min_length = 5, max_length = 32, pattern = r#"^[A-Za-z\d_]{5,32}$"#)]
-            #[garde(length(min = 5, max = 32), pattern(*RE_TELEGRAM_USERNAME))]
-            telegram: String,
+    ///
+    #[schema(
+        min_length = 2,
+        max_length = 24,
+        pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+    )]
+    #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
+    pub surname: String,
 
-            //
-            #[schema(
-                min_length = 2,
-                max_length = 24,
-                pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
-            )]
+    ///
+    #[schema(
+        min_length = 5,
+        max_length = 32,
+        pattern = r#"^[A-Za-z\d_]{5,32}$"#
+    )]
+    #[garde(length(min = 5, max = 32), pattern(*RE_TELEGRAM_USERNAME))]
+    pub telegram: String,
 
-            #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
-            city: String,
+    //
+    #[schema(
+        min_length = 2,
+        max_length = 24,
+        pattern = r#"(^[А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*(?: [А-ЯЁ][а-яё]*(?:['-][А-ЯЁ][а-яё]*)*)*$)"#
+    )]
+    #[garde(length(min = 2, max = 24), pattern(*RE_NAME))]
+    pub city: String,
 
-            ///
-            #[schema(min_length = 0, max_length = 4096)]
-            #[garde(length(min = 0, max = 4096))]
-            bio: String,
+    ///
+    #[schema(min_length = 0, max_length = 4096)]
+    #[garde(length(min = 0, max = 4096))]
+    pub bio: String,
 
-            ///
-            #[schema(min_length = 0)]
-            #[garde(
-                length(min = 0),
-                inner(url, custom(validate_portfolio_url)),
-            )]
-            portfolio_urls: Vec<String>,
-        },
-    }
+    ///
+    #[schema(min_length = 0)]
+    #[garde(length(min = 0), inner(url, custom(validate_portfolio_url)))]
+    pub portfolio_urls: Vec<String>,
 }
 
 impl From<Profile> for UpsertProfile {

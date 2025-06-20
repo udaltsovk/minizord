@@ -1,19 +1,16 @@
 use macros::entity;
 use ulid::Ulid;
 
-entity! {
-    Technology {
-        id: Ulid,
-        fields {
-            name: String,
-        },
-        create {
-            name: String,
-        },
-        update {
-            name: String,
-        }
-    }
+use crate::EntityId;
+
+#[entity]
+pub struct Technology {
+    pub id: Ulid,
+
+    #[field]
+    #[create]
+    #[update]
+    pub name: String,
 }
 
 impl From<CreateTechnology> for Technology {

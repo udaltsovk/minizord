@@ -1,12 +1,19 @@
-use entity::{knows, technology::TechnologyId, user::UserId};
-use macros::urd_repository;
+use entity::{
+    knows::{Knows, UpsertKnows},
+    technology::TechnologyId,
+    user::UserId,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-urd_repository! {
-    UserId -> Knows -> TechnologyId
-        Err: RepositoryError
-}
+#[repository(
+    r#in = UserId,
+    out = TechnologyId,
+    entity = Knows,
+    upsert = UpsertKnows,
+    error = RepositoryError
+)]
+pub trait KnowsRepository {}

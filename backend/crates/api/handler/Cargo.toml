@@ -9,16 +9,6 @@ edition.workspace = true
 name = "handler"
 path = "./src/lib.rs"
 
-[features]
-actix-web = [
-    "macros/actix-web", 
-    "dep:utoipa-actix-web",
-    "dep:actix-web", 
-    "dep:actix-web-lab", 
-    "dep:actix-web-validation", 
-    "dep:actix-multipart"
-]
-
 [dependencies]
 macros.workspace = true
 utils.workspace = true
@@ -36,12 +26,12 @@ ulid.workspace = true
 tracing.workspace = true
 
 utoipa.workspace = true
-utoipa-actix-web = { workspace = true, optional = true }
+utoipa-actix-web.workspace = true
 
-actix-web = { workspace = true, optional = true }
-actix-web-lab = { workspace = true, optional = true }
-actix-web-validation = { workspace = true, optional = true }
-actix-multipart = { workspace = true, optional = true }
+actix-web.workspace = true
+actix-web-lab.workspace = true
+actix-web-validation.workspace = true
+actix-multipart.workspace = true
 
 [build-dependencies]
 chrono.workspace = true

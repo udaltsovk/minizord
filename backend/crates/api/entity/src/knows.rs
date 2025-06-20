@@ -1,16 +1,15 @@
-use macros::entity;
+use macros::relation;
 
-use crate::{technology::TechnologyId, user::UserId};
+use crate::{EntityId, technology::TechnologyId, user::UserId};
 
-entity! {
-    UserId -> Knows -> TechnologyId {
-        fields {
-            level: u16,
-        },
-        upsert {
-            level: u16,
-        }
-    }
+#[relation]
+pub struct Knows {
+    pub r#in: UserId,
+    pub out: TechnologyId,
+
+    #[field]
+    #[upsert]
+    pub level: u16,
 }
 
 impl From<UpsertKnows> for Knows {

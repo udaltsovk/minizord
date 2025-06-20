@@ -1,50 +1,51 @@
 use entity::team::Team as TeamEntity;
-use macros::dto;
+use garde::Validate;
+use serde::{Deserialize, Serialize};
 use ulid::Ulid;
 use utils::validation::RE_SENTENCE;
+use utoipa::ToSchema;
 
-dto! {
+#[derive(Serialize, ToSchema, Clone, PartialEq, Debug)]
+///
+pub struct Team {
     ///
-    Team {
-        fields {
-            ///
-            #[schema(format = Ulid, examples(Ulid::default))]
-            id: Ulid,
+    #[schema(format = Ulid, examples(Ulid::default))]
+    pub id: Ulid,
 
-            ///
-            #[schema(min_length = 1, max_length = 30)]
-            name: String,
+    ///
+    #[schema(min_length = 1, max_length = 30)]
+    pub name: String,
 
-            ///
-            #[schema(format = Ulid, examples(Ulid::default))]
-            lead: Ulid,
+    ///
+    #[schema(format = Ulid, examples(Ulid::default))]
+    pub lead: Ulid,
 
-            ///
-            #[schema(format = Ulid, examples(Ulid::default))]
-            tour: Ulid,
-        },
-        create
-        ///
-        {
-            ///
-            #[schema(min_length = 3, max_length = 20)]
-            #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
-            name: String,
+    ///
+    #[schema(format = Ulid, examples(Ulid::default))]
+    pub tour: Ulid,
+}
 
-            ///
-            #[schema(format = Ulid, examples(Ulid::default))]
-            #[garde(skip)]
-            tour: Ulid,
-        },
-        update
-        ///
-        {
-            ///
-            #[schema(min_length = 3, max_length = 20)]
-            #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
-            name: String
-        },
-    }
+#[derive(Deserialize, ToSchema, Validate, Clone, PartialEq, Debug)]
+///
+pub struct CreateTeam {
+    ///
+    #[schema(min_length = 3, max_length = 20)]
+    #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
+    pub name: String,
+
+    ///
+    #[schema(format = Ulid, examples(Ulid::default))]
+    #[garde(skip)]
+    pub tour: Ulid,
+}
+
+#[derive(Deserialize, ToSchema, Validate, Clone, PartialEq, Debug)]
+///
+pub struct TeamUpdate {
+    ///
+    #[schema(min_length = 3, max_length = 20)]
+    #[garde(length(min = 3, max = 20), pattern(*RE_SENTENCE))]
+    pub name: Option<String>,
 }
 
 impl From<TeamEntity> for Team {

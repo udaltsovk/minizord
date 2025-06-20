@@ -1,16 +1,21 @@
-use entity::specialization::{self, Specialization};
-use macros::crud_repository;
+use entity::specialization::{
+    CreateSpecialization, Specialization, SpecializationId,
+    SpecializationUpdate,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    Specialization
-        Err: RepositoryError
-    {
-        async fn find_by_name(&self, name: &str) -> Option<Specialization>;
-        async fn exists_by_name(&self, name: &str) -> bool;
-    }
+#[repository(
+    entity = Specialization,
+    entity_id = SpecializationId,
+    create = CreateSpecialization,
+    update = SpecializationUpdate,
+    error = RepositoryError
+)]
+pub trait SpecializationRepository {
+    async fn find_by_name(&self, name: &str) -> Option<Specialization>;
+    async fn exists_by_name(&self, name: &str) -> bool;
 }

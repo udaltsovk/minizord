@@ -1,17 +1,22 @@
 use std::collections::HashMap;
 
-use entity::{reviewed, user::UserId};
-use macros::urd_repository;
+use entity::{
+    reviewed::{Reviewed, UpsertReviewed},
+    user::UserId,
+};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-urd_repository! {
-    UserId -> reviewed -> UserId
-        Err: RepositoryError
-    {
-        async fn count_by_score(&self) -> HashMap<u16, u32>;
-    }
+#[repository(
+    r#in = UserId,
+    out = UserId,
+    entity = Reviewed,
+    upsert = UpsertReviewed,
+    error = RepositoryError
+)]
+pub trait ReviewedRepository {
+    async fn count_by_score(&self) -> HashMap<u16, u32>;
 }

@@ -22,11 +22,11 @@ path = "./src/gen_openapi.rs"
 
 [dependencies]
 env-vars-config.workspace = true
-utils = { workspace = true, features = ["actix-web"] }
+utils.workspace = true
 
 api-repository = { path = "./repository" }
-api-service = { path = "./service", features = ["surrealdb", "s3"] }
-api-handler = { path = "./handler", features = ["actix-web"] }
+api-service = { path = "./service" }
+api-handler = { path = "./handler" }
 
 # log.workspace = true
 
@@ -34,7 +34,6 @@ garde.workspace = true
 
 # tonic.workspace = true
 
-opentelemetry.workspace = true
 tracing.workspace = true
 
 include_dir.workspace = true

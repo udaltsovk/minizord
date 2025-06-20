@@ -5,21 +5,6 @@ authors = ["Kirill Udaltsov <commits@udaltsovk.ru>"]
 license.workspace = true
 edition.workspace = true
 
-[features]
-surrealdb = [
-    "dep:mobc-surrealdb", 
-    "dep:surrealdb", 
-    "dep:surrealdb-migrations", 
-    "dep:include_dir"
-]
-s3 = ["dep:aws-sdk-s3"]
-actix-web = [
-    "dep:actix-web", 
-    "dep:actix-contrib-logger", 
-    "dep:tracing-actix-web", 
-    "dep:actix-web-metrics"
-]
-
 [dependencies]
 macros.workspace = true
 
@@ -50,47 +35,46 @@ tracing-subscriber = { version = "0.3", features = [
     "registry",
     "std",
 ] }
-tracing-opentelemetry = "0.30"
-opentelemetry-appender-tracing = { version = "0.29", features = [
-    "experimental_metadata_attributes", 
-    # "spec_unstable_logs_enabled",
+tracing-opentelemetry = "0.31"
+opentelemetry-appender-tracing = { version = "0.30", features = [
+    "experimental_metadata_attributes",
+#    "spec_unstable_logs_enabled",
     "experimental_use_tracing_span_context"
 ] }
-opentelemetry_sdk = { version = "0.29", features = [
+opentelemetry_sdk = { version = "0.30", features = [
     "rt-tokio",
     "trace",
     "logs",
     "metrics",
 ] }
-opentelemetry-otlp = { version = "0.29", features = [
+opentelemetry-otlp = { version = "0.30", features = [
     "grpc-tonic",
     "trace",
     "logs",
     "metrics",
 ] }
-opentelemetry-semantic-conventions = { version = "0.29", features = ["semconv_experimental"] }
+opentelemetry-semantic-conventions = { version = "0.30", features = ["semconv_experimental"] }
 metrics.workspace = true
 metrics-process = "2.4"
 tokio-metrics = { version = "0.4", features = ["rt", "metrics-rs-integration"] }
-metrics-util = "0.19"
+metrics-util = "0.20"
 metrics-tracing-context = "0.18"
 metrics-exporter-prometheus = "0.17"
 
 mobc.workspace = true
-mobc-surrealdb = { git = "https://github.com/NikSneMC/mobc-surrealdb", optional = true }
-surrealdb = { workspace = true, optional = true }
-surrealdb-migrations = { version = "2.2", optional = true }
-include_dir = { workspace = true, optional = true }
+mobc-surrealdb = { git = "https://github.com/NikSneMC/mobc-surrealdb" }
+surrealdb-migrations.version = "2.3"
+include_dir.workspace = true
 
-aws-sdk-s3 = { workspace = true, optional = true }
+aws-sdk-s3.workspace = true
 
-actix-web = { workspace = true, optional = true }
-actix-contrib-logger = { version = "0.1", optional = true }
+actix-web.workspace = true
+actix-contrib-logger.version = "0.1"
 tracing-actix-web = { version = "0.7", default-features = false, features = [
     "opentelemetry_0_29",
     "uuid_v7",
-], optional = true }
-actix-web-metrics = { version = "0.2", optional = true }
+] }
+actix-web-metrics.version = "0.2"
 
 [dev-dependencies]
 rstest.workspace = true

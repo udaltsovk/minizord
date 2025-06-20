@@ -1,16 +1,18 @@
-use entity::tour::{self, Tour};
-use macros::crud_repository;
+use entity::tour::{CreateTour, Tour, TourId, TourUpdate};
+use macros::repository;
 
 use crate::common::RepositoryError;
 
-#[cfg(feature = "surrealdb")]
 pub mod surreal;
 
-crud_repository! {
-    Tour
-        Err: RepositoryError
-    {
-        async fn find_by_name(&self, name: &str) -> Option<Tour>;
-        async fn exists_by_name(&self, name: &str) -> bool;
-    }
+#[repository(
+    entity = Tour,
+    entity_id = TourId,
+    create = CreateTour,
+    update = TourUpdate,
+    error = RepositoryError
+)]
+pub trait TourRepository {
+    async fn find_by_name(&self, name: &str) -> Option<Tour>;
+    async fn exists_by_name(&self, name: &str) -> bool;
 }
