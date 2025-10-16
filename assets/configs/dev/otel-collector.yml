@@ -12,14 +12,12 @@ receivers:
       global:
         scrape_interval: 5s
       scrape_configs:
-        - job_name: "minizord_api"
+        - job_name: "minizord-monolyth"
           metrics_path: /metrics
           static_configs:
             - targets: ["host.docker.internal:8081"]
-
 processors:
   batch:
-
 exporters:
   otlphttp/loki:
     endpoint: http://loki:3100/otlp
@@ -40,7 +38,6 @@ exporters:
     add_metric_suffixes: true
     resource_to_telemetry_conversion:
       enabled: true
-
 service:
   pipelines:
     traces:
@@ -67,4 +64,3 @@ service:
               prometheus:
                 host: "0.0.0.0"
                 port: 8888
-

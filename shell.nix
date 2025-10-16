@@ -8,17 +8,17 @@
 }: let
   packages = with pkgs; [
     (rust-bin.nightly.latest.default.override {
-      extensions = [ "rust-src" ];
+      extensions = ["rust-src"];
     })
+    bun
 
     watchexec
+    just
+
     surrealdb-migrations
-    protobuf
     cargo-udeps
     cargo-audit
     cargo-expand
-
-    bun
   ];
 
   libraries = with pkgs; [
@@ -33,4 +33,5 @@ in
 
       DIRENV_LOG_FORMAT = "";
       LD_LIBRARY_PATH = "${lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH";
+      CFLAGS = "-DJEMALLOC_STRERROR_R_RETURNS_CHAR_WITH_GNU_SOURCE";
     }

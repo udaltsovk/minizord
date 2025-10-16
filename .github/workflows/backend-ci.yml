@@ -1,27 +1,22 @@
 name: Backend CI
-
 on:
   push:
     paths:
       - .github/workflows/backend-ci.yml
       - .github/workflows/backend-docker.yml
-      - backend/**
-    branches: 
+      - apps/backend/**
+    branches:
       - master
   pull_request:
     paths:
-      - backend/**
+      - apps/backend/**
     branches:
       - master
   workflow_dispatch:
-
 jobs:
   test:
     name: Test
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: ./backend
     strategy:
       matrix:
         build: [stable, nightly]
@@ -33,79 +28,68 @@ jobs:
             os: ubuntu-latest
             rust: nightly
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update ${{ matrix.rust }} --no-self-update
-        rustup default ${{ matrix.rust }}
-    - name: Run tests
-      run: |
-        cargo test --all
-
+      - uses: actions/checkout@master
+      - name: Install Rust
+        run: |
+          rustup update ${{ matrix.rust }} --no-self-update
+          rustup default ${{ matrix.rust }}
+      - name: Run tests
+        run: |
+          cargo test --all
   check-code:
     name: Check code style
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update nightly --no-self-update
-        rustup +nightly component add rustfmt
-        rustup update stable --no-self-update
-        rustup +stable component add clippy
-    - name: Format code using Rustfmt
-      run: |
-        cargo +nightly fmt --all -- --check
-    - name: Lint code using Clippy
-      run: |
-        cargo +stable clippy --all -- -D warnings
+      - uses: actions/checkout@master
+      - name: Install Rust
+        run: |
+          rustup update nightly --no-self-update
+          rustup +nightly component add rustfmt
+          rustup update stable --no-self-update
+          rustup +stable component add clippy
+      - name: Format code using Rustfmt
+        run: |
+          cargo +nightly fmt --all -- --check
+      - name: Lint code using Clippy
+        run: |
+          cargo +stable clippy --all -- -D warnings
   check-deps:
     name: Check for unused or insecure dependencies
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update nightly --no-self-update
-        rustup default nightly
-    - name: Install cargo-binstall
-      uses: cargo-bins/cargo-binstall@main
-    - name: Install cargo-udeps
-      run: cargo binstall cargo-udeps
-    - name: Check for unused dependencies with cargo-udeps
-      run: |
-        cargo udeps --all
-    - name: Install cargo-audit
-      run: cargo binstall cargo-audit
-    - name: Check for insecure dependencies using cargo-audit
-      run: |
-        cargo audit
+      - uses: actions/checkout@master
+      - name: Install Rust
+        run: |
+          rustup update nightly --no-self-update
+          rustup default nightly
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+      - name: Install cargo-udeps
+        run: cargo binstall cargo-udeps
+      - name: Check for unused dependencies with cargo-udeps
+        run: |
+          cargo udeps --all
+      - name: Install cargo-audit
+        run: cargo binstall cargo-audit
+      - name: Check for insecure dependencies using cargo-audit
+        run: |
+          cargo audit
   openapi:
     name: Build and push openapi.Json
     runs-on: ubuntu-latest
     needs: [test, check-code, check-deps]
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update nightly --no-self-update
-        rustup default nightly
-    - name: Build openapi.json
-      run: |
-        cargo run --bin gen-openapi
-    - uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: "chore: update openapi.json"
-  
+      - uses: actions/checkout@master
+      - name: Install Rust
+        run: |
+          rustup update nightly --no-self-update
+          rustup default nightly
+      - name: Build openapi.json
+        run: |
+          cargo run --bin gen-openapi
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: update openapi.json"
   docker:
     name: ${{ matrix.crate }}
     needs: [test, check-code, check-deps]
@@ -116,4 +100,3 @@ jobs:
     uses: ./.github/workflows/backend-docker.yml
     with:
       crate: minizord-${{ matrix.crate }}
-

@@ -1,27 +1,22 @@
 name: Frontend CI
-
 on:
   push:
     paths:
       - .github/workflows/frontend-ci.yml
-      - frontend/**
-    branches: 
+      - apps/frontend/**
+    branches:
       - master
   pull_request:
     paths:
       - .github/workflows/frontend-ci.yml
-      - frontend/**
+      - apps/frontend/**
     branches:
       - master
   workflow_dispatch:
-
 jobs:
   # test:
   #   name: Test
   #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./frontend
   #   steps:
   #   - uses: actions/checkout@master
   #   - name: Install Bun
@@ -33,21 +28,18 @@ jobs:
   check-code:
     name: Check code style
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     steps:
-    - uses: actions/checkout@master
-    - name: Install Bun
-      uses: oven-sh/setup-bun@v2
-    - name: Format code using prettier
-      run: |
-        bun i
-        bun run format
-    - name: Lint code using eslint
-      run: |
-        bun i
-        bun run lint
+      - uses: actions/checkout@master
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Format code using prettier
+        run: |
+          bun i
+          bun run format
+      - name: Lint code using eslint
+        run: |
+          bun i
+          bun run lint
   docker:
     name: Build and publish docker image
     runs-on: ubuntu-latest
@@ -76,8 +68,7 @@ jobs:
         env:
           GIT_HASH: ${{ steps.push-changes.outputs.commit-hash }}
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          file: ./apps/frontend/Dockerfile
           platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
