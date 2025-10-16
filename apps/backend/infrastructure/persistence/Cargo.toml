@@ -1,0 +1,14 @@
+[package]
+name = "minizord-infrastructure-persistence"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[features]
+surreal = ["dep:surreal"]
+
+[dependencies]
+surreal = { path = "./surreal", package = "minizord-infrastructure-persistence-surreal", optional = true }
+
+[lints]
+workspace = true

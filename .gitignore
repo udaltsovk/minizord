@@ -1,3 +1,6 @@
 .idea
 .direnv
 .env
+node_modules
+target
+!bin
