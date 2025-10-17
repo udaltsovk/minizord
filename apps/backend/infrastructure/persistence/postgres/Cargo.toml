@@ -1,0 +1,21 @@
+[package]
+name = "minizord-infrastructure-persistence-postgres"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { workspace = true, features = ["infrastructure-persistence-postgres"] }
+domain = { path = "../../../domain", package = "minizord-domain" }
+application = { path = "../../../application", package = "minizord-application" }
+
+async-trait.workspace = true
+tap.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+sqlx = { workspace = true, features = ["runtime-tokio", "postgres", "uuid"] }
+
+[lints]
+workspace = true

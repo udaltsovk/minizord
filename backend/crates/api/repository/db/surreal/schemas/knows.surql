@@ -1,6 +1,0 @@
-DEFINE TABLE OVERWRITE knows 
-    SCHEMAFULL
-    TYPE RELATION FROM user TO technology ENFORCED;
-
-DEFINE FIELD OVERWRITE level ON knows
-    TYPE int;

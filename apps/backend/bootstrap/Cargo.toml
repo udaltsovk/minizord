@@ -1,0 +1,14 @@
+[package]
+name = "minizord-bootstrap"
+version = "0.1.0"
+edition = "2024"
+
+[package.metadata.cargo-udeps.ignore]
+normal = ["monolyth"]
+
+[dependencies]
+monolyth = { path = "./monolyth", package = "minizord-monolyth" }
+
+
+[lints]
+workspace = true
