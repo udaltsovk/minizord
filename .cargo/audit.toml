@@ -1,0 +1,10 @@
+[advisories]
+ignore = []
+
+
+[yanked]
+enabled = false # url
+
+[output]
+deny = ["warnings"]
+quiet = false

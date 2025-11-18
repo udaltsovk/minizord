@@ -1,0 +1,495 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Minizord API",
+    "description": "OpenAPI for the Minizord platform",
+    "contact": {
+      "name": "GitHub repo",
+      "url": "https://github.com/udaltsovk/minizord"
+    },
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local instance"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterJsonUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JsonUser"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginJsonUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JsonVerboseSession"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions/refresh": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JsonSessionTokenPair"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorStruct"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiInfo": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "name",
+          "version",
+          "documentation",
+          "about",
+          "build_info"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "minizord-api"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "0.1.0"
+            ]
+          },
+          "documentation": {
+            "type": "string",
+            "format": "uri",
+            "description": ""
+          },
+          "about": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "Welcome, traveler!"
+            ]
+          },
+          "build_info": {
+            "$ref": "#/components/schemas/BuildInfo"
+          }
+        }
+      },
+      "BuildInfo": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "comp_date",
+          "git_hash",
+          "profile"
+        ],
+        "properties": {
+          "comp_date": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "2025-02-23 @ 17:00 (Europe/Moscow)"
+            ]
+          },
+          "git_hash": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "c94e0b0a2ed3c3fc6fbcd2a93d682bc4adeb9924"
+            ]
+          },
+          "profile": {
+            "type": "string",
+            "description": "",
+            "examples": [
+              "release"
+            ]
+          }
+        }
+      },
+      "JsonErrorStruct": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "error_code",
+          "errors"
+        ],
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "description": ""
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": ""
+          }
+        }
+      },
+      "JsonSessionTokenPair": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "access_token",
+          "refresh_token"
+        ],
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": ""
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": ""
+          }
+        }
+      },
+      "JsonUser": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "id",
+          "email",
+          "username",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": ""
+          },
+          "email": {
+            "type": "string",
+            "description": ""
+          },
+          "username": {
+            "type": "string",
+            "description": ""
+          },
+          "role": {
+            "$ref": "#/components/schemas/JsonUserRole"
+          },
+          "profile_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": ""
+          }
+        }
+      },
+      "JsonUserRole": {
+        "type": "string",
+        "description": "",
+        "default": "participant",
+        "enum": [
+          "admin",
+          "organizer",
+          "mentor",
+          "participant"
+        ]
+      },
+      "JsonVerboseSession": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JsonSessionTokenPair"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "user"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": ""
+              },
+              "user": {
+                "$ref": "#/components/schemas/JsonUser"
+              }
+            }
+          }
+        ],
+        "description": ""
+      },
+      "LoginJsonUser": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": ""
+          },
+          "password": {
+            "type": "string",
+            "description": ""
+          }
+        }
+      },
+      "RegisterJsonUser": {
+        "type": "object",
+        "description": "",
+        "required": [
+          "email",
+          "username",
+          "password",
+          "role"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": ""
+          },
+          "username": {
+            "type": "string",
+            "description": ""
+          },
+          "password": {
+            "type": "string",
+            "description": ""
+          },
+          "role": {
+            "$ref": "#/components/schemas/JsonUserRole"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "admin": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "mentor": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "organizer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "participant": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": ""
+    },
+    {
+      "name": "sessions",
+      "description": ""
+    }
+  ]
+}

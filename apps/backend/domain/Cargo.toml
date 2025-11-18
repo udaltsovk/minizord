@@ -1,0 +1,24 @@
+[package]
+name = "minizord-domain"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { workspace = true, features = ["domain", "macros-proc"] }
+
+async-trait.workspace = true
+derive-where.workspace = true
+tap.workspace = true
+# tracing.workspace = true
+thiserror.workspace = true
+uuid = { workspace = true, features = ["v7"] }
+
+passwords = "3.1"
+regex = "1.12"
+
+[dev-dependencies]
+rstest.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,5 @@
+[clippy]
+rustflags = ["--cfg", "tokio_unstable", "-C", "target-cpu=native"]
+
+[build]
+rustflags = ["--cfg", "tokio_unstable", "-C", "target-cpu=native"]

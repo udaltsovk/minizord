@@ -1,0 +1,17 @@
+[package]
+name = "minizord-infrastructure-services-hasher-argon2"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { workspace = true }
+application = { path = "../../../../application", package = "minizord-application" }
+
+thiserror.workspace = true
+tracing.workspace = true
+
+argon2 = "0.5"
+
+[lints]
+workspace = true

@@ -1,0 +1,53 @@
+[package]
+name = "minizord-monolyth"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "minizord-monolyth"
+path = "./src/bin/main.rs"
+
+[[bin]]
+name = "minizord-openapi"
+path = "./src/bin/openapi.rs"
+
+[dependencies]
+lib = { workspace = true, features = [
+  "bootstrap-openapi",
+  "infrastructure-instrumentation-opentelemetry-grpc-tonic",
+  # "infrastructure-persistence-surreal",
+] }
+domain = { path = "../../domain", package = "minizord-domain" }
+application = { path = "../../application", package = "minizord-application" }
+infrastructure = { path = "../../infrastructure", package = "minizord-infrastructure", features = [
+  "persistence-surreal",
+  "services-hasher-argon2",
+  "services-token-jwt",
+] }
+presentation = { path = "../../presentation", package = "minizord-presentation", features = [
+  "api-rest",
+] }
+
+async-trait.workspace = true
+env-vars-config.workspace = true
+include_dir.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tower.workspace = true
+tracing.workspace = true
+utoipa.workspace = true
+
+axum-otel-metrics = "0.12"
+axum-tracing-opentelemetry = { version = "0.30", features = [
+  "tracing_level_info",
+] }
+tracing-subscriber = "0.3"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+tikv-jemallocator = { workspace = true, features = [
+  "profiling",
+  "unprefixed_malloc_on_supported_platforms",
+] }
+
+[lints]
+workspace = true
