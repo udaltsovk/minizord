@@ -30,7 +30,7 @@ garde = { version = "0.22", features = ["derive", "serde", "url", "email", "emai
 chrono = { version = "0.4", features = ["serde"] }
 ulid = { version = "1.2", features = ["serde"] }
 
-bytes = { version = "1.10", features = ["serde"] }
+bytes = { version = "1.11", features = ["serde"] }
 
 tokio = { version = "1.45", features = [
     "rt-multi-thread",
@@ -40,10 +40,10 @@ tokio = { version = "1.45", features = [
 ] }
 
 mobc = "0.8"
-surrealdb = "2.3"
+surrealdb = "2.6"
 include_dir = "0.7"
 
-aws-sdk-s3 = { version = "1.85", features = ["behavior-version-latest"] }
+aws-sdk-s3 = { version = "1.103", features = ["behavior-version-latest"] }
 
 # tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost", "zstd"] }
 

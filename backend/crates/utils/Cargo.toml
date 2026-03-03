@@ -39,7 +39,7 @@ ulid.workspace = true
 
 argon2 = { version = "0.5", features = ["std"] }
 rand_chacha = "0.3"
-jsonwebtoken = "9.3"
+jsonwebtoken = "10.3"
 
 opentelemetry.workspace = true
 tracing.workspace = true
