@@ -43,7 +43,7 @@ mobc = "0.8"
 surrealdb = "2.6"
 include_dir = "0.7"
 
-aws-sdk-s3 = { version = "1.103", features = ["behavior-version-latest"] }
+aws-sdk-s3 = { version = "1.112", features = ["behavior-version-latest"] }
 
 # tonic = { version = "0.12", default-features = false, features = ["channel", "codegen", "prost", "zstd"] }
 
